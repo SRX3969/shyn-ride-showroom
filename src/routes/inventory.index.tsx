@@ -64,7 +64,7 @@ function InventoryContent() {
   const { data: cars } = useSuspenseQuery(inventoryQuery(search));
 
   const update = (patch: Partial<z.infer<typeof searchSchema>>) => {
-    navigate({ search: (s) => ({ ...s, ...patch }) as any });
+    navigate({ search: (s: any) => ({ ...s, ...patch }) as any });
   };
 
   return (
