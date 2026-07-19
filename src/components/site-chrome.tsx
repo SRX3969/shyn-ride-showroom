@@ -1,104 +1,262 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { Menu, X, Instagram, Phone, Mail } from "lucide-react";
 
 export function Header() {
-  const [signedIn, setSignedIn] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      setSignedIn(!!session);
-    });
-    return () => sub.subscription.unsubscribe();
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileOpen]);
+
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-        <Link to="/" className="font-display text-xl tracking-tight">
-          SHYN <span className="text-champagne">RIDE</span>
-        </Link>
-        <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
-          <Link to="/inventory" className="hover:text-foreground transition-colors" activeProps={{ className: "text-foreground" }}>
-            Inventory
+    <>
+      <header
+        className={`sticky top-0 z-50 transition-all duration-500 ${
+          scrolled
+            ? "glass border-b border-border/40 shadow-lg shadow-black/20"
+            : "bg-transparent border-b border-transparent"
+        }`}
+      >
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+          <Link
+            to="/"
+            className="font-display text-xl tracking-tight transition-transform duration-300 hover:scale-105"
+            onClick={() => setMobileOpen(false)}
+          >
+            SHYN <span className="text-gradient-gold">RIDE</span>
           </Link>
-          <Link to="/sell-your-car" className="hover:text-foreground transition-colors" activeProps={{ className: "text-foreground" }}>
-            Sell Your Car
-          </Link>
-          <Link to="/about" className="hover:text-foreground transition-colors" activeProps={{ className: "text-foreground" }}>
-            About
-          </Link>
-          <Link to="/faqs" className="hover:text-foreground transition-colors" activeProps={{ className: "text-foreground" }}>
-            FAQs
-          </Link>
-          <Link to="/contact" className="hover:text-foreground transition-colors" activeProps={{ className: "text-foreground" }}>
-            Contact
-          </Link>
-        </nav>
-        <div className="flex items-center gap-3">
-          {signedIn ? (
-            <Link
-              to="/admin"
-              className="rounded-sm border border-champagne/40 px-4 py-2 text-xs uppercase tracking-widest text-champagne transition-colors hover:bg-champagne hover:text-primary-foreground"
-            >
-              Admin
-            </Link>
-          ) : (
+
+          {/* Desktop nav */}
+          <nav className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
+            {[
+              { to: "/inventory" as const, label: "Inventory" },
+              { to: "/sell-your-car" as const, label: "Sell Your Car" },
+              { to: "/about" as const, label: "About" },
+              { to: "/faqs" as const, label: "FAQs" },
+              { to: "/contact" as const, label: "Contact" },
+            ].map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="nav-link font-medium transition-colors hover:text-foreground"
+                activeProps={{ className: "text-foreground" }}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-3">
             <Link
               to="/inventory"
-              className="rounded-sm bg-champagne px-4 py-2 text-xs uppercase tracking-widest text-primary-foreground transition-colors hover:bg-champagne/90"
+              className="hidden rounded-md bg-champagne px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:bg-champagne/90 hover:shadow-lg hover:shadow-champagne/20 btn-shine md:block"
             >
               View Inventory
             </Link>
-          )}
+
+            {/* Mobile hamburger */}
+            <button
+              onClick={() => setMobileOpen((v) => !v)}
+              className="relative z-50 flex h-10 w-10 items-center justify-center rounded-md transition-colors hover:bg-card md:hidden"
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            >
+              <div className="relative h-5 w-5">
+                <Menu
+                  className={`absolute inset-0 h-5 w-5 transition-all duration-300 ${
+                    mobileOpen ? "rotate-90 scale-0 opacity-0" : "rotate-0 scale-100 opacity-100"
+                  }`}
+                />
+                <X
+                  className={`absolute inset-0 h-5 w-5 transition-all duration-300 ${
+                    mobileOpen ? "rotate-0 scale-100 opacity-100" : "-rotate-90 scale-0 opacity-0"
+                  }`}
+                />
+              </div>
+            </button>
+          </div>
         </div>
+      </header>
+
+      {/* Mobile overlay */}
+      <div
+        className={`fixed inset-0 z-40 bg-background/95 backdrop-blur-xl transition-all duration-500 md:hidden ${
+          mobileOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <nav className="flex h-full flex-col items-center justify-center gap-8">
+          {[
+            { to: "/" as const, label: "Home" },
+            { to: "/inventory" as const, label: "Inventory" },
+            { to: "/sell-your-car" as const, label: "Sell Your Car" },
+            { to: "/about" as const, label: "About" },
+            { to: "/faqs" as const, label: "FAQs" },
+            { to: "/contact" as const, label: "Contact" },
+          ].map((link, i) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              onClick={() => setMobileOpen(false)}
+              className={`font-display text-3xl text-foreground transition-all duration-500 hover:text-champagne ${
+                mobileOpen
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-4 opacity-0"
+              }`}
+              style={{
+                transitionDelay: mobileOpen ? `${i * 80}ms` : "0ms",
+              }}
+            >
+              {link.label}
+            </Link>
+          ))}
+          <Link
+            to="/inventory"
+            onClick={() => setMobileOpen(false)}
+            className={`mt-4 rounded-md bg-champagne px-8 py-3 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-500 ${
+              mobileOpen
+                ? "translate-y-0 opacity-100"
+                : "translate-y-4 opacity-0"
+            }`}
+            style={{
+              transitionDelay: mobileOpen ? "500ms" : "0ms",
+            }}
+          >
+            View Inventory
+          </Link>
+        </nav>
       </div>
-    </header>
+    </>
   );
 }
 
 export function Footer() {
   return (
-    <footer className="border-t border-border/60 bg-background">
+    <footer className="border-t border-border/40 bg-card/30 noise-overlay">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-16 md:grid-cols-4">
         <div>
           <div className="font-display text-2xl">
-            SHYN <span className="text-champagne">RIDE</span>
+            SHYN <span className="text-gradient-gold">RIDE</span>
           </div>
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground">
-            A curated pre-owned luxury car showroom in Bangalore. Certified, transparent, unhurried.
+            A curated pre-owned luxury car showroom in Bangalore. Certified,
+            transparent, unhurried.
           </p>
+          <div className="mt-6 flex items-center gap-4">
+            <a
+              href="#"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-all duration-300 hover:border-champagne hover:text-champagne hover:scale-110"
+              aria-label="Instagram"
+            >
+              <Instagram className="h-4 w-4" />
+            </a>
+            <a
+              href="#"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-all duration-300 hover:border-champagne hover:text-champagne hover:scale-110"
+              aria-label="Phone"
+            >
+              <Phone className="h-4 w-4" />
+            </a>
+            <a
+              href="#"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-all duration-300 hover:border-champagne hover:text-champagne hover:scale-110"
+              aria-label="Email"
+            >
+              <Mail className="h-4 w-4" />
+            </a>
+          </div>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-widest text-champagne">Explore</div>
-          <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-            <li><Link to="/inventory" className="hover:text-foreground">Inventory</Link></li>
-            <li><Link to="/sell-your-car" className="hover:text-foreground">Sell Your Car</Link></li>
-            <li><Link to="/about" className="hover:text-foreground">About</Link></li>
-            <li><Link to="/faqs" className="hover:text-foreground">FAQs</Link></li>
+          <div className="text-xs font-semibold uppercase tracking-widest text-champagne">
+            Explore
+          </div>
+          <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
+            <li>
+              <Link
+                to="/inventory"
+                className="transition-colors duration-300 hover:text-foreground"
+              >
+                Inventory
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/sell-your-car"
+                className="transition-colors duration-300 hover:text-foreground"
+              >
+                Sell Your Car
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/about"
+                className="transition-colors duration-300 hover:text-foreground"
+              >
+                About
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/faqs"
+                className="transition-colors duration-300 hover:text-foreground"
+              >
+                FAQs
+              </Link>
+            </li>
           </ul>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-widest text-champagne">Visit</div>
-          <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+          <div className="text-xs font-semibold uppercase tracking-widest text-champagne">
+            Visit
+          </div>
+          <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
             <li>Bangalore, India</li>
             <li>Mon – Sat, 10am – 8pm</li>
             <li>By appointment</li>
           </ul>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-widest text-champagne">Reach us</div>
-          <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-            <li>hello@shynride.example</li>
+          <div className="text-xs font-semibold uppercase tracking-widest text-champagne">
+            Reach us
+          </div>
+          <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
+            <li>hello@shynride.in</li>
             <li>+91 00000 00000</li>
-            <li><Link to="/contact" className="hover:text-foreground">Contact</Link></li>
+            <li>
+              <Link
+                to="/contact"
+                className="transition-colors duration-300 hover:text-foreground"
+              >
+                Contact
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
-      <div className="border-t border-border/40">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 text-xs text-muted-foreground">
-          <span>© {new Date().getFullYear()} SHYN RIDE. All rights reserved.</span>
-          <span className="tracking-widest">Bangalore</span>
+      <div className="hair mx-6" />
+      <div className="border-t border-border/20">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-6 py-6 text-xs text-muted-foreground sm:flex-row">
+          <span>
+            © {new Date().getFullYear()} SHYN RIDE. All rights reserved.
+          </span>
+          <span className="font-medium tracking-wider">
+            Made with ♥ by <span className="text-champagne">Abhir</span>
+          </span>
         </div>
       </div>
     </footer>

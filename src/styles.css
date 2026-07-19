@@ -4,8 +4,9 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* SHYN RIDE — Quiet Showroom design system.
+/* SHYN RIDE — Premium Showroom design system.
  * Dark by default. All colors as oklch semantic tokens.
+ * Typography: Playfair Display (display) + Outfit (sans)
  */
 
 @theme inline {
@@ -43,47 +44,48 @@
 }
 
 :root {
-  --radius: 0.25rem;
+  --radius: 0.5rem;
 
-  --font-display-family: "Fraunces", ui-serif, Georgia, serif;
-  --font-sans-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display-family: "Playfair Display", ui-serif, Georgia, serif;
+  --font-sans-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
 
   /* Obsidian base */
-  --background: oklch(0.13 0.005 250);      /* #0B0C0E */
-  --foreground: oklch(0.95 0.012 85);       /* #F3EFE8 ivory */
-  --card: oklch(0.17 0.005 250);            /* #17181B charcoal */
+  --background: oklch(0.11 0.006 260);       /* deep black-blue */
+  --foreground: oklch(0.95 0.012 85);        /* #F3EFE8 ivory */
+  --card: oklch(0.15 0.006 260);             /* charcoal */
   --card-foreground: oklch(0.95 0.012 85);
-  --popover: oklch(0.17 0.005 250);
+  --popover: oklch(0.15 0.006 260);
   --popover-foreground: oklch(0.95 0.012 85);
 
-  --primary: oklch(0.75 0.09 80);           /* #C9A86A champagne */
-  --primary-foreground: oklch(0.13 0.005 250);
-  --champagne: oklch(0.75 0.09 80);
+  --primary: oklch(0.78 0.1 75);             /* warm champagne gold */
+  --primary-foreground: oklch(0.11 0.006 260);
+  --champagne: oklch(0.78 0.1 75);
 
-  --secondary: oklch(0.22 0.006 250);
+  --secondary: oklch(0.2 0.006 260);
   --secondary-foreground: oklch(0.95 0.012 85);
-  --muted: oklch(0.2 0.006 250);
-  --muted-foreground: oklch(0.62 0.008 250); /* #8A8D93 slate */
-  --slate-quiet: oklch(0.62 0.008 250);
-  --accent: oklch(0.28 0.05 165);           /* deep emerald surface */
+  --muted: oklch(0.18 0.006 260);
+  --muted-foreground: oklch(0.6 0.008 260);  /* slate */
+  --slate-quiet: oklch(0.6 0.008 260);
+  --accent: oklch(0.28 0.05 165);            /* deep emerald surface */
   --accent-foreground: oklch(0.95 0.012 85);
-  --emerald-deep: oklch(0.22 0.045 165);    /* #10201B */
+  --emerald-deep: oklch(0.2 0.045 165);
 
   --destructive: oklch(0.58 0.22 25);
   --destructive-foreground: oklch(0.98 0.003 85);
 
-  --border: oklch(0.24 0.006 250);
-  --input: oklch(0.22 0.006 250);
-  --ring: oklch(0.75 0.09 80);
+  --border: oklch(0.22 0.006 260);
+  --input: oklch(0.2 0.006 260);
+  --ring: oklch(0.78 0.1 75);
 }
 
-/* Base */
+/* ─── Base ─── */
 @layer base {
   * {
     border-color: var(--color-border);
   }
   html {
     color-scheme: dark;
+    scroll-behavior: smooth;
   }
   body {
     background-color: var(--color-background);
@@ -91,10 +93,11 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    overflow-x: hidden;
   }
   h1, h2, h3, h4 {
     font-family: var(--font-display);
-    font-weight: 400;
+    font-weight: 500;
     letter-spacing: -0.02em;
   }
   .tabular {
@@ -105,10 +108,24 @@
     background: var(--color-champagne);
     color: var(--color-background);
   }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-background);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-champagne);
+  }
 }
 
-/* Chrome sweep — a slow diagonal highlight that glides across on hover.
- * Used on car card image containers. */
+/* ─── Chrome sweep — diagonal highlight on hover ─── */
 @utility chrome-sweep {
   position: relative;
   overflow: hidden;
@@ -134,7 +151,49 @@
   transform: translateX(120%);
 }
 
-/* Scroll reveal */
+/* ─── Scroll reveal animations ─── */
+@utility sr-hidden {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+@utility sr-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@utility sr-scale-hidden {
+  opacity: 0;
+  transform: scale(0.92) translateY(20px);
+  transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+@utility sr-scale-visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+@utility sr-left-hidden {
+  opacity: 0;
+  transform: translateX(-40px);
+  transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+@utility sr-left-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+@utility sr-right-hidden {
+  opacity: 0;
+  transform: translateX(40px);
+  transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 800ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+@utility sr-right-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Legacy reveal (kept for compat) */
 @utility reveal {
   opacity: 0;
   transform: translateY(14px);
@@ -145,12 +204,131 @@
   transform: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .chrome-sweep-inner { display: none !important; }
-  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+/* ─── Keyframe animations ─── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
-/* Thin divider used sparingly with a champagne glint */
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes lineGrow {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-champagne) 40%, transparent); }
+  50% { box-shadow: 0 0 20px 4px color-mix(in oklab, var(--color-champagne) 25%, transparent); }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-60px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes borderExpand {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* ─── Animation utilities ─── */
+@utility animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+@utility animate-shimmer {
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+}
+@utility animate-slide-up {
+  animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@utility animate-fade-in-scale {
+  animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@utility animate-gradient-shift {
+  background-size: 200% 200%;
+  animation: gradientShift 6s ease infinite;
+}
+@utility animate-pulse-glow {
+  animation: pulseGlow 2.5s ease-in-out infinite;
+}
+@utility animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+@utility animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* ─── Glassmorphism ─── */
+@utility glass {
+  background: color-mix(in oklab, var(--color-card) 60%, transparent);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  border: 1px solid color-mix(in oklab, var(--color-foreground) 8%, transparent);
+}
+@utility glass-subtle {
+  background: color-mix(in oklab, var(--color-card) 40%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ─── Gradient text ─── */
+@utility text-gradient-gold {
+  background: linear-gradient(135deg, var(--color-champagne), oklch(0.85 0.12 65), var(--color-champagne));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+@utility text-gradient-shine {
+  background: linear-gradient(90deg, var(--color-champagne), oklch(0.92 0.06 80), var(--color-champagne));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 4s linear infinite;
+}
+
+/* ─── Thin divider with champagne glint ─── */
 @utility hair {
   height: 1px;
   background: linear-gradient(
@@ -159,4 +337,98 @@
     color-mix(in oklab, var(--color-champagne) 60%, transparent) 50%,
     transparent
   );
+}
+
+/* ─── Hover card lift ─── */
+@utility hover-lift {
+  transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 500ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px -12px color-mix(in oklab, var(--color-champagne) 15%, transparent),
+    0 8px 16px -8px rgba(0, 0, 0, 0.4);
+}
+
+/* ─── Nav link underline animation ─── */
+@utility nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-champagne);
+  transition: width 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* ─── Button shine effect ─── */
+@utility btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shine::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklab, white 20%, transparent),
+    transparent
+  );
+  transition: left 600ms ease;
+}
+.btn-shine:hover::before {
+  left: 100%;
+}
+
+/* ─── Image zoom on hover ─── */
+@utility img-zoom {
+  overflow: hidden;
+}
+.img-zoom img {
+  transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.img-zoom:hover img {
+  transform: scale(1.06);
+}
+
+/* ─── Noise texture overlay ─── */
+@utility noise-overlay {
+  position: relative;
+}
+.noise-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ─── Reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  .chrome-sweep-inner { display: none !important; }
+  .sr-hidden, .sr-scale-hidden, .sr-left-hidden, .sr-right-hidden {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .animate-float, .animate-shimmer, .animate-marquee,
+  .animate-gradient-shift, .animate-pulse-glow {
+    animation: none !important;
+  }
+  .hover-lift:hover { transform: none !important; }
 }

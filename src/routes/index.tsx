@@ -1,25 +1,34 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { Suspense } from "react";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import { Header, Footer } from "@/components/site-chrome";
 import { CarCard } from "@/components/car-card";
-import { listCars, getBodyTypeCounts, getSiteContent } from "@/lib/cars.functions";
+import { FloatingActions } from "@/components/floating-actions";
+import { SkeletonCard } from "@/components/skeleton";
+import { PageTransition, RevealSection } from "@/components/page-transition";
+import { useScrollReveal, useStaggerReveal } from "@/hooks/useScrollReveal";
+import { useParallax } from "@/hooks/useParallax";
+import { useCountUpString } from "@/hooks/useCountUp";
 import heroImg from "@/assets/hero-showroom.jpg";
-
-const homeDataQuery = queryOptions({
-  queryKey: ["home-data"],
-  queryFn: async () => {
-    const [featured, counts, content] = await Promise.all([
-      listCars({ data: { featured: true, limit: 6, sort: "newest" } }),
-      getBodyTypeCounts(),
-      getSiteContent(),
-    ]);
-    return { featured, counts, content };
-  },
-});
+import sedanImg from "@/assets/car-sedan-1.jpg";
+import suvImg from "@/assets/car-suv-1.jpg";
+import coupeImg from "@/assets/car-coupe-1.jpg";
+import sedan2Img from "@/assets/car-sedan-2.jpg";
+import suv2Img from "@/assets/car-suv-2.jpg";
+import {
+  Shield,
+  Headset,
+  TrendingUp,
+  ArrowRight,
+  Star,
+  ChevronRight,
+  Sparkles,
+  Eye,
+  FileCheck,
+  Truck,
+} from "lucide-react";
 
 export const Route = createFileRoute("/")({
-  loader: ({ context }) => context.queryClient.ensureQueryData(homeDataQuery),
   component: HomePage,
   head: () => ({
     meta: [
@@ -29,7 +38,10 @@ export const Route = createFileRoute("/")({
         content:
           "Bangalore's curated pre-owned luxury car showroom. Mercedes-Benz, BMW, Audi, Land Rover, Porsche. Certified. Transparent. Unhurried.",
       },
-      { property: "og:title", content: "SHYN RIDE — Pre-Owned Luxury Cars, Bangalore" },
+      {
+        property: "og:title",
+        content: "SHYN RIDE — Pre-Owned Luxury Cars, Bangalore",
+      },
       {
         property: "og:description",
         content: "A curated pre-owned luxury car showroom in Bangalore.",
@@ -42,234 +54,681 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Header />
-      <Suspense fallback={<div className="h-screen" />}>
-        <HomeContent />
-      </Suspense>
-      <Footer />
+    <PageTransition>
+      <div className="min-h-screen bg-background text-foreground">
+        <Header />
+        <main>
+          <HeroSection />
+          <BrandMarquee />
+          <TrustStrip />
+          <FeaturedInventory />
+          <LifestyleGallery />
+          <WhyShynRide />
+          <HowItWorks />
+          <BudgetBands />
+          <SellCTA />
+          <Testimonials />
+          <FinalCTA />
+        </main>
+        <Footer />
+        <FloatingActions />
+      </div>
+    </PageTransition>
+  );
+}
+
+/* ─── Hero ─── */
+function HeroSection() {
+  const { ref: parallaxRef, offset } = useParallax(0.15);
+  const siteContent = useQuery(api.siteContent.getAll);
+  const hero = (siteContent?.hero ?? {}) as any;
+
+  return (
+    <section
+      ref={parallaxRef}
+      className="relative h-[95vh] min-h-[650px] w-full overflow-hidden"
+    >
+      <img
+        src={heroImg}
+        alt="A black luxury sedan in a dark showroom"
+        width={1920}
+        height={1080}
+        className="absolute inset-0 h-full w-full object-cover"
+        style={{ transform: `translateY(${offset}px) scale(1.05)` }}
+      />
+      {/* Multi-layer gradient for cinematic depth */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/20 to-background" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background to-transparent" />
+
+      <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-28">
+        <div className="max-w-2xl">
+          <div
+            className="inline-flex items-center gap-2 rounded-full border border-champagne/20 bg-champagne/5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.35em] text-champagne backdrop-blur-sm animate-fade-in"
+            style={{ animationDelay: "200ms" }}
+          >
+            <Sparkles className="h-3 w-3" />
+            Curated in Bangalore
+          </div>
+          <h1
+            className="mt-6 font-display text-5xl leading-[1.05] text-foreground md:text-7xl lg:text-8xl animate-slide-up"
+            style={{ animationDelay: "400ms" }}
+          >
+            {hero.headline ? (
+              hero.headline
+            ) : (
+              <>
+                Own the{" "}
+                <span className="text-gradient-gold">Extraordinary.</span>
+              </>
+            )}
+          </h1>
+          <p
+            className="mt-6 max-w-lg text-base leading-relaxed text-foreground/70 md:text-lg animate-slide-up"
+            style={{ animationDelay: "600ms" }}
+          >
+            {hero.subhead ??
+              "A curated pre-owned luxury showroom in Bangalore. Certified. Transparent. Unhurried."}
+          </p>
+          <div
+            className="mt-10 flex flex-wrap items-center gap-4 animate-slide-up"
+            style={{ animationDelay: "800ms" }}
+          >
+            <Link
+              to="/inventory"
+              className="group flex items-center gap-2.5 rounded-lg bg-champagne px-7 py-4 text-xs font-bold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:shadow-2xl hover:shadow-champagne/25 btn-shine animate-pulse-glow"
+            >
+              {hero.cta ?? "View Inventory"}
+              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+            <Link
+              to="/sell-your-car"
+              className="group flex items-center gap-2.5 rounded-lg border border-foreground/20 px-7 py-4 text-xs font-bold uppercase tracking-widest text-foreground transition-all duration-300 hover:border-champagne/50 hover:text-champagne hover:bg-champagne/5"
+            >
+              Sell Your Car
+              <ChevronRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float">
+        <div className="flex flex-col items-center gap-2">
+          <div className="h-10 w-px bg-gradient-to-b from-champagne/50 to-transparent" />
+          <div className="text-[9px] font-bold uppercase tracking-[0.4em] text-champagne/40">
+            Scroll
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Brand Marquee ─── */
+function BrandMarquee() {
+  const brands = [
+    "MERCEDES-BENZ",
+    "BMW",
+    "AUDI",
+    "PORSCHE",
+    "LAND ROVER",
+    "JAGUAR",
+    "VOLVO",
+    "LEXUS",
+  ];
+
+  return (
+    <section className="border-y border-border/20 bg-card/10 py-5 overflow-hidden">
+      <div className="animate-marquee flex whitespace-nowrap">
+        {[...brands, ...brands].map((brand, i) => (
+          <span
+            key={i}
+            className="mx-10 inline-flex items-center gap-3 font-display text-base tracking-[0.15em] text-muted-foreground/30 transition-colors duration-500 hover:text-champagne/70 md:text-lg"
+          >
+            <span className="h-1 w-1 rounded-full bg-champagne/20" />
+            {brand}
+          </span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ─── Trust Strip ─── */
+function TrustStrip() {
+  const siteContent = useQuery(api.siteContent.getAll);
+  const stats: { value: string; label: string }[] =
+    (siteContent?.trust_stats as any) ?? [];
+  const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
+
+  return (
+    <section ref={ref} className="relative border-b border-border/20 bg-card/20 overflow-hidden">
+      {/* Subtle gradient accent */}
+      <div className="absolute inset-0 bg-gradient-to-r from-champagne/[0.02] via-transparent to-champagne/[0.02]" />
+      <div className="relative mx-auto grid max-w-7xl grid-cols-2 gap-8 px-6 py-20 md:grid-cols-4">
+        {stats.map((s, i) => (
+          <StatItem
+            key={i}
+            value={s.value}
+            label={s.label}
+            delay={i * 150}
+            visible={isVisible}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function StatItem({
+  value,
+  label,
+  delay,
+  visible,
+}: {
+  value: string;
+  label: string;
+  delay: number;
+  visible: boolean;
+}) {
+  const { ref, displayValue } = useCountUpString(value, { duration: 2200 });
+  return (
+    <div
+      ref={ref}
+      className={`text-center md:text-left sr-hidden ${visible ? "sr-visible" : ""}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      <div className="tabular font-display text-4xl text-gradient-gold md:text-5xl">
+        {displayValue}
+      </div>
+      <div className="mt-3 text-[10px] font-bold uppercase tracking-[0.25em] text-muted-foreground/70">
+        {label}
+      </div>
     </div>
   );
 }
 
-const BUDGET_BANDS = [
-  { label: "₹15L – 25L", min: 1500000, max: 2500000 },
-  { label: "₹25L – 50L", min: 2500000, max: 5000000 },
-  { label: "₹50L – 1Cr", min: 5000000, max: 10000000 },
-  { label: "₹1Cr +", min: 10000000, max: undefined },
-];
-
-function HomeContent() {
-  const { data } = useSuspenseQuery(homeDataQuery);
-  const hero = data.content.hero ?? {};
-  const stats = data.content.trust_stats ?? [];
-  const testimonials = data.content.testimonials ?? [];
+/* ─── Featured Inventory ─── */
+function FeaturedInventory() {
+  const featured = useQuery(api.cars.list, {
+    featured: true,
+    limit: 6,
+    sort: "newest",
+  });
+  const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
+  const { containerRef, visibleItems } = useStaggerReveal(
+    featured?.length ?? 6,
+  );
 
   return (
-    <main>
-      {/* Hero */}
-      <section className="relative h-[92vh] min-h-[600px] w-full overflow-hidden">
-        <img
-          src={heroImg}
-          alt="A black luxury sedan in a dark showroom"
-          width={1920}
-          height={1080}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/30 to-background" />
-        <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-24">
-          <div className="max-w-2xl">
-            <div className="text-xs uppercase tracking-[0.3em] text-champagne">
-              Curated in Bangalore
-            </div>
-            <h1 className="mt-6 font-display text-5xl leading-[1.05] text-foreground md:text-7xl">
-              {hero.headline ?? "Own the Extraordinary."}
-            </h1>
-            <p className="mt-6 max-w-lg text-base text-muted-foreground md:text-lg">
-              {hero.subhead ??
-                "A curated pre-owned luxury showroom. Certified. Transparent. Unhurried."}
-            </p>
-            <div className="mt-10 flex flex-wrap items-center gap-4">
-              <Link
-                to="/inventory"
-                className="rounded-sm bg-champagne px-6 py-3 text-xs uppercase tracking-widest text-primary-foreground transition-colors hover:bg-champagne/90"
-              >
-                {hero.cta ?? "View Inventory"}
-              </Link>
-              <Link
-                to="/sell-your-car"
-                className="rounded-sm border border-foreground/30 px-6 py-3 text-xs uppercase tracking-widest text-foreground transition-colors hover:border-foreground"
-              >
-                Sell Your Car
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Trust strip */}
-      <section className="border-y border-border/60 bg-card/50">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-8 px-6 py-14 md:grid-cols-4">
-          {stats.map((s: any, i: number) => (
-            <div key={i}>
-              <div className="tabular font-display text-2xl text-champagne">{s.value}</div>
-              <div className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">
-                {s.label}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Browse by body type */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <SectionEyebrow>Browse</SectionEyebrow>
-        <h2 className="mt-3 font-display text-4xl">By body style.</h2>
-        <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4">
-          {["Sedan", "SUV", "Coupe", "Convertible"].map((bt) => (
-            <Link
-              key={bt}
-              to="/inventory"
-              search={{ bodyType: bt } as any}
-              className="group relative flex aspect-[4/5] flex-col justify-end overflow-hidden bg-card p-6 transition-colors hover:bg-secondary"
-            >
-              <div className="font-display text-2xl text-foreground">{bt}</div>
-              <div className="mt-2 text-xs uppercase tracking-widest text-muted-foreground">
-                {data.counts[bt] ?? 0} available
-              </div>
-              <div className="mt-4 h-px w-8 bg-champagne transition-all duration-500 group-hover:w-20" />
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Featured inventory */}
-      <section className="border-t border-border/60 bg-card/30 py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="flex items-end justify-between">
-            <div>
-              <SectionEyebrow>Featured</SectionEyebrow>
-              <h2 className="mt-3 font-display text-4xl">On the floor now.</h2>
-            </div>
-            <Link
-              to="/inventory"
-              className="hidden text-xs uppercase tracking-widest text-champagne hover:text-champagne/80 md:block"
-            >
-              View all →
-            </Link>
-          </div>
-          <div className="mt-12 grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
-            {data.featured.map((car) => (
-              <CarCard key={car.id} car={car} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Why SHYN RIDE */}
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <SectionEyebrow>The showroom</SectionEyebrow>
-        <h2 className="mt-3 max-w-2xl font-display text-4xl">
-          A quieter way to buy a serious car.
-        </h2>
-        <div className="mt-14 grid grid-cols-1 gap-10 md:grid-cols-3">
-          {[
-            {
-              t: "Certified inspection",
-              d: "Every car passes a 180-point mechanical, cosmetic and paperwork inspection before it is listed.",
-            },
-            {
-              t: "Transparent pricing",
-              d: "Honest, researched prices. If a car is marked negotiable, there is room. If not, the number is the number.",
-            },
-            {
-              t: "Concierge service",
-              d: "Doorstep test drives, RTO paperwork, finance liaison, and a delivery experience worthy of the car.",
-            },
-          ].map((f) => (
-            <div key={f.t} className="border-t border-border pt-8">
-              <div className="text-xs uppercase tracking-widest text-champagne">
-                {f.t}
-              </div>
-              <p className="mt-4 text-base leading-relaxed text-foreground/90">{f.d}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Budget bands */}
-      <section className="border-t border-border/60 py-24">
-        <div className="mx-auto max-w-7xl px-6">
-          <SectionEyebrow>By budget</SectionEyebrow>
-          <h2 className="mt-3 font-display text-4xl">Find your range.</h2>
-          <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4">
-            {BUDGET_BANDS.map((b) => (
-              <Link
-                key={b.label}
-                to="/inventory"
-                search={{ minPrice: b.min, maxPrice: b.max } as any}
-                className="group flex items-center justify-between border border-border p-6 transition-colors hover:border-champagne/60"
-              >
-                <span className="tabular font-display text-lg text-foreground">{b.label}</span>
-                <span className="text-champagne transition-transform group-hover:translate-x-1">
-                  →
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Sell CTA — emerald surface */}
-      <section className="bg-emerald-deep py-24" style={{ backgroundColor: "var(--emerald-deep)" }}>
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 px-6 md:grid-cols-2">
+    <section className="py-28">
+      <div className="mx-auto max-w-7xl px-6">
+        <div
+          ref={ref}
+          className={`flex items-end justify-between sr-hidden ${isVisible ? "sr-visible" : ""}`}
+        >
           <div>
-            <SectionEyebrow>Sell your car</SectionEyebrow>
-            <h2 className="mt-3 font-display text-4xl">A fair number, without the theatre.</h2>
-            <p className="mt-6 max-w-lg text-base text-muted-foreground">
-              Share a few details and we will call you back with a considered quote. If we buy your
-              car, you get paid the same day.
+            <SectionEyebrow>Featured</SectionEyebrow>
+            <h2 className="mt-3 font-display text-4xl md:text-5xl">
+              On the floor <span className="text-gradient-gold">now.</span>
+            </h2>
+            <p className="mt-4 max-w-md text-sm text-muted-foreground/70">
+              Hand-picked from our current collection. Each one inspected, certified, and ready to drive.
             </p>
-            <Link
-              to="/sell-your-car"
-              className="mt-8 inline-block rounded-sm bg-champagne px-6 py-3 text-xs uppercase tracking-widest text-primary-foreground transition-colors hover:bg-champagne/90"
-            >
-              Get a quote
-            </Link>
           </div>
-          <ul className="space-y-6 text-sm text-foreground/85">
-            <li className="border-t border-foreground/10 pt-6"><span className="text-champagne">01</span> — Free inspection at your home or office.</li>
-            <li className="border-t border-foreground/10 pt-6"><span className="text-champagne">02</span> — Transparent quote against current market.</li>
-            <li className="border-t border-foreground/10 pt-6"><span className="text-champagne">03</span> — RTO paperwork handled end to end.</li>
-            <li className="border-t border-foreground/10 pt-6"><span className="text-champagne">04</span> — Same-day payment on acceptance.</li>
-          </ul>
+          <Link
+            to="/inventory"
+            className="hidden items-center gap-2 rounded-lg border border-border/40 px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-champagne transition-all duration-300 hover:border-champagne/40 hover:bg-champagne/5 md:flex"
+          >
+            View all
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
         </div>
-      </section>
-
-      {/* Testimonials */}
-      {testimonials.length > 0 && (
-        <section className="mx-auto max-w-7xl px-6 py-24">
-          <SectionEyebrow>Owners</SectionEyebrow>
-          <div className="mt-10 grid grid-cols-1 gap-10 md:grid-cols-3">
-            {testimonials.map((t: any, i: number) => (
-              <figure key={i} className="border-t border-border pt-8">
-                <blockquote className="font-display text-xl leading-snug text-foreground">
-                  "{t.quote}"
-                </blockquote>
-                <figcaption className="mt-6 text-xs uppercase tracking-widest text-muted-foreground">
-                  {t.name} · {t.car}
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </section>
-      )}
-    </main>
+        <div
+          ref={containerRef}
+          className="mt-14 grid grid-cols-1 gap-x-8 gap-y-14 md:grid-cols-2 lg:grid-cols-3"
+        >
+          {featured === undefined
+            ? Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))
+            : featured.map((car, i) => (
+                <div
+                  key={car._id}
+                  className={`sr-scale-hidden ${visibleItems[i] ? "sr-scale-visible" : ""}`}
+                >
+                  <CarCard car={car} />
+                </div>
+              ))}
+        </div>
+        <div className="mt-12 text-center md:hidden">
+          <Link
+            to="/inventory"
+            className="inline-flex items-center gap-2 rounded-lg border border-border/40 px-6 py-3 text-xs font-bold uppercase tracking-widest text-champagne transition-all duration-300 hover:border-champagne/40"
+          >
+            View all inventory
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+      </div>
+    </section>
   );
 }
 
+/* ─── Lifestyle Gallery ─── */
+function LifestyleGallery() {
+  const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
+
+  return (
+    <section ref={ref} className="py-4 pb-28">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className={`sr-hidden ${isVisible ? "sr-visible" : ""}`}>
+          <SectionEyebrow>Gallery</SectionEyebrow>
+          <h2 className="mt-3 font-display text-4xl md:text-5xl">
+            A closer <span className="text-gradient-gold">look.</span>
+          </h2>
+          <p className="mt-4 max-w-md text-sm text-muted-foreground/70">
+            From executive sedans to grand tourers — see what's on our floor right now.
+          </p>
+        </div>
+        <div className="mt-12 grid grid-cols-2 gap-2 md:grid-cols-4 md:grid-rows-2 md:gap-3">
+          <GalleryImage
+            src={sedanImg}
+            alt="Luxury sedan showroom shot"
+            className="col-span-2 row-span-2 aspect-[4/3] md:aspect-auto"
+            visible={isVisible}
+            delay={100}
+          />
+          <GalleryImage src={suvImg} alt="Premium SUV" visible={isVisible} delay={200} />
+          <GalleryImage src={coupeImg} alt="Sports coupe" visible={isVisible} delay={300} />
+          <GalleryImage src={sedan2Img} alt="Executive sedan" visible={isVisible} delay={400} />
+          <GalleryImage src={suv2Img} alt="Luxury SUV rear" visible={isVisible} delay={500} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function GalleryImage({
+  src,
+  alt,
+  className = "",
+  visible,
+  delay,
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+  visible: boolean;
+  delay: number;
+}) {
+  return (
+    <div
+      className={`group relative overflow-hidden rounded-xl sr-scale-hidden ${visible ? "sr-scale-visible" : ""} ${className || "aspect-[4/3]"}`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+      />
+      {/* Overlay on hover */}
+      <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+      <div className="absolute bottom-4 left-4 opacity-0 transition-all duration-500 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0">
+        <span className="text-xs font-bold uppercase tracking-widest text-foreground/90">{alt}</span>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Why SHYN RIDE ─── */
+function WhyShynRide() {
+  const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
+  const features = [
+    {
+      icon: Shield,
+      title: "Certified Inspection",
+      desc: "Every car passes a 180-point mechanical, cosmetic and paperwork inspection before it is listed.",
+      accent: "from-champagne/10 to-champagne/5",
+    },
+    {
+      icon: TrendingUp,
+      title: "Transparent Pricing",
+      desc: "Honest, researched prices. If a car is marked negotiable, there is room. If not, the number is the number.",
+      accent: "from-emerald-deep/30 to-emerald-deep/10",
+    },
+    {
+      icon: Headset,
+      title: "Concierge Service",
+      desc: "Doorstep test drives, RTO paperwork, finance liaison, and a delivery experience worthy of the car.",
+      accent: "from-champagne/10 to-champagne/5",
+    },
+  ];
+
+  return (
+    <section ref={ref} className="py-28">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className={`max-w-2xl sr-hidden ${isVisible ? "sr-visible" : ""}`}>
+          <SectionEyebrow>The showroom</SectionEyebrow>
+          <h2 className="mt-3 font-display text-4xl md:text-5xl">
+            A quieter way to buy a{" "}
+            <span className="text-gradient-gold">serious car.</span>
+          </h2>
+          <p className="mt-4 text-sm text-muted-foreground/70">
+            No floor salespeople. No pressure. Just a beautiful space, honest information, and cars that deserve your attention.
+          </p>
+        </div>
+        <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3">
+          {features.map((f, i) => (
+            <div
+              key={f.title}
+              className={`group relative overflow-hidden rounded-2xl border border-border/30 bg-card/20 p-8 transition-all duration-500 hover:border-champagne/20 hover:bg-card/40 hover:shadow-xl hover:shadow-champagne/5 sr-hidden ${isVisible ? "sr-visible" : ""}`}
+              style={{ transitionDelay: `${200 + i * 150}ms` }}
+            >
+              {/* Accent gradient */}
+              <div className={`absolute -right-16 -top-16 h-40 w-40 rounded-full bg-gradient-to-br ${f.accent} opacity-0 blur-3xl transition-opacity duration-700 group-hover:opacity-100`} />
+              <div className="relative">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-champagne/10 text-champagne ring-1 ring-champagne/10 transition-all duration-500 group-hover:bg-champagne/15 group-hover:scale-110 group-hover:ring-champagne/20">
+                  <f.icon className="h-6 w-6" />
+                </div>
+                <h3 className="mt-6 font-display text-xl text-foreground">
+                  {f.title}
+                </h3>
+                <p className="mt-4 text-sm leading-relaxed text-foreground/60">
+                  {f.desc}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── How It Works ─── */
+function HowItWorks() {
+  const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
+  const steps = [
+    {
+      num: "01",
+      icon: Eye,
+      title: "Browse",
+      desc: "Explore our curated inventory online. Filter by make, budget, or body style.",
+    },
+    {
+      num: "02",
+      icon: Sparkles,
+      title: "Test Drive",
+      desc: "Schedule a doorstep test drive. We bring the car to you, anywhere in Bangalore.",
+    },
+    {
+      num: "03",
+      icon: FileCheck,
+      title: "Paperwork",
+      desc: "We handle RC transfer, insurance, and all RTO formalities end to end.",
+    },
+    {
+      num: "04",
+      icon: Truck,
+      title: "Drive Home",
+      desc: "Same-day delivery with a handover experience worthy of your new car.",
+    },
+  ];
+
+  return (
+    <section ref={ref} className="relative border-y border-border/20 bg-card/10 py-28 overflow-hidden">
+      {/* Background decoration */}
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-champagne/[0.02] blur-[120px]" />
+      <div className="relative mx-auto max-w-7xl px-6">
+        <div
+          className={`text-center sr-hidden ${isVisible ? "sr-visible" : ""}`}
+        >
+          <SectionEyebrow>How it works</SectionEyebrow>
+          <h2 className="mt-3 font-display text-4xl md:text-5xl">
+            Four simple <span className="text-gradient-gold">steps.</span>
+          </h2>
+          <p className="mx-auto mt-4 max-w-md text-sm text-muted-foreground/70">
+            From first glance to first drive — we make every step effortless.
+          </p>
+        </div>
+        <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-4">
+          {steps.map((step, i) => (
+            <div
+              key={step.num}
+              className={`group relative text-center sr-hidden ${isVisible ? "sr-visible" : ""}`}
+              style={{ transitionDelay: `${300 + i * 150}ms` }}
+            >
+              {/* Connecting line */}
+              {i < steps.length - 1 && (
+                <div className="absolute right-0 top-10 hidden h-px w-full translate-x-1/2 md:block">
+                  <div className="h-full w-full bg-gradient-to-r from-champagne/30 via-champagne/10 to-transparent" />
+                </div>
+              )}
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl border border-border/30 bg-card/40 transition-all duration-500 group-hover:border-champagne/30 group-hover:bg-card/60 group-hover:shadow-xl group-hover:shadow-champagne/5">
+                <step.icon className="h-7 w-7 text-champagne transition-transform duration-500 group-hover:scale-110" />
+              </div>
+              <div className="mt-2 text-[10px] font-bold uppercase tracking-[0.3em] text-champagne/40">
+                Step {step.num}
+              </div>
+              <h3 className="mt-3 font-display text-xl text-foreground">
+                {step.title}
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground/60">
+                {step.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Budget Bands ─── */
+const BUDGET_BANDS = [
+  { label: "₹15L – 25L", min: 1500000, max: 2500000, desc: "Entry luxury" },
+  { label: "₹25L – 50L", min: 2500000, max: 5000000, desc: "Premium range" },
+  { label: "₹50L – 1Cr", min: 5000000, max: 10000000, desc: "High luxury" },
+  { label: "₹1Cr +", min: 10000000, max: undefined, desc: "Exotic & rare" },
+];
+
+function BudgetBands() {
+  const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
+
+  return (
+    <section ref={ref} className="py-28">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className={`sr-hidden ${isVisible ? "sr-visible" : ""}`}>
+          <SectionEyebrow>By budget</SectionEyebrow>
+          <h2 className="mt-3 font-display text-4xl md:text-5xl">
+            Find your <span className="text-gradient-gold">range.</span>
+          </h2>
+        </div>
+        <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4">
+          {BUDGET_BANDS.map((b, i) => (
+            <Link
+              key={b.label}
+              to="/inventory"
+              search={{ minPrice: b.min, maxPrice: b.max } as any}
+              className={`group relative overflow-hidden rounded-xl border border-border/30 bg-card/20 p-6 transition-all duration-500 hover:border-champagne/30 hover:bg-card/40 hover:shadow-lg hover:shadow-champagne/5 sr-hidden ${isVisible ? "sr-visible" : ""}`}
+              style={{ transitionDelay: `${200 + i * 100}ms` }}
+            >
+              <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-champagne/[0.03] blur-2xl transition-all duration-500 group-hover:bg-champagne/[0.08]" />
+              <span className="relative block tabular font-display text-2xl text-foreground">
+                {b.label}
+              </span>
+              <span className="relative mt-1 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50">
+                {b.desc}
+              </span>
+              <ArrowRight className="relative mt-4 h-4 w-4 text-champagne/40 transition-all duration-300 group-hover:translate-x-1 group-hover:text-champagne" />
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Sell CTA ─── */
+function SellCTA() {
+  const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
+
+  return (
+    <section
+      ref={ref}
+      className="relative overflow-hidden py-28"
+      style={{ backgroundColor: "var(--emerald-deep)" }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-deep via-transparent to-champagne/5 opacity-60" />
+      <div className="absolute -right-40 -top-40 h-80 w-80 rounded-full bg-champagne/[0.04] blur-[100px]" />
+
+      <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-16 px-6 md:grid-cols-2">
+        <div className={`sr-left-hidden ${isVisible ? "sr-left-visible" : ""}`}>
+          <SectionEyebrow>Sell your car</SectionEyebrow>
+          <h2 className="mt-3 font-display text-4xl md:text-5xl">
+            A fair number, without the{" "}
+            <span className="text-gradient-gold">theatre.</span>
+          </h2>
+          <p className="mt-6 max-w-lg text-base leading-relaxed text-foreground/60">
+            Share a few details and we will call you back with a considered
+            quote. If we buy your car, you get paid the same day.
+          </p>
+          <Link
+            to="/sell-your-car"
+            className="mt-10 inline-flex items-center gap-2.5 rounded-lg bg-champagne px-8 py-4 text-xs font-bold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:shadow-2xl hover:shadow-champagne/25 btn-shine"
+          >
+            Get a quote
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
+        <ul
+          className={`space-y-0 sr-right-hidden ${isVisible ? "sr-right-visible" : ""}`}
+        >
+          {[
+            "Free inspection at your home or office.",
+            "Transparent quote against current market.",
+            "RTO paperwork handled end to end.",
+            "Same-day payment on acceptance.",
+          ].map((step, i) => (
+            <li
+              key={i}
+              className="flex items-start gap-5 border-t border-foreground/8 py-6"
+            >
+              <span className="tabular font-display text-2xl text-champagne/60">
+                0{i + 1}
+              </span>
+              <span className="mt-1 text-sm leading-relaxed text-foreground/80">{step}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Testimonials ─── */
+function Testimonials() {
+  const siteContent = useQuery(api.siteContent.getAll);
+  const testimonials: { quote: string; name: string; car: string }[] =
+    (siteContent?.testimonials as any) ?? [];
+  const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
+
+  if (testimonials.length === 0) return null;
+
+  return (
+    <section ref={ref} className="py-28">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className={`sr-hidden ${isVisible ? "sr-visible" : ""}`}>
+          <SectionEyebrow>What owners say</SectionEyebrow>
+          <h2 className="mt-3 font-display text-4xl md:text-5xl">
+            Words from <span className="text-gradient-gold">our clients.</span>
+          </h2>
+        </div>
+        <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-3">
+          {testimonials.map((t, i) => (
+            <figure
+              key={i}
+              className={`group relative overflow-hidden rounded-2xl border border-border/20 bg-card/20 p-8 transition-all duration-500 hover:border-champagne/15 hover:bg-card/40 hover:shadow-xl hover:shadow-champagne/5 sr-hidden ${isVisible ? "sr-visible" : ""}`}
+              style={{ transitionDelay: `${200 + i * 150}ms` }}
+            >
+              <div className="absolute -right-12 -top-12 h-32 w-32 rounded-full bg-champagne/[0.03] blur-3xl transition-opacity duration-500 group-hover:opacity-100 opacity-0" />
+              <div className="relative">
+                <div className="flex gap-0.5">
+                  {[...Array(5)].map((_, j) => (
+                    <Star
+                      key={j}
+                      className="h-3.5 w-3.5 fill-champagne/80 text-champagne/80"
+                    />
+                  ))}
+                </div>
+                <blockquote className="mt-6 font-display text-lg leading-snug text-foreground/90">
+                  "{t.quote}"
+                </blockquote>
+                <figcaption className="mt-8 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-champagne/10 font-display text-sm text-champagne">
+                    {t.name.charAt(0)}
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-foreground">{t.name}</div>
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-champagne/50">
+                      {t.car}
+                    </div>
+                  </div>
+                </figcaption>
+              </div>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Final CTA ─── */
+function FinalCTA() {
+  const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
+
+  return (
+    <section ref={ref} className="border-t border-border/20 py-28">
+      <div className="mx-auto max-w-3xl px-6 text-center">
+        <div className={`sr-hidden ${isVisible ? "sr-visible" : ""}`}>
+          <h2 className="font-display text-4xl md:text-5xl">
+            Ready to find <span className="text-gradient-gold">your car?</span>
+          </h2>
+          <p className="mx-auto mt-6 max-w-lg text-base text-muted-foreground/70">
+            Browse our collection or tell us what you are looking for. We will
+            do the rest.
+          </p>
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
+            <Link
+              to="/inventory"
+              className="group flex items-center gap-2.5 rounded-lg bg-champagne px-8 py-4 text-xs font-bold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:shadow-2xl hover:shadow-champagne/25 btn-shine"
+            >
+              Browse inventory
+              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+            <Link
+              to="/contact"
+              className="group flex items-center gap-2.5 rounded-lg border border-border/40 px-8 py-4 text-xs font-bold uppercase tracking-widest text-foreground transition-all duration-300 hover:border-champagne/40 hover:text-champagne"
+            >
+              Contact us
+              <ChevronRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Shared ─── */
 function SectionEyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-xs uppercase tracking-[0.3em] text-champagne">{children}</div>
+    <div className="text-[11px] font-bold uppercase tracking-[0.35em] text-champagne">
+      {children}
+    </div>
   );
 }

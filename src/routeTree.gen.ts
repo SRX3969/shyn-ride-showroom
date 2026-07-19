@@ -9,43 +9,20 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as SellYourCarRouteImport } from './routes/sell-your-car'
-import { Route as FaqsRouteImport } from './routes/faqs'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as FaqsRouteImport } from './routes/faqs'
+import { Route as SellYourCarRouteImport } from './routes/sell-your-car'
+import { Route as AdminEnquiriesRouteImport } from './routes/admin.enquiries'
+import { Route as AdminInventoryRouteImport } from './routes/admin.inventory'
 import { Route as InventoryIndexRouteImport } from './routes/inventory.index'
 import { Route as InventorySlugRouteImport } from './routes/inventory.$slug'
-import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
-import { Route as AuthenticatedAdminEnquiriesRouteImport } from './routes/_authenticated/admin.enquiries'
-import { Route as AuthenticatedAdminCarsRouteImport } from './routes/_authenticated/admin.cars'
 
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SellYourCarRoute = SellYourCarRouteImport.update({
-  id: '/sell-your-car',
-  path: '/sell-your-car',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FaqsRoute = FaqsRouteImport.update({
-  id: '/faqs',
-  path: '/faqs',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -53,14 +30,35 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
+} as any)
+const FaqsRoute = FaqsRouteImport.update({
+  id: '/faqs',
+  path: '/faqs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SellYourCarRoute = SellYourCarRouteImport.update({
+  id: '/sell-your-car',
+  path: '/sell-your-car',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminEnquiriesRoute = AdminEnquiriesRouteImport.update({
+  id: '/enquiries',
+  path: '/enquiries',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminInventoryRoute = AdminInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => AdminRoute,
 } as any)
 const InventoryIndexRoute = InventoryIndexRouteImport.update({
   id: '/inventory/',
@@ -72,161 +70,101 @@ const InventorySlugRoute = InventorySlugRouteImport.update({
   path: '/inventory/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAdminEnquiriesRoute =
-  AuthenticatedAdminEnquiriesRouteImport.update({
-    id: '/admin/enquiries',
-    path: '/admin/enquiries',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminCarsRoute = AuthenticatedAdminCarsRouteImport.update({
-  id: '/admin/cars',
-  path: '/admin/cars',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/auth': typeof AuthRoute
+  '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
   '/faqs': typeof FaqsRoute
   '/sell-your-car': typeof SellYourCarRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/enquiries': typeof AdminEnquiriesRoute
+  '/admin/inventory': typeof AdminInventoryRoute
   '/inventory/$slug': typeof InventorySlugRoute
   '/inventory/': typeof InventoryIndexRoute
-  '/admin/cars': typeof AuthenticatedAdminCarsRoute
-  '/admin/enquiries': typeof AuthenticatedAdminEnquiriesRoute
-  '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/auth': typeof AuthRoute
+  '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
   '/faqs': typeof FaqsRoute
   '/sell-your-car': typeof SellYourCarRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/enquiries': typeof AdminEnquiriesRoute
+  '/admin/inventory': typeof AdminInventoryRoute
   '/inventory/$slug': typeof InventorySlugRoute
   '/inventory': typeof InventoryIndexRoute
-  '/admin/cars': typeof AuthenticatedAdminCarsRoute
-  '/admin/enquiries': typeof AuthenticatedAdminEnquiriesRoute
-  '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/auth': typeof AuthRoute
+  '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
   '/faqs': typeof FaqsRoute
   '/sell-your-car': typeof SellYourCarRoute
-  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/enquiries': typeof AdminEnquiriesRoute
+  '/admin/inventory': typeof AdminInventoryRoute
   '/inventory/$slug': typeof InventorySlugRoute
   '/inventory/': typeof InventoryIndexRoute
-  '/_authenticated/admin/cars': typeof AuthenticatedAdminCarsRoute
-  '/_authenticated/admin/enquiries': typeof AuthenticatedAdminEnquiriesRoute
-  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
-    | '/auth'
+    | '/admin'
     | '/contact'
     | '/faqs'
     | '/sell-your-car'
-    | '/sitemap.xml'
+    | '/admin/enquiries'
+    | '/admin/inventory'
     | '/inventory/$slug'
     | '/inventory/'
-    | '/admin/cars'
-    | '/admin/enquiries'
-    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/auth'
+    | '/admin'
     | '/contact'
     | '/faqs'
     | '/sell-your-car'
-    | '/sitemap.xml'
+    | '/admin/enquiries'
+    | '/admin/inventory'
     | '/inventory/$slug'
     | '/inventory'
-    | '/admin/cars'
-    | '/admin/enquiries'
-    | '/admin'
   id:
     | '__root__'
     | '/'
-    | '/_authenticated'
     | '/about'
-    | '/auth'
+    | '/admin'
     | '/contact'
     | '/faqs'
     | '/sell-your-car'
-    | '/sitemap.xml'
+    | '/admin/enquiries'
+    | '/admin/inventory'
     | '/inventory/$slug'
     | '/inventory/'
-    | '/_authenticated/admin/cars'
-    | '/_authenticated/admin/enquiries'
-    | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
-  AuthRoute: typeof AuthRoute
+  AdminRoute: typeof AdminRouteWithChildren
   ContactRoute: typeof ContactRoute
   FaqsRoute: typeof FaqsRoute
   SellYourCarRoute: typeof SellYourCarRoute
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   InventorySlugRoute: typeof InventorySlugRoute
   InventoryIndexRoute: typeof InventoryIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sell-your-car': {
-      id: '/sell-your-car'
-      path: '/sell-your-car'
-      fullPath: '/sell-your-car'
-      preLoaderRoute: typeof SellYourCarRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/faqs': {
-      id: '/faqs'
-      path: '/faqs'
-      fullPath: '/faqs'
-      preLoaderRoute: typeof FaqsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -236,19 +174,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/faqs': {
+      id: '/faqs'
+      path: '/faqs'
+      fullPath: '/faqs'
+      preLoaderRoute: typeof FaqsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sell-your-car': {
+      id: '/sell-your-car'
+      path: '/sell-your-car'
+      fullPath: '/sell-your-car'
+      preLoaderRoute: typeof SellYourCarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/enquiries': {
+      id: '/admin/enquiries'
+      path: '/enquiries'
+      fullPath: '/admin/enquiries'
+      preLoaderRoute: typeof AdminEnquiriesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/inventory': {
+      id: '/admin/inventory'
+      path: '/inventory'
+      fullPath: '/admin/inventory'
+      preLoaderRoute: typeof AdminInventoryRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/inventory/': {
       id: '/inventory/'
@@ -264,57 +230,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InventorySlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin/': {
-      id: '/_authenticated/admin/'
-      path: '/admin'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/enquiries': {
-      id: '/_authenticated/admin/enquiries'
-      path: '/admin/enquiries'
-      fullPath: '/admin/enquiries'
-      preLoaderRoute: typeof AuthenticatedAdminEnquiriesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/cars': {
-      id: '/_authenticated/admin/cars'
-      path: '/admin/cars'
-      fullPath: '/admin/cars'
-      preLoaderRoute: typeof AuthenticatedAdminCarsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
   }
 }
 
-interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminCarsRoute: typeof AuthenticatedAdminCarsRoute
-  AuthenticatedAdminEnquiriesRoute: typeof AuthenticatedAdminEnquiriesRoute
-  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+interface AdminRouteChildren {
+  AdminEnquiriesRoute: typeof AdminEnquiriesRoute
+  AdminInventoryRoute: typeof AdminInventoryRoute
 }
 
-const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminCarsRoute: AuthenticatedAdminCarsRoute,
-  AuthenticatedAdminEnquiriesRoute: AuthenticatedAdminEnquiriesRoute,
-  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminEnquiriesRoute: AdminEnquiriesRoute,
+  AdminInventoryRoute: AdminInventoryRoute,
 }
 
-const AuthenticatedRouteRouteWithChildren =
-  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
-  AuthRoute: AuthRoute,
+  AdminRoute: AdminRouteWithChildren,
   ContactRoute: ContactRoute,
   FaqsRoute: FaqsRoute,
   SellYourCarRoute: SellYourCarRoute,
-  SitemapDotxmlRoute: SitemapDotxmlRoute,
   InventorySlugRoute: InventorySlugRoute,
   InventoryIndexRoute: InventoryIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
