@@ -167,10 +167,20 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
             
             {/* Basic Info */}
             <div className={activeTab === 0 ? "block" : "hidden"}>
+              <datalist id="car-makes">
+                {["Maruti Suzuki", "Hyundai", "Tata", "Mahindra", "Kia", "Toyota", "Honda", "MG", "Skoda", "Volkswagen", "Renault", "Nissan", "Jeep", "Audi", "BMW", "Mercedes-Benz", "Volvo", "Land Rover", "Jaguar", "Porsche", "Lexus", "Mini", "Isuzu", "Force Motors"].map(opt => <option key={opt} value={opt} />)}
+              </datalist>
+              <datalist id="body-types">
+                {["Hatchback", "Sedan", "SUV", "MUV", "Coupe", "Convertible", "Wagon", "Pickup", "Minivan"].map(opt => <option key={opt} value={opt} />)}
+              </datalist>
+              <datalist id="car-colors">
+                {["White", "Silver", "Grey", "Black", "Red", "Blue", "Brown", "Green", "Beige", "Yellow", "Orange", "Purple", "Gold"].map(opt => <option key={opt} value={opt} />)}
+              </datalist>
+              
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Make *</label>
-                  <input {...register("make")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" />
+                  <input list="car-makes" {...register("make")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" placeholder="e.g. Tata, Hyundai..." autoComplete="off" />
                   {errors.make && <p className="text-xs text-red-500 mt-1">{errors.make.message}</p>}
                 </div>
                 <div>
@@ -189,12 +199,12 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Body Type *</label>
-                  <input {...register("body_type")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" />
+                  <input list="body-types" {...register("body_type")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" placeholder="e.g. SUV, Sedan..." autoComplete="off" />
                   {errors.body_type && <p className="text-xs text-red-500 mt-1">{errors.body_type.message}</p>}
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Color *</label>
-                  <input {...register("color")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" />
+                  <input list="car-colors" {...register("color")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" placeholder="e.g. White, Black..." autoComplete="off" />
                   {errors.color && <p className="text-xs text-red-500 mt-1">{errors.color.message}</p>}
                 </div>
               </div>
