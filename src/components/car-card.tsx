@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import { Fuel, Gauge, Calendar, ArrowRight } from "lucide-react";
 import { formatINR, formatKm } from "@/lib/format";
-import { Fuel, Gauge, Calendar } from "lucide-react";
 
 export type CarCardData = {
   _id: string;

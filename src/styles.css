@@ -437,3 +437,13 @@
   }
   .hover-lift:hover { transform: none !important; }
 }
+
+/* ─── Hide Vercel Toolbar ─── */
+#vercel-toolbar,
+.vercel-toolbar,
+vercel-toolbar {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
