@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { useMutation } from "convex/react";
+import { useAction } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { setSessionToken } from "@/lib/auth";
 import { z } from "zod";
@@ -22,7 +22,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 function AdminLogin() {
   const [isLoading, setIsLoading] = useState(false);
-  const loginMutation = useMutation(api.admin.login);
+  const loginAction = useAction(api.admin.login);
   const navigate = useNavigate();
 
   const {
@@ -41,7 +41,7 @@ function AdminLogin() {
       // Here we just use a static string or let Convex handle it if it could.
       const ip = "client-ip"; 
       
-      const token = await loginMutation({
+      const token = await loginAction({
         username: data.username,
         password: data.password,
         ip,
