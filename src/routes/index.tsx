@@ -152,9 +152,9 @@ function HeroSection() {
       </div>
       
       {/* Multi-layer gradient for cinematic depth (Forced dark for image contrast) */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-background pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent pointer-events-none" />
-      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/20 to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background/40 to-transparent pointer-events-none" />
 
       {/* Slide Indicators */}
       <div className="absolute bottom-12 right-6 flex gap-2 z-10 md:right-12">
@@ -714,26 +714,25 @@ function SellCTA() {
       className="relative overflow-hidden py-16"
       style={{ backgroundColor: "var(--emerald-deep)" }}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-emerald-deep via-transparent to-champagne/5 opacity-60" />
       <div className="absolute -right-40 -top-40 h-80 w-80 rounded-full bg-champagne/[0.04] blur-[100px]" />
 
       <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-16 px-6 md:grid-cols-2">
         <div className={`sr-left-hidden ${isVisible ? "sr-left-visible" : ""}`}>
           <SectionEyebrow>Sell your car</SectionEyebrow>
-          <h2 className="mt-3 font-display text-4xl md:text-5xl">
+          <h2 className="mt-3 font-display text-4xl md:text-5xl text-white">
             A fair number, without the{" "}
             <span className="text-gradient-gold">theatre.</span>
           </h2>
-          <p className="mt-6 max-w-lg text-base leading-relaxed text-foreground/60">
+          <p className="mt-6 max-w-lg text-lg leading-relaxed text-white/80">
             Share a few details and we will call you back with a considered
             quote. If we buy your car, you get paid the same day.
           </p>
           <Link
             to="/sell-your-car"
-            className="mt-10 inline-flex items-center gap-2.5 rounded-lg bg-champagne px-8 py-4 text-xs font-bold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:shadow-2xl hover:shadow-champagne/25 btn-shine"
+            className="mt-10 inline-flex items-center gap-2.5 rounded-lg bg-champagne px-8 py-4 text-sm font-bold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:shadow-2xl hover:shadow-champagne/25 btn-shine"
           >
             Get a quote
-            <ArrowRight className="h-3.5 w-3.5" />
+            <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
         <ul
@@ -747,12 +746,12 @@ function SellCTA() {
           ].map((step, i) => (
             <li
               key={i}
-              className="flex items-start gap-5 border-t border-foreground/8 py-6"
+              className="flex items-start gap-5 border-t border-white/10 py-6"
             >
-              <span className="tabular font-display text-2xl text-champagne/60">
+              <span className="tabular font-display text-3xl text-champagne/80">
                 0{i + 1}
               </span>
-              <span className="mt-1 text-sm leading-relaxed text-foreground/80">{step}</span>
+              <span className="mt-1.5 text-base leading-relaxed text-white/90">{step}</span>
             </li>
           ))}
         </ul>
