@@ -127,7 +127,7 @@ function HeroSection() {
   return (
     <section
       ref={parallaxRef}
-      className="relative h-[95vh] min-h-[650px] w-full overflow-hidden"
+      className="relative h-[95vh] min-h-[650px] w-full overflow-hidden bg-foreground/5"
     >
       <div className="absolute inset-0 h-full w-full" ref={emblaRef}>
         <div className="flex h-full w-full touch-pan-y">
@@ -151,38 +151,38 @@ function HeroSection() {
         </div>
       </div>
       
-      {/* Multi-layer gradient for cinematic depth */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/20 to-background pointer-events-none" />
-      <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-transparent pointer-events-none" />
+      {/* Multi-layer gradient for cinematic depth (Forced dark for image contrast) */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-background pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent pointer-events-none" />
       <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background to-transparent pointer-events-none" />
 
       {/* Slide Indicators */}
-      <div className="absolute bottom-16 right-6 flex gap-2 z-10 md:right-12">
+      <div className="absolute bottom-12 right-6 flex gap-2 z-10 md:right-12">
         {HERO_SLIDES.map((_, index) => (
-          <button
+           <button
             key={index}
             onClick={() => emblaApi?.scrollTo(index)}
             className={`h-1.5 rounded-full transition-all duration-500 ${
               selectedIndex === index
                 ? "w-8 bg-champagne"
-                : "w-2 bg-champagne/30 hover:bg-champagne/50"
+                : "w-2 bg-white/30 hover:bg-white/50"
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}
       </div>
 
-      <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-28 pointer-events-none">
+      <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-24 pointer-events-none">
         <div className="max-w-2xl pointer-events-auto">
           <div
-            className="inline-flex items-center gap-2 rounded-full border border-champagne/20 bg-champagne/5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.35em] text-champagne backdrop-blur-sm animate-fade-in"
+            className="inline-flex items-center gap-2 rounded-full border border-champagne/30 bg-black/20 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.35em] text-champagne backdrop-blur-md animate-fade-in"
             style={{ animationDelay: "200ms" }}
           >
             <Sparkles className="h-3 w-3" />
             Curated in Bangalore
           </div>
           <h1
-            className="mt-6 font-display text-5xl leading-[1.05] text-foreground md:text-7xl lg:text-8xl animate-slide-up"
+            className="mt-6 font-display text-5xl leading-[1.05] text-white drop-shadow-lg md:text-7xl lg:text-8xl animate-slide-up"
             style={{ animationDelay: "400ms" }}
           >
             {hero.headline ? (
@@ -195,7 +195,7 @@ function HeroSection() {
             )}
           </h1>
           <p
-            className="mt-6 max-w-lg text-base leading-relaxed text-foreground/70 md:text-lg animate-slide-up"
+            className="mt-6 max-w-lg text-base leading-relaxed text-white/90 drop-shadow md:text-lg animate-slide-up"
             style={{ animationDelay: "600ms" }}
           >
             {hero.subhead ??
@@ -214,7 +214,7 @@ function HeroSection() {
             </Link>
             <Link
               to="/sell-your-car"
-              className="group flex items-center gap-2.5 rounded-lg border border-foreground/20 px-7 py-4 text-xs font-bold uppercase tracking-widest text-foreground transition-all duration-300 hover:border-champagne/50 hover:text-champagne hover:bg-champagne/5"
+              className="group flex items-center gap-2.5 rounded-lg border border-white/30 px-7 py-4 text-xs font-bold uppercase tracking-widest text-white transition-all duration-300 hover:border-champagne hover:text-champagne hover:bg-black/20 backdrop-blur-sm"
             >
               Sell Your Car
               <ChevronRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
@@ -224,10 +224,10 @@ function HeroSection() {
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float pointer-events-none">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float pointer-events-none hidden md:block">
         <div className="flex flex-col items-center gap-2">
           <div className="h-10 w-px bg-gradient-to-b from-champagne/50 to-transparent" />
-          <div className="text-[9px] font-bold uppercase tracking-[0.4em] text-champagne/40">
+          <div className="text-[9px] font-bold uppercase tracking-[0.4em] text-champagne/80 drop-shadow">
             Scroll
           </div>
         </div>
@@ -271,7 +271,7 @@ function TheShowroom() {
   const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
 
   return (
-    <section ref={ref} className="relative bg-background py-28 overflow-hidden">
+    <section ref={ref} className="relative bg-background py-16 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6">
         <div className={`grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-20 items-center sr-hidden ${isVisible ? "sr-visible" : ""}`}>
           <div className="order-2 lg:order-1 relative">
@@ -286,7 +286,7 @@ function TheShowroom() {
               <div className="absolute bottom-6 left-6 right-6">
                 <div className="flex items-center gap-3 text-champagne">
                   <div className="h-px flex-1 bg-champagne/30" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Bangalore, India</span>
+                  <span className="text-[11px] font-bold uppercase tracking-[0.3em]">Bangalore, India</span>
                   <div className="h-px flex-1 bg-champagne/30" />
                 </div>
               </div>
@@ -310,12 +310,12 @@ function TheShowroom() {
             
             <div className="mt-12 grid grid-cols-2 gap-6 border-t border-border/40 pt-8">
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-champagne">Hours</div>
+                <div className="text-[11px] font-bold uppercase tracking-widest text-champagne">Hours</div>
                 <div className="mt-2 text-sm font-medium text-foreground">Mon – Sat: 10AM – 8PM</div>
                 <div className="text-sm text-muted-foreground">Sunday by appointment</div>
               </div>
               <div>
-                <div className="text-[10px] font-bold uppercase tracking-widest text-champagne">Experience</div>
+                <div className="text-[11px] font-bold uppercase tracking-widest text-champagne">Experience</div>
                 <div className="mt-2 text-sm font-medium text-foreground">Private Viewing Room</div>
                 <div className="text-sm text-muted-foreground">Valet Parking Available</div>
               </div>
@@ -374,7 +374,7 @@ function StatItem({
       <div className="tabular font-display text-4xl text-gradient-gold md:text-5xl">
         {displayValue}
       </div>
-      <div className="mt-3 text-[10px] font-bold uppercase tracking-[0.25em] text-muted-foreground/70">
+      <div className="mt-3 text-[11px] font-bold uppercase tracking-[0.25em] text-muted-foreground/80">
         {label}
       </div>
     </div>
@@ -394,7 +394,7 @@ function FeaturedInventory() {
   );
 
   return (
-    <section className="py-28">
+    <section className="py-16">
       <div className="mx-auto max-w-7xl px-6">
         <div
           ref={ref}
@@ -453,7 +453,7 @@ function LifestyleGallery() {
   const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
 
   return (
-    <section ref={ref} className="py-4 pb-28">
+    <section ref={ref} className="py-4 pb-16">
       <div className="mx-auto max-w-7xl px-6">
         <div className={`sr-hidden ${isVisible ? "sr-visible" : ""}`}>
           <SectionEyebrow>Gallery</SectionEyebrow>
@@ -540,7 +540,7 @@ function WhyShynRide() {
   ];
 
   return (
-    <section ref={ref} className="py-28">
+    <section ref={ref} className="py-16">
       <div className="mx-auto max-w-7xl px-6">
         <div className={`max-w-2xl sr-hidden ${isVisible ? "sr-visible" : ""}`}>
           <SectionEyebrow>The showroom</SectionEyebrow>
@@ -611,7 +611,7 @@ function HowItWorks() {
   ];
 
   return (
-    <section ref={ref} className="relative border-y border-border/20 bg-card/10 py-28 overflow-hidden">
+    <section ref={ref} className="relative border-y border-border/20 bg-card/10 py-16 overflow-hidden">
       {/* Background decoration */}
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-champagne/[0.02] blur-[120px]" />
       <div className="relative mx-auto max-w-7xl px-6">
@@ -642,7 +642,7 @@ function HowItWorks() {
               <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl border border-border/30 bg-card/40 transition-all duration-500 group-hover:border-champagne/30 group-hover:bg-card/60 group-hover:shadow-xl group-hover:shadow-champagne/5">
                 <step.icon className="h-7 w-7 text-champagne transition-transform duration-500 group-hover:scale-110" />
               </div>
-              <div className="mt-2 text-[10px] font-bold uppercase tracking-[0.3em] text-champagne/40">
+              <div className="mt-2 text-[11px] font-bold uppercase tracking-[0.3em] text-champagne/70">
                 Step {step.num}
               </div>
               <h3 className="mt-3 font-display text-xl text-foreground">
@@ -671,7 +671,7 @@ function BudgetBands() {
   const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
 
   return (
-    <section ref={ref} className="py-28">
+    <section ref={ref} className="py-16">
       <div className="mx-auto max-w-7xl px-6">
         <div className={`sr-hidden ${isVisible ? "sr-visible" : ""}`}>
           <SectionEyebrow>By budget</SectionEyebrow>
@@ -692,7 +692,7 @@ function BudgetBands() {
               <span className="relative block tabular font-display text-2xl text-foreground">
                 {b.label}
               </span>
-              <span className="relative mt-1 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/50">
+              <span className="relative mt-1 block text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground/70">
                 {b.desc}
               </span>
               <ArrowRight className="relative mt-4 h-4 w-4 text-champagne/40 transition-all duration-300 group-hover:translate-x-1 group-hover:text-champagne" />
@@ -711,7 +711,7 @@ function SellCTA() {
   return (
     <section
       ref={ref}
-      className="relative overflow-hidden py-28"
+      className="relative overflow-hidden py-16"
       style={{ backgroundColor: "var(--emerald-deep)" }}
     >
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-deep via-transparent to-champagne/5 opacity-60" />
@@ -771,7 +771,7 @@ function Testimonials() {
   if (testimonials.length === 0) return null;
 
   return (
-    <section ref={ref} className="py-28">
+    <section ref={ref} className="py-16">
       <div className="mx-auto max-w-7xl px-6">
         <div className={`sr-hidden ${isVisible ? "sr-visible" : ""}`}>
           <SectionEyebrow>What owners say</SectionEyebrow>
@@ -805,7 +805,7 @@ function Testimonials() {
                   </div>
                   <div>
                     <div className="text-sm font-medium text-foreground">{t.name}</div>
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-champagne/50">
+                    <div className="text-[11px] font-bold uppercase tracking-widest text-champagne/70">
                       {t.car}
                     </div>
                   </div>
@@ -824,7 +824,7 @@ function FinalCTA() {
   const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
 
   return (
-    <section ref={ref} className="border-t border-border/20 py-28">
+    <section ref={ref} className="border-t border-border/20 py-16">
       <div className="mx-auto max-w-3xl px-6 text-center">
         <div className={`sr-hidden ${isVisible ? "sr-visible" : ""}`}>
           <h2 className="font-display text-4xl md:text-5xl">
