@@ -95,6 +95,10 @@ export const list = query({
           status: car.status,
           featured: car.featured,
           cover_url: images[0]?.url ?? null,
+          images: images.map((img) => ({
+            url: img.url,
+            sort_order: img.sort_order,
+          })),
         };
       }),
     );
@@ -190,15 +194,30 @@ export const create = mutation({
     reg_state: v.optional(v.string()),
     description: v.optional(v.string()),
     features: v.array(v.string()),
+    images: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
-    const slug = `${args.year}-${args.make}-${args.model}-${Math.random().toString(36).slice(2, 6)}`.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    const { images, ...carData } = args;
+    const slug = `${carData.year}-${carData.make}-${carData.model}-${Math.random().toString(36).slice(2, 6)}`.toLowerCase().replace(/[^a-z0-9]+/g, "-");
     const carId = await ctx.db.insert("cars", {
-      ...args,
+      ...carData,
       slug,
       status: "available",
       featured: false,
     });
+
+    if (images && images.length > 0) {
+      await Promise.all(
+        images.map((url, index) => 
+          ctx.db.insert("car_images", {
+            car_id: carId,
+            url,
+            sort_order: index,
+          })
+        )
+      );
+    }
+
     return carId;
   },
 });
@@ -221,10 +240,33 @@ export const update = mutation({
     reg_state: v.optional(v.string()),
     description: v.optional(v.string()),
     features: v.array(v.string()),
+    images: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
-    const { id, ...rest } = args;
+    const { id, images, ...rest } = args;
     await ctx.db.patch(id, rest);
+
+    if (images !== undefined) {
+      // Delete existing images
+      const existingImages = await ctx.db
+        .query("car_images")
+        .withIndex("by_car", (q) => q.eq("car_id", id))
+        .collect();
+      
+      await Promise.all(existingImages.map((img) => ctx.db.delete(img._id)));
+
+      // Insert new images
+      await Promise.all(
+        images.map((url, index) => 
+          ctx.db.insert("car_images", {
+            car_id: id,
+            url,
+            sort_order: index,
+          })
+        )
+      );
+    }
+
     return { ok: true };
   },
 });

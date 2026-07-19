@@ -5,6 +5,8 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import { ConvexClientProvider } from "@/integrations/convex/ConvexClientProvider";
+import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/theme-provider";
 
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
@@ -70,10 +72,13 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
-    <ConvexClientProvider>
-      <QueryClientProvider client={queryClient}>
-        <Outlet />
-      </QueryClientProvider>
-    </ConvexClientProvider>
+    <ThemeProvider defaultTheme="dark" storageKey="shyn-ride-theme">
+      <ConvexClientProvider>
+        <QueryClientProvider client={queryClient}>
+          <Outlet />
+          <Toaster position="bottom-center" />
+        </QueryClientProvider>
+      </ConvexClientProvider>
+    </ThemeProvider>
   );
 }

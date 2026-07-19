@@ -49,30 +49,62 @@
   --font-display-family: "Playfair Display", ui-serif, Georgia, serif;
   --font-sans-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
 
-  /* Obsidian base */
+  /* --- LIGHT MODE (Crisp, airy, premium) --- */
+  --background: oklch(0.98 0.01 85);       /* Off-white ivory */
+  --foreground: oklch(0.15 0.006 260);     /* Deep charcoal */
+  
+  --card: oklch(1 0 0);                    /* Pure white */
+  --card-foreground: oklch(0.15 0.006 260);
+  
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0.006 260);
+
+  --primary: oklch(0.78 0.1 75);             /* warm champagne gold */
+  --primary-foreground: oklch(1 0 0);        /* white text on primary */
+  --champagne: oklch(0.78 0.1 75);
+
+  --secondary: oklch(0.92 0.01 260);
+  --secondary-foreground: oklch(0.15 0.006 260);
+  
+  --muted: oklch(0.95 0.01 260);
+  --muted-foreground: oklch(0.4 0.01 260);   /* slate gray */
+  --slate-quiet: oklch(0.4 0.01 260);
+  
+  --accent: oklch(0.95 0.05 165);            /* very soft emerald */
+  --accent-foreground: oklch(0.15 0.006 260);
+  --emerald-deep: oklch(0.2 0.045 165);      /* keeping deep emerald same for contrast elements */
+
+  --destructive: oklch(0.58 0.22 25);
+  --destructive-foreground: oklch(0.98 0.003 85);
+
+  --border: oklch(0.9 0.01 260);
+  --input: oklch(0.9 0.01 260);
+  --ring: oklch(0.78 0.1 75);
+}
+
+:root.dark {
+  /* --- DARK MODE (Obsidian base) --- */
   --background: oklch(0.11 0.006 260);       /* deep black-blue */
   --foreground: oklch(0.95 0.012 85);        /* #F3EFE8 ivory */
+  
   --card: oklch(0.15 0.006 260);             /* charcoal */
   --card-foreground: oklch(0.95 0.012 85);
+  
   --popover: oklch(0.15 0.006 260);
   --popover-foreground: oklch(0.95 0.012 85);
 
   --primary: oklch(0.78 0.1 75);             /* warm champagne gold */
   --primary-foreground: oklch(0.11 0.006 260);
-  --champagne: oklch(0.78 0.1 75);
 
   --secondary: oklch(0.2 0.006 260);
   --secondary-foreground: oklch(0.95 0.012 85);
+  
   --muted: oklch(0.18 0.006 260);
   --muted-foreground: oklch(0.6 0.008 260);  /* slate */
-  --slate-quiet: oklch(0.6 0.008 260);
+  
   --accent: oklch(0.28 0.05 165);            /* deep emerald surface */
   --accent-foreground: oklch(0.95 0.012 85);
-  --emerald-deep: oklch(0.2 0.045 165);
-
-  --destructive: oklch(0.58 0.22 25);
-  --destructive-foreground: oklch(0.98 0.003 85);
-
+  
   --border: oklch(0.22 0.006 260);
   --input: oklch(0.2 0.006 260);
   --ring: oklch(0.78 0.1 75);
@@ -84,7 +116,6 @@
     border-color: var(--color-border);
   }
   html {
-    color-scheme: dark;
     scroll-behavior: smooth;
   }
   body {

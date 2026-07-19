@@ -60,6 +60,7 @@ function HomePage() {
         <main>
           <HeroSection />
           <BrandMarquee />
+          <TheShowroom />
           <TrustStrip />
           <FeaturedInventory />
           <LifestyleGallery />
@@ -88,16 +89,16 @@ const HERO_SLIDES = [
     alt: "A black luxury sedan in a dark showroom",
   },
   {
-    src: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1920&auto=format&fit=crop",
-    alt: "Porsche 911 GT3 front aggressive angle",
+    src: "https://images.unsplash.com/photo-1562141989-c5c79ac8f576?q=80&w=1920&auto=format&fit=crop",
+    alt: "Modern luxury car showroom interior",
   },
   {
     src: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1920&auto=format&fit=crop",
     alt: "Mercedes S-Class side profile",
   },
   {
-    src: "https://images.unsplash.com/photo-1606016159991-dfe4f2746db5?q=80&w=1920&auto=format&fit=crop",
-    alt: "Range Rover front quarter",
+    src: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1920&auto=format&fit=crop",
+    alt: "Elegant dealership showcase floor",
   }
 ];
 
@@ -260,6 +261,67 @@ function BrandMarquee() {
             {brand}
           </span>
         ))}
+      </div>
+    </section>
+  );
+}
+
+/* ─── The Showroom ─── */
+function TheShowroom() {
+  const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
+
+  return (
+    <section ref={ref} className="relative bg-background py-28 overflow-hidden">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className={`grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-20 items-center sr-hidden ${isVisible ? "sr-visible" : ""}`}>
+          <div className="order-2 lg:order-1 relative">
+            <div className="absolute -inset-4 bg-champagne/5 blur-2xl rounded-full" />
+            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl shadow-2xl">
+              <img
+                src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1200&auto=format&fit=crop"
+                alt="SHYN RIDE Showroom Bangalore"
+                className="h-full w-full object-cover transition-transform duration-1000 hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6">
+                <div className="flex items-center gap-3 text-champagne">
+                  <div className="h-px flex-1 bg-champagne/30" />
+                  <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Bangalore, India</span>
+                  <div className="h-px flex-1 bg-champagne/30" />
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="order-1 lg:order-2">
+            <SectionEyebrow>The Destination</SectionEyebrow>
+            <h2 className="mt-4 font-display text-4xl leading-[1.1] md:text-5xl lg:text-6xl text-foreground">
+              A space designed for <br />
+              <span className="text-gradient-gold">automotive excellence.</span>
+            </h2>
+            <div className="mt-8 space-y-6 text-base leading-relaxed text-muted-foreground">
+              <p>
+                Located in the heart of Bangalore, our facility is more than just a dealership. It is a curated gallery where the world's most exceptional pre-owned luxury vehicles are displayed exactly as they were intended to be seen.
+              </p>
+              <p>
+                We believe that buying a luxury vehicle should be as refined an experience as driving one. There are no high-pressure salespeople here. Just passionate experts, a beautifully lit floor, and a collection of cars that speak for themselves.
+              </p>
+            </div>
+            
+            <div className="mt-12 grid grid-cols-2 gap-6 border-t border-border/40 pt-8">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-champagne">Hours</div>
+                <div className="mt-2 text-sm font-medium text-foreground">Mon – Sat: 10AM – 8PM</div>
+                <div className="text-sm text-muted-foreground">Sunday by appointment</div>
+              </div>
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-champagne">Experience</div>
+                <div className="mt-2 text-sm font-medium text-foreground">Private Viewing Room</div>
+                <div className="text-sm text-muted-foreground">Valet Parking Available</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

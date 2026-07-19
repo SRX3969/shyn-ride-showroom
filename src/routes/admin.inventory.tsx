@@ -153,6 +153,7 @@ function CarFormModal({ car, onClose }: { car: any; onClose: () => void }) {
     reg_state: car?.reg_state || "KA",
     description: car?.description || "",
     features: car?.features?.join(", ") || "",
+    images: car?.images?.map((i: any) => i.url).join("\n") || "",
   });
 
   const [submitting, setSubmitting] = useState(false);
@@ -168,6 +169,7 @@ function CarFormModal({ car, onClose }: { car: any; onClose: () => void }) {
       km: Number(form.km),
       owners: Number(form.owners),
       features: form.features.split(",").map((f: string) => f.trim()).filter(Boolean),
+      images: form.images.split("\n").map((url: string) => url.trim()).filter(Boolean),
     };
 
     try {
@@ -243,6 +245,18 @@ function CarFormModal({ car, onClose }: { car: any; onClose: () => void }) {
               className="mt-2 w-full rounded-xl border border-border/30 bg-background px-4 py-3 text-sm focus:border-champagne focus:outline-none resize-none"
               placeholder="Panoramic Sunroof, Meridian Audio, Air Suspension..."
             />
+          </div>
+
+          <div>
+            <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Image URLs (one per line)</label>
+            <textarea
+              rows={4}
+              value={form.images}
+              onChange={(e) => setForm({ ...form, images: e.target.value })}
+              className="mt-2 w-full rounded-xl border border-border/30 bg-background px-4 py-3 text-sm focus:border-champagne focus:outline-none resize-none font-mono"
+              placeholder="https://images.unsplash.com/photo-..."
+            />
+            <p className="mt-1 text-xs text-muted-foreground">The first URL will be used as the cover image.</p>
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t border-border/20">
