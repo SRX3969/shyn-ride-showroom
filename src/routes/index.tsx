@@ -78,31 +78,101 @@ function HomePage() {
 }
 
 /* ─── Hero ─── */
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+import { useCallback, useEffect, useState } from "react";
+
+const HERO_SLIDES = [
+  {
+    src: heroImg,
+    alt: "A black luxury sedan in a dark showroom",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1920&auto=format&fit=crop",
+    alt: "Porsche 911 GT3 front aggressive angle",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1920&auto=format&fit=crop",
+    alt: "Mercedes S-Class side profile",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1606016159991-dfe4f2746db5?q=80&w=1920&auto=format&fit=crop",
+    alt: "Range Rover front quarter",
+  }
+];
+
 function HeroSection() {
   const { ref: parallaxRef, offset } = useParallax(0.15);
   const siteContent = useQuery(api.siteContent.getAll);
   const hero = (siteContent?.hero ?? {}) as any;
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, duration: 40 }, [
+    Autoplay({ delay: 6000, stopOnInteraction: false }),
+  ]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+  }, [emblaApi, onSelect]);
 
   return (
     <section
       ref={parallaxRef}
       className="relative h-[95vh] min-h-[650px] w-full overflow-hidden"
     >
-      <img
-        src={heroImg}
-        alt="A black luxury sedan in a dark showroom"
-        width={1920}
-        height={1080}
-        className="absolute inset-0 h-full w-full object-cover"
-        style={{ transform: `translateY(${offset}px) scale(1.05)` }}
-      />
+      <div className="absolute inset-0 h-full w-full" ref={emblaRef}>
+        <div className="flex h-full w-full touch-pan-y">
+          {HERO_SLIDES.map((slide, index) => (
+            <div
+              key={index}
+              className="relative min-w-0 flex-[0_0_100%] h-full w-full"
+            >
+              <img
+                src={slide.src}
+                alt={slide.alt}
+                width={1920}
+                height={1080}
+                className="h-full w-full object-cover transition-transform duration-[10000ms] ease-linear"
+                style={{
+                  transform: `translateY(${offset}px) scale(${selectedIndex === index ? 1.05 : 1})`,
+                }}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+      
       {/* Multi-layer gradient for cinematic depth */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/20 to-background" />
-      <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/20 to-background pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background to-transparent pointer-events-none" />
 
-      <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-28">
-        <div className="max-w-2xl">
+      {/* Slide Indicators */}
+      <div className="absolute bottom-16 right-6 flex gap-2 z-10 md:right-12">
+        {HERO_SLIDES.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => emblaApi?.scrollTo(index)}
+            className={`h-1.5 rounded-full transition-all duration-500 ${
+              selectedIndex === index
+                ? "w-8 bg-champagne"
+                : "w-2 bg-champagne/30 hover:bg-champagne/50"
+            }`}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
+
+      <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-28 pointer-events-none">
+        <div className="max-w-2xl pointer-events-auto">
           <div
             className="inline-flex items-center gap-2 rounded-full border border-champagne/20 bg-champagne/5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.35em] text-champagne backdrop-blur-sm animate-fade-in"
             style={{ animationDelay: "200ms" }}
@@ -153,7 +223,7 @@ function HeroSection() {
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float">
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float pointer-events-none">
         <div className="flex flex-col items-center gap-2">
           <div className="h-10 w-px bg-gradient-to-b from-champagne/50 to-transparent" />
           <div className="text-[9px] font-bold uppercase tracking-[0.4em] text-champagne/40">
