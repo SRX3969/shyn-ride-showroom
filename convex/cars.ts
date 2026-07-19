@@ -24,7 +24,7 @@ export const list = query({
     let cars = await ctx.db.query("cars").collect();
 
     // Filter out deleted
-    cars = cars.filter((c) => !c.deleted_at);
+    cars = cars.filter((c) => !c.deleted_at && !c.is_deleted);
 
     // Apply filters
     if (args.featured !== undefined) {
@@ -115,7 +115,7 @@ export const getBySlug = query({
       .withIndex("by_slug", (q) => q.eq("slug", args.slug))
       .first();
 
-    if (!car || car.deleted_at) return null;
+    if (!car || car.deleted_at || car.is_deleted) return null;
 
     const images = await ctx.db
       .query("car_images")
@@ -158,7 +158,7 @@ export const getBodyTypeCounts = query({
     const cars = await ctx.db.query("cars").collect();
     const counts: Record<string, number> = {};
     for (const car of cars) {
-      if (!car.deleted_at) {
+      if (!car.deleted_at && !car.is_deleted) {
         counts[car.body_type] = (counts[car.body_type] ?? 0) + 1;
       }
     }
@@ -170,7 +170,7 @@ export const listSlugs = query({
   handler: async (ctx) => {
     const cars = await ctx.db.query("cars").collect();
     return cars
-      .filter((c) => !c.deleted_at)
+      .filter((c) => !c.deleted_at && !c.is_deleted)
       .map((c) => ({ slug: c.slug }));
   },
 });
