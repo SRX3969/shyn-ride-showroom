@@ -15,8 +15,13 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FaqsRouteImport } from './routes/faqs'
 import { Route as SellYourCarRouteImport } from './routes/sell-your-car'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminEnquiriesRouteImport } from './routes/admin.enquiries'
 import { Route as AdminInventoryRouteImport } from './routes/admin.inventory'
+import { Route as AdminLedgerRouteImport } from './routes/admin.ledger'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as InventoryIndexRouteImport } from './routes/inventory.index'
 import { Route as InventorySlugRouteImport } from './routes/inventory.$slug'
 
@@ -50,6 +55,11 @@ const SellYourCarRoute = SellYourCarRouteImport.update({
   path: '/sell-your-car',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminEnquiriesRoute = AdminEnquiriesRouteImport.update({
   id: '/enquiries',
   path: '/enquiries',
@@ -58,6 +68,26 @@ const AdminEnquiriesRoute = AdminEnquiriesRouteImport.update({
 const AdminInventoryRoute = AdminInventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLedgerRoute = AdminLedgerRouteImport.update({
+  id: '/ledger',
+  path: '/ledger',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => AdminRoute,
 } as any)
 const InventoryIndexRoute = InventoryIndexRouteImport.update({
@@ -80,19 +110,28 @@ export interface FileRoutesByFullPath {
   '/sell-your-car': typeof SellYourCarRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/inventory': typeof AdminInventoryRoute
+  '/admin/ledger': typeof AdminLedgerRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/inventory/$slug': typeof InventorySlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/inventory/': typeof InventoryIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/admin': typeof AdminRouteWithChildren
   '/contact': typeof ContactRoute
   '/faqs': typeof FaqsRoute
   '/sell-your-car': typeof SellYourCarRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/inventory': typeof AdminInventoryRoute
+  '/admin/ledger': typeof AdminLedgerRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/inventory/$slug': typeof InventorySlugRoute
+  '/admin': typeof AdminIndexRoute
   '/inventory': typeof InventoryIndexRoute
 }
 export interface FileRoutesById {
@@ -105,7 +144,12 @@ export interface FileRoutesById {
   '/sell-your-car': typeof SellYourCarRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/inventory': typeof AdminInventoryRoute
+  '/admin/ledger': typeof AdminLedgerRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/inventory/$slug': typeof InventorySlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/inventory/': typeof InventoryIndexRoute
 }
 export interface FileRouteTypes {
@@ -119,19 +163,28 @@ export interface FileRouteTypes {
     | '/sell-your-car'
     | '/admin/enquiries'
     | '/admin/inventory'
+    | '/admin/ledger'
+    | '/admin/login'
+    | '/admin/reports'
+    | '/admin/settings'
     | '/inventory/$slug'
+    | '/admin/'
     | '/inventory/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/admin'
     | '/contact'
     | '/faqs'
     | '/sell-your-car'
     | '/admin/enquiries'
     | '/admin/inventory'
+    | '/admin/ledger'
+    | '/admin/login'
+    | '/admin/reports'
+    | '/admin/settings'
     | '/inventory/$slug'
+    | '/admin'
     | '/inventory'
   id:
     | '__root__'
@@ -143,7 +196,12 @@ export interface FileRouteTypes {
     | '/sell-your-car'
     | '/admin/enquiries'
     | '/admin/inventory'
+    | '/admin/ledger'
+    | '/admin/login'
+    | '/admin/reports'
+    | '/admin/settings'
     | '/inventory/$slug'
+    | '/admin/'
     | '/inventory/'
   fileRoutesById: FileRoutesById
 }
@@ -202,6 +260,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SellYourCarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/enquiries': {
       id: '/admin/enquiries'
       path: '/enquiries'
@@ -214,6 +279,34 @@ declare module '@tanstack/react-router' {
       path: '/inventory'
       fullPath: '/admin/inventory'
       preLoaderRoute: typeof AdminInventoryRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/ledger': {
+      id: '/admin/ledger'
+      path: '/ledger'
+      fullPath: '/admin/ledger'
+      preLoaderRoute: typeof AdminLedgerRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/inventory/': {
@@ -236,11 +329,21 @@ declare module '@tanstack/react-router' {
 interface AdminRouteChildren {
   AdminEnquiriesRoute: typeof AdminEnquiriesRoute
   AdminInventoryRoute: typeof AdminInventoryRoute
+  AdminLedgerRoute: typeof AdminLedgerRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminReportsRoute: typeof AdminReportsRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminEnquiriesRoute: AdminEnquiriesRoute,
   AdminInventoryRoute: AdminInventoryRoute,
+  AdminLedgerRoute: AdminLedgerRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  AdminReportsRoute: AdminReportsRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminIndexRoute: AdminIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)

@@ -22,12 +22,21 @@ export default defineSchema({
     description: v.optional(v.string()),
     features: v.array(v.string()),
     deleted_at: v.optional(v.string()),
+    // Admin fields
+    purchase_price: v.optional(v.number()),
+    purchase_date: v.optional(v.string()),
+    purchase_source: v.optional(v.string()),
+    sold_price: v.optional(v.number()),
+    sold_date: v.optional(v.string()),
+    internal_notes: v.optional(v.string()),
+    is_deleted: v.optional(v.boolean()),
   })
     .index("by_slug", ["slug"])
     .index("by_featured", ["featured"])
     .index("by_status", ["status"])
     .index("by_body_type", ["body_type"])
-    .index("by_make", ["make"]),
+    .index("by_make", ["make"])
+    .index("by_is_deleted", ["is_deleted"]),
 
   car_images: defineTable({
     car_id: v.id("cars"),
@@ -51,4 +60,32 @@ export default defineSchema({
     key: v.string(),
     value: v.any(),
   }).index("by_key", ["key"]),
+
+  admin_users: defineTable({
+    username: v.string(),
+    password_hash: v.string(),
+    role: v.string(),
+  }).index("by_username", ["username"]),
+
+  sessions: defineTable({
+    token: v.string(),
+    admin_id: v.id("admin_users"),
+    expires_at: v.number(),
+  }).index("by_token", ["token"]),
+
+  activity_logs: defineTable({
+    action: v.string(),
+    entity: v.string(),
+    entity_id: v.string(),
+    admin_user: v.string(),
+    detail: v.optional(v.string()),
+  }),
+
+  login_attempts: defineTable({
+    username: v.string(),
+    ip: v.string(),
+    timestamp: v.number(),
+    successful: v.boolean(),
+  }).index("by_username", ["username"])
+    .index("by_ip", ["ip"]),
 });
