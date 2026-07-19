@@ -175,7 +175,7 @@ function HeroSection() {
       <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-24 pointer-events-none">
         <div className="max-w-2xl pointer-events-auto">
           <div
-            className="inline-flex items-center gap-2 rounded-full border border-champagne/30 bg-black/20 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.35em] text-champagne backdrop-blur-md animate-fade-in"
+            className="inline-flex items-center gap-2 rounded-full border border-gold-ui/30 bg-black/20 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.35em] text-gold-ui backdrop-blur-md animate-fade-in"
             style={{ animationDelay: "200ms" }}
           >
             <Sparkles className="h-3 w-3" />
@@ -214,7 +214,7 @@ function HeroSection() {
             </Link>
             <Link
               to="/sell-your-car"
-              className="group flex items-center gap-2.5 rounded-lg border border-white/30 px-7 py-4 text-xs font-bold uppercase tracking-widest text-white transition-all duration-300 hover:border-champagne hover:text-champagne hover:bg-black/20 backdrop-blur-sm"
+              className="group flex items-center gap-2.5 rounded-lg border border-white/30 px-7 py-4 text-[13px] font-bold uppercase tracking-widest text-white transition-all duration-300 hover:border-gold-ui hover:text-gold-ui hover:bg-black/20 backdrop-blur-sm"
             >
               Sell Your Car
               <ChevronRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
@@ -227,7 +227,7 @@ function HeroSection() {
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float pointer-events-none hidden md:block">
         <div className="flex flex-col items-center gap-2">
           <div className="h-10 w-px bg-gradient-to-b from-champagne/50 to-transparent" />
-          <div className="text-[9px] font-bold uppercase tracking-[0.4em] text-champagne/80 drop-shadow">
+          <div className="text-[9px] font-bold uppercase tracking-[0.4em] text-gold-ui/80 drop-shadow">
             Scroll
           </div>
         </div>
@@ -255,9 +255,9 @@ function BrandMarquee() {
         {[...brands, ...brands].map((brand, i) => (
           <span
             key={i}
-            className="mx-10 inline-flex items-center gap-3 font-display text-base tracking-[0.15em] text-foreground/60 transition-colors duration-500 hover:text-champagne md:text-lg"
+            className="mx-10 inline-flex items-center gap-3 font-display text-base tracking-[0.15em] text-text-secondary transition-colors duration-500 hover:text-gold-display md:text-lg"
           >
-            <span className="h-1 w-1 rounded-full bg-champagne/60" />
+            <span className="h-1.5 w-1.5 rounded-full bg-gold-ui" />
             {brand}
           </span>
         ))}
@@ -284,7 +284,7 @@ function TheShowroom() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
               <div className="absolute bottom-6 left-6 right-6">
-                <div className="flex items-center gap-3 text-champagne">
+                <div className="flex items-center gap-3 text-gold-ui">
                   <div className="h-px flex-1 bg-champagne/30" />
                   <span className="text-[11px] font-bold uppercase tracking-[0.3em]">Bangalore, India</span>
                   <div className="h-px flex-1 bg-champagne/30" />
@@ -310,12 +310,12 @@ function TheShowroom() {
             
             <div className="mt-12 grid grid-cols-2 gap-6 border-t border-border/40 pt-8">
               <div>
-                <div className="text-[11px] font-bold uppercase tracking-widest text-champagne">Hours</div>
+                <div className="text-[11px] font-bold uppercase tracking-widest text-gold-ui">Hours</div>
                 <div className="mt-2 text-sm font-medium text-foreground">Mon – Sat: 10AM – 8PM</div>
                 <div className="text-sm text-muted-foreground">Sunday by appointment</div>
               </div>
               <div>
-                <div className="text-[11px] font-bold uppercase tracking-widest text-champagne">Experience</div>
+                <div className="text-[11px] font-bold uppercase tracking-widest text-gold-ui">Experience</div>
                 <div className="mt-2 text-sm font-medium text-foreground">Private Viewing Room</div>
                 <div className="text-sm text-muted-foreground">Valet Parking Available</div>
               </div>
@@ -371,10 +371,10 @@ function StatItem({
       className={`text-center md:text-left sr-hidden ${visible ? "sr-visible" : ""}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
-      <div className="tabular font-display text-4xl text-gradient-gold md:text-5xl">
+      <div className="tabular font-display text-4xl text-gold-display md:text-5xl">
         {displayValue}
       </div>
-      <div className="mt-3 text-[11px] font-bold uppercase tracking-[0.25em] text-muted-foreground/80">
+      <div className="mt-3 text-[13px] font-semibold uppercase tracking-[0.08em] text-gold-ui">
         {label}
       </div>
     </div>
@@ -411,7 +411,7 @@ function FeaturedInventory() {
           </div>
           <Link
             to="/inventory"
-            className="hidden items-center gap-2 rounded-lg border border-border/40 px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-champagne transition-all duration-300 hover:border-champagne/40 hover:bg-champagne/5 md:flex"
+            className="hidden items-center gap-2 rounded-lg border border-border/40 px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-gold-ui transition-all duration-300 hover:border-gold-ui/40 hover:bg-gold-ui/5 md:flex"
           >
             View all
             <ArrowRight className="h-3.5 w-3.5" />
@@ -437,7 +437,7 @@ function FeaturedInventory() {
         <div className="mt-12 text-center md:hidden">
           <Link
             to="/inventory"
-            className="inline-flex items-center gap-2 rounded-lg border border-border/40 px-6 py-3 text-xs font-bold uppercase tracking-widest text-champagne transition-all duration-300 hover:border-champagne/40"
+            className="inline-flex items-center gap-2 rounded-lg border border-border/40 px-6 py-3 text-xs font-bold uppercase tracking-widest text-gold-ui transition-all duration-300 hover:border-gold-ui/40"
           >
             View all inventory
             <ArrowRight className="h-3.5 w-3.5" />
@@ -562,7 +562,7 @@ function WhyShynRide() {
               {/* Accent gradient */}
               <div className={`absolute -right-16 -top-16 h-40 w-40 rounded-full bg-gradient-to-br ${f.accent} opacity-0 blur-3xl transition-opacity duration-700 group-hover:opacity-100`} />
               <div className="relative">
-                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-champagne/10 text-champagne ring-1 ring-champagne/10 transition-all duration-500 group-hover:bg-champagne/15 group-hover:scale-110 group-hover:ring-champagne/20">
+                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gold-ui/10 text-gold-ui ring-1 ring-gold-ui/10 transition-all duration-500 group-hover:bg-gold-ui/15 group-hover:scale-110 group-hover:ring-gold-ui/20">
                   <f.icon className="h-6 w-6" />
                 </div>
                 <h3 className="mt-6 font-display text-xl text-foreground">
@@ -585,28 +585,28 @@ function HowItWorks() {
   const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
   const steps = [
     {
-      num: "01",
+      num: 1,
+      title: "Browse digitally",
+      desc: "Explore our collection with high-fidelity imagery and transparent history.",
+      icon: Search,
+    },
+    {
+      num: 2,
+      title: "Schedule viewing",
+      desc: "Book a private appointment at our showroom or request a home visit.",
       icon: Eye,
-      title: "Browse",
-      desc: "Explore our curated inventory online. Filter by make, budget, or body style.",
     },
     {
-      num: "02",
-      icon: Sparkles,
-      title: "Test Drive",
-      desc: "Schedule a doorstep test drive. We bring the car to you, anywhere in Bangalore.",
+      num: 3,
+      title: "Expert inspection",
+      desc: "Every vehicle passes our rigorous 150-point quality assurance check.",
+      icon: ClipboardCheck,
     },
     {
-      num: "03",
-      icon: FileCheck,
-      title: "Paperwork",
-      desc: "We handle RC transfer, insurance, and all RTO formalities end to end.",
-    },
-    {
-      num: "04",
+      num: 4,
+      title: "Doorstep delivery",
+      desc: "Seamless paperwork and delivery of your new vehicle to your home.",
       icon: Truck,
-      title: "Drive Home",
-      desc: "Same-day delivery with a handover experience worthy of your new car.",
     },
   ];
 
@@ -639,16 +639,16 @@ function HowItWorks() {
                   <div className="h-full w-full bg-gradient-to-r from-champagne/30 via-champagne/10 to-transparent" />
                 </div>
               )}
-              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl border border-border/30 bg-card/40 transition-all duration-500 group-hover:border-champagne/30 group-hover:bg-card/60 group-hover:shadow-xl group-hover:shadow-champagne/5">
-                <step.icon className="h-7 w-7 text-champagne transition-transform duration-500 group-hover:scale-110" />
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl border border-border bg-surface transition-all duration-500 group-hover:border-gold-ui/30 group-hover:shadow-xl">
+                <step.icon className="h-8 w-8 text-gold-ui transition-transform duration-500 group-hover:scale-110" strokeWidth={2} />
               </div>
-              <div className="mt-2 text-[11px] font-bold uppercase tracking-[0.3em] text-champagne/70">
-                Step {step.num}
+              <div className="mt-4 text-[13px] font-semibold uppercase tracking-[0.08em] text-gold-ui">
+                Step 0{step.num}
               </div>
-              <h3 className="mt-3 font-display text-xl text-foreground">
+              <h3 className="mt-2 font-display text-xl text-text-primary">
                 {step.title}
               </h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground/60">
+              <p className="mx-auto mt-2 max-w-[260px] text-base leading-[1.6] text-text-secondary">
                 {step.desc}
               </p>
             </div>
@@ -685,17 +685,18 @@ function BudgetBands() {
               key={b.label}
               to="/inventory"
               search={{ minPrice: b.min, maxPrice: b.max } as any}
-              className={`group relative overflow-hidden rounded-xl border border-border/30 bg-card/20 p-6 transition-all duration-500 hover:border-champagne/30 hover:bg-card/40 hover:shadow-lg hover:shadow-champagne/5 sr-hidden ${isVisible ? "sr-visible" : ""}`}
+              className={`group flex cursor-pointer items-center justify-between rounded-xl border border-border bg-surface px-6 py-5 transition-all hover:border-gold-ui hover:shadow-lg sr-hidden ${isVisible ? "sr-visible" : ""}`}
               style={{ transitionDelay: `${200 + i * 100}ms` }}
             >
-              <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-champagne/[0.03] blur-2xl transition-all duration-500 group-hover:bg-champagne/[0.08]" />
-              <span className="relative block tabular font-display text-2xl text-foreground">
-                {b.label}
-              </span>
-              <span className="relative mt-1 block text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground/70">
-                {b.desc}
-              </span>
-              <ArrowRight className="relative mt-4 h-4 w-4 text-champagne/40 transition-all duration-300 group-hover:translate-x-1 group-hover:text-champagne" />
+              <div>
+                <span className="relative block tabular font-display text-2xl text-text-primary">
+                  {b.label}
+                </span>
+                <span className="relative mt-1 block text-sm font-medium text-text-secondary">
+                  {b.desc}
+                </span>
+              </div>
+              <ArrowRight className="relative mt-2 h-5 w-5 text-gold-ui/40 transition-all duration-300 group-hover:translate-x-1 group-hover:text-gold-ui" />
             </Link>
           ))}
         </div>
@@ -721,15 +722,15 @@ function SellCTA() {
           <SectionEyebrow>Sell your car</SectionEyebrow>
           <h2 className="mt-3 font-display text-4xl md:text-5xl text-white">
             A fair number, without the{" "}
-            <span className="text-gradient-gold">theatre.</span>
+            <span className="text-gold-display">theatre.</span>
           </h2>
-          <p className="mt-6 max-w-lg text-lg leading-relaxed text-white/80">
+          <p className="mt-6 max-w-lg text-base leading-[1.6] text-white/80">
             Share a few details and we will call you back with a considered
             quote. If we buy your car, you get paid the same day.
           </p>
           <Link
             to="/sell-your-car"
-            className="mt-10 inline-flex items-center gap-2.5 rounded-lg bg-champagne px-8 py-4 text-sm font-bold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:shadow-2xl hover:shadow-champagne/25 btn-shine"
+            className="mt-10 inline-flex items-center gap-2.5 rounded-lg bg-gold-ui px-8 py-4 text-[13px] font-bold uppercase tracking-widest text-white transition-all duration-300 hover:shadow-2xl hover:shadow-gold-ui/25 btn-shine"
           >
             Get a quote
             <ArrowRight className="h-4 w-4" />
@@ -748,10 +749,10 @@ function SellCTA() {
               key={i}
               className="flex items-start gap-5 border-t border-white/10 py-6"
             >
-              <span className="tabular font-display text-3xl text-champagne/80">
+              <span className="tabular font-display text-3xl text-gold-display">
                 0{i + 1}
               </span>
-              <span className="mt-1.5 text-base leading-relaxed text-white/90">{step}</span>
+              <span className="mt-1.5 text-base leading-[1.6] text-white">{step}</span>
             </li>
           ))}
         </ul>
@@ -791,7 +792,7 @@ function Testimonials() {
                   {[...Array(5)].map((_, j) => (
                     <Star
                       key={j}
-                      className="h-3.5 w-3.5 fill-champagne/80 text-champagne/80"
+                      className="h-3.5 w-3.5 fill-gold-ui/80 text-gold-ui/80"
                     />
                   ))}
                 </div>
@@ -799,12 +800,12 @@ function Testimonials() {
                   "{t.quote}"
                 </blockquote>
                 <figcaption className="mt-8 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-champagne/10 font-display text-sm text-champagne">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gold-ui/10 font-display text-sm text-gold-ui">
                     {t.name.charAt(0)}
                   </div>
                   <div>
                     <div className="text-sm font-medium text-foreground">{t.name}</div>
-                    <div className="text-[11px] font-bold uppercase tracking-widest text-champagne/70">
+                    <div className="text-[11px] font-bold uppercase tracking-widest text-gold-ui/70">
                       {t.car}
                     </div>
                   </div>
@@ -843,7 +844,7 @@ function FinalCTA() {
             </Link>
             <Link
               to="/contact"
-              className="group flex items-center gap-2.5 rounded-lg border border-border/40 px-8 py-4 text-xs font-bold uppercase tracking-widest text-foreground transition-all duration-300 hover:border-champagne/40 hover:text-champagne"
+              className="group flex items-center gap-2.5 rounded-lg border border-border/40 px-8 py-4 text-xs font-bold uppercase tracking-widest text-text-primary transition-all duration-300 hover:border-gold-ui/40 hover:text-gold-ui"
             >
               Contact us
               <ChevronRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
@@ -858,7 +859,7 @@ function FinalCTA() {
 /* ─── Shared ─── */
 function SectionEyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-[11px] font-bold uppercase tracking-[0.35em] text-champagne">
+    <div className="text-[13px] font-semibold uppercase tracking-[0.08em] text-gold-ui">
       {children}
     </div>
   );

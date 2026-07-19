@@ -19,28 +19,38 @@
   --font-display: var(--font-display-family);
   --font-sans: var(--font-sans-family);
 
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
+  /* NEW EXPLICIT TOKENS */
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-gold-display: var(--gold-display);
+  --color-gold-ui: var(--gold-ui);
+
+  /* LEGACY ALIASES (to prevent breaking components during transition) */
+  --color-background: var(--bg);
+  --color-foreground: var(--text-primary);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--text-primary);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--text-primary);
+  --color-primary: var(--gold-ui);
+  --color-primary-foreground: #FFFFFF;
+  --color-secondary: var(--border);
+  --color-secondary-foreground: var(--text-primary);
+  --color-muted: var(--bg);
+  --color-muted-foreground: var(--text-secondary);
+  --color-accent: var(--bg);
+  --color-accent-foreground: var(--text-primary);
+  --color-destructive: #941B0C;
+  --color-destructive-foreground: #FFFFFF;
   --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-champagne: var(--champagne);
+  --color-input: var(--border);
+  --color-ring: var(--gold-ui);
+  --color-champagne: var(--gold-display);
   --color-emerald-deep: var(--emerald-deep);
-  --color-slate-quiet: var(--slate-quiet);
+  --color-slate-quiet: var(--text-tertiary);
 }
 
 :root {
@@ -50,64 +60,28 @@
   --font-sans-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
 
   /* --- LIGHT MODE (Crisp, airy, premium) --- */
-  --background: oklch(0.98 0.01 85);       /* Off-white ivory */
-  --foreground: oklch(0.15 0.006 260);     /* Deep charcoal */
-  
-  --card: oklch(1 0 0);                    /* Pure white */
-  --card-foreground: oklch(0.15 0.006 260);
-  
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.006 260);
-
-  --primary: oklch(0.78 0.1 75);             /* warm champagne gold */
-  --primary-foreground: oklch(1 0 0);        /* white text on primary */
-  --champagne: oklch(0.78 0.1 75);
-
-  --secondary: oklch(0.92 0.01 260);
-  --secondary-foreground: oklch(0.15 0.006 260);
-  
-  --muted: oklch(0.95 0.01 260);
-  --muted-foreground: oklch(0.4 0.01 260);   /* slate gray */
-  --slate-quiet: oklch(0.4 0.01 260);
-  
-  --accent: oklch(0.95 0.05 165);            /* very soft emerald */
-  --accent-foreground: oklch(0.15 0.006 260);
-  --emerald-deep: oklch(0.2 0.045 165);      /* keeping deep emerald same for contrast elements */
-
-  --destructive: oklch(0.58 0.22 25);
-  --destructive-foreground: oklch(0.98 0.003 85);
-
-  --border: oklch(0.9 0.01 260);
-  --input: oklch(0.9 0.01 260);
-  --ring: oklch(0.78 0.1 75);
+  --bg: #FAF7F1;           /* cream background */
+  --surface: #FFFFFF;      /* card surfaces */
+  --text-primary: #1A1A1A; /* headlines, body — near-black */
+  --text-secondary: #4A4A4A; /* descriptions, paragraphs */
+  --text-tertiary: #6B6B6B;  /* least-important captions */
+  --gold-display: #D9A85C;   /* large decorative headline words only */
+  --gold-ui: #8C6329;        /* eyebrows, labels, icons, small links */
+  --border: #E5DFD3;
+  --emerald-deep: #0D2B24;
 }
 
 :root.dark {
   /* --- DARK MODE (Obsidian base) --- */
-  --background: oklch(0.11 0.006 260);       /* deep black-blue */
-  --foreground: oklch(0.95 0.012 85);        /* #F3EFE8 ivory */
-  
-  --card: oklch(0.15 0.006 260);             /* charcoal */
-  --card-foreground: oklch(0.95 0.012 85);
-  
-  --popover: oklch(0.15 0.006 260);
-  --popover-foreground: oklch(0.95 0.012 85);
-
-  --primary: oklch(0.78 0.1 75);             /* warm champagne gold */
-  --primary-foreground: oklch(0.11 0.006 260);
-
-  --secondary: oklch(0.2 0.006 260);
-  --secondary-foreground: oklch(0.95 0.012 85);
-  
-  --muted: oklch(0.18 0.006 260);
-  --muted-foreground: oklch(0.6 0.008 260);  /* slate */
-  
-  --accent: oklch(0.28 0.05 165);            /* deep emerald surface */
-  --accent-foreground: oklch(0.95 0.012 85);
-  
-  --border: oklch(0.22 0.006 260);
-  --input: oklch(0.2 0.006 260);
-  --ring: oklch(0.78 0.1 75);
+  --bg: #0B0C0E;
+  --surface: #17181B;
+  --text-primary: #F3EFE8;   /* ivory */
+  --text-secondary: #C7C3BA; /* descriptions, paragraphs */
+  --text-tertiary: #8A8D93;  /* least-important captions */
+  --gold-display: #E4BE85;   /* slightly lighter/warmer than light-mode */
+  --gold-ui: #C9A86A;        /* brighter for dark background contrast */
+  --border: #2A2C30;
+  --emerald-deep: #081B16;
 }
 
 /* ─── Base ─── */

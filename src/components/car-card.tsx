@@ -73,35 +73,37 @@ export function CarCard({ car, className = "" }: { car: CarCardData; className?:
         </div>
 
         {/* Specs row */}
-        <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <Calendar className="h-3 w-3 text-champagne/60" />
-            {car.year}
-          </span>
-          <span className="h-3 w-px bg-border" />
-          <span className="flex items-center gap-1">
-            <Gauge className="h-3 w-3 text-champagne/60" />
-            {formatKm(car.km)}
-          </span>
-          <span className="h-3 w-px bg-border" />
-          <span className="flex items-center gap-1">
-            <Fuel className="h-3 w-3 text-champagne/60" />
-            {car.fuel_type}
-          </span>
-          <span className="h-3 w-px bg-border" />
-          <span>{car.transmission}</span>
+        <div className="mt-4 flex items-center justify-between text-[13px] font-medium text-text-tertiary">
+          <div className="flex items-center gap-1.5">
+            <Calendar className="h-3.5 w-3.5" />
+            <span>{car.year}</span>
+          </div>
+          <div className="h-1 w-1 rounded-full bg-border" />
+          <div className="flex items-center gap-1.5">
+            <Gauge className="h-3.5 w-3.5" />
+            <span>{formatKm(car.km)}</span>
+          </div>
+          <div className="h-1 w-1 rounded-full bg-border" />
+          <div className="flex items-center gap-1.5">
+            <Fuel className="h-3.5 w-3.5" />
+            <span className="capitalize">{car.fuel_type}</span>
+          </div>
         </div>
 
-        {/* Price */}
-        <div className="flex items-end justify-between border-t border-border/40 pt-3">
-          <div className="tabular font-display text-xl text-gradient-gold">
-            {formatINR(car.price_inr)}
-          </div>
-          {car.price_negotiable && (
-            <div className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-              Negotiable
+        <div className="mt-5 border-t border-border/50 pt-5 flex items-center justify-between">
+          <div className="flex flex-col">
+            <div className="font-display text-[26px] font-semibold tracking-tight text-text-primary">
+              {formatINR(car.price_inr)}
             </div>
-          )}
+            {car.price_negotiable && (
+              <div className="mt-1 text-[11px] font-medium uppercase tracking-widest text-text-tertiary">
+                Negotiable
+              </div>
+            )}
+          </div>
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-surface shadow-sm ring-1 ring-border transition-transform duration-300 group-hover:scale-110 group-hover:bg-gold-ui">
+            <ArrowRight className="h-3.5 w-3.5 text-text-primary transition-colors group-hover:text-white" />
+          </div>
         </div>
       </div>
     </Link>
