@@ -61,48 +61,43 @@ export function CarCard({ car, className = "" }: { car: CarCardData; className?:
 
       <div className="mt-5 space-y-3">
         <div>
-          <div className="text-[11px] font-semibold uppercase tracking-widest text-champagne">
+          <div className="text-[13px] font-semibold text-text-secondary">
             {car.make}
           </div>
-          <div className="mt-1 font-display text-xl leading-tight text-foreground">
+          <div className="mt-1 font-bold text-xl leading-tight text-text-primary">
             {car.model}{" "}
             {car.variant && (
-              <span className="text-sm text-muted-foreground">· {car.variant}</span>
+              <span className="text-[15px] font-medium text-text-secondary">
+                {car.variant}
+              </span>
             )}
           </div>
         </div>
 
-        {/* Specs row */}
-        <div className="mt-4 flex items-center justify-between text-[13px] font-medium text-text-tertiary">
-          <div className="flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5" />
-            <span>{car.year}</span>
-          </div>
-          <div className="h-1 w-1 rounded-full bg-border" />
-          <div className="flex items-center gap-1.5">
-            <Gauge className="h-3.5 w-3.5" />
-            <span>{formatKm(car.km)}</span>
-          </div>
-          <div className="h-1 w-1 rounded-full bg-border" />
-          <div className="flex items-center gap-1.5">
-            <Fuel className="h-3.5 w-3.5" />
-            <span className="capitalize">{car.fuel_type}</span>
-          </div>
+        {/* Specs row (Cars24 style - simple grey text) */}
+        <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-medium text-text-secondary bg-surface rounded-md px-3 py-2 border border-border/50">
+          <span>{formatKm(car.km)}</span>
+          <span className="text-border px-1">•</span>
+          <span className="capitalize">{car.fuel_type}</span>
+          <span className="text-border px-1">•</span>
+          <span className="capitalize">{car.transmission}</span>
+          <span className="text-border px-1">•</span>
+          <span>{car.year}</span>
         </div>
 
-        <div className="mt-5 border-t border-border/50 pt-5 flex items-center justify-between">
-          <div className="flex flex-col">
-            <div className="font-display text-[26px] font-semibold tracking-tight text-text-primary">
+        <div className="mt-4 pt-4 border-t border-border/50 flex flex-col">
+          <div className="text-[13px] font-medium text-text-tertiary mb-1">
+            Price
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="font-bold text-[22px] tracking-tight text-text-primary">
               {formatINR(car.price_inr)}
             </div>
             {car.price_negotiable && (
-              <div className="mt-1 text-[11px] font-medium uppercase tracking-widest text-text-tertiary">
+              <div className="text-[12px] font-medium text-text-secondary bg-surface px-2 py-1 rounded-sm border border-border">
                 Negotiable
               </div>
             )}
-          </div>
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-surface shadow-sm ring-1 ring-border transition-transform duration-300 group-hover:scale-110 group-hover:bg-gold-ui">
-            <ArrowRight className="h-3.5 w-3.5 text-text-primary transition-colors group-hover:text-white" />
           </div>
         </div>
       </div>

@@ -182,10 +182,10 @@ function HeroSection() {
       <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-24 pointer-events-none">
         <div className="max-w-2xl pointer-events-auto">
           <div
-            className="inline-flex items-center gap-2 rounded-full border border-gold-ui/30 bg-black/20 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.35em] text-gold-ui backdrop-blur-md animate-fade-in"
+            className="inline-flex items-center gap-2 rounded-full border border-border/40 bg-black/40 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-md animate-fade-in"
             style={{ animationDelay: "200ms" }}
           >
-            <Sparkles className="h-3 w-3" />
+            <Sparkles className="h-4 w-4 text-gold-ui" />
             Curated in Bangalore
           </div>
           <h1
@@ -214,14 +214,14 @@ function HeroSection() {
           >
             <Link
               to="/inventory"
-              className="group flex items-center gap-2.5 rounded-lg bg-champagne px-7 py-4 text-xs font-bold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:shadow-2xl hover:shadow-champagne/25 btn-shine animate-pulse-glow"
+              className="group flex items-center gap-2.5 rounded-lg bg-gold-ui px-7 py-4 text-[15px] font-bold text-white transition-all duration-300 hover:shadow-2xl hover:shadow-gold-ui/25 btn-shine animate-pulse-glow"
             >
               {hero.cta ?? "View Inventory"}
-              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
             <Link
               to="/sell-your-car"
-              className="group flex items-center gap-2.5 rounded-lg border border-white/30 px-7 py-4 text-[13px] font-bold uppercase tracking-widest text-white transition-all duration-300 hover:border-gold-ui hover:text-gold-ui hover:bg-black/20 backdrop-blur-sm"
+              className="group flex items-center gap-2.5 rounded-lg border border-white/30 px-7 py-4 text-[15px] font-bold text-white transition-all duration-300 hover:border-gold-ui hover:text-gold-ui hover:bg-black/40 backdrop-blur-sm"
             >
               Sell Your Car
               <ChevronRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
@@ -233,8 +233,8 @@ function HeroSection() {
       {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float pointer-events-none hidden md:block">
         <div className="flex flex-col items-center gap-2">
-          <div className="h-10 w-px bg-gradient-to-b from-champagne/50 to-transparent" />
-          <div className="text-[9px] font-bold uppercase tracking-[0.4em] text-gold-ui/80 drop-shadow">
+          <div className="h-10 w-px bg-gradient-to-b from-white/50 to-transparent" />
+          <div className="text-[11px] font-bold text-white/80 drop-shadow">
             Scroll
           </div>
         </div>
@@ -262,9 +262,8 @@ function BrandMarquee() {
         {[...brands, ...brands].map((brand, i) => (
           <span
             key={i}
-            className="mx-10 inline-flex items-center gap-3 font-display text-base tracking-[0.15em] text-text-secondary transition-colors duration-500 hover:text-gold-display md:text-lg"
+            className="mx-10 inline-flex items-center gap-3 font-bold text-lg text-text-secondary transition-colors duration-500 hover:text-text-primary"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-gold-ui" />
             {brand}
           </span>
         ))}
@@ -291,10 +290,8 @@ function TheShowroom() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
               <div className="absolute bottom-6 left-6 right-6">
-                <div className="flex items-center gap-3 text-gold-ui">
-                  <div className="h-px flex-1 bg-champagne/30" />
-                  <span className="text-[11px] font-bold uppercase tracking-[0.3em]">Bangalore, India</span>
-                  <div className="h-px flex-1 bg-champagne/30" />
+                <div className="flex items-center gap-3 text-text-secondary font-semibold text-[13px]">
+                  <span>Bangalore, India</span>
                 </div>
               </div>
             </div>
@@ -378,10 +375,10 @@ function StatItem({
       className={`text-center md:text-left sr-hidden ${visible ? "sr-visible" : ""}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
-      <div className="tabular font-display text-4xl text-gold-display md:text-5xl">
+      <div className="tabular font-bold text-4xl text-text-primary md:text-5xl">
         {displayValue}
       </div>
-      <div className="mt-3 text-[13px] font-semibold uppercase tracking-[0.08em] text-gold-ui">
+      <div className="mt-3 text-[15px] font-semibold text-text-secondary">
         {label}
       </div>
     </div>
@@ -418,7 +415,7 @@ function FeaturedInventory() {
           </div>
           <Link
             to="/inventory"
-            className="hidden items-center gap-2 rounded-lg border border-border/40 px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-gold-ui transition-all duration-300 hover:border-gold-ui/40 hover:bg-gold-ui/5 md:flex"
+            className="hidden items-center gap-2 rounded-lg border border-border px-5 py-2.5 text-[14px] font-bold text-text-secondary transition-all duration-300 hover:border-gold-ui hover:text-gold-ui hover:bg-gold-ui/5 md:flex"
           >
             View all
             <ArrowRight className="h-3.5 w-3.5" />
@@ -444,7 +441,7 @@ function FeaturedInventory() {
         <div className="mt-12 text-center md:hidden">
           <Link
             to="/inventory"
-            className="inline-flex items-center gap-2 rounded-lg border border-border/40 px-6 py-3 text-xs font-bold uppercase tracking-widest text-gold-ui transition-all duration-300 hover:border-gold-ui/40"
+            className="inline-flex items-center gap-2 rounded-lg border border-border/40 px-6 py-3 text-[15px] font-bold text-text-primary transition-all duration-300 hover:border-gold-ui/40"
           >
             View all inventory
             <ArrowRight className="h-3.5 w-3.5" />
@@ -649,10 +646,10 @@ function HowItWorks() {
               <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl border border-border bg-surface transition-all duration-500 group-hover:border-gold-ui/30 group-hover:shadow-xl">
                 <step.icon className="h-8 w-8 text-gold-ui transition-transform duration-500 group-hover:scale-110" strokeWidth={2} />
               </div>
-              <div className="mt-4 text-[13px] font-semibold uppercase tracking-[0.08em] text-gold-ui">
+              <div className="mt-4 text-[14px] font-bold text-text-secondary">
                 Step 0{step.num}
               </div>
-              <h3 className="mt-2 font-display text-xl text-text-primary">
+              <h3 className="mt-2 text-xl font-bold text-text-primary">
                 {step.title}
               </h3>
               <p className="mx-auto mt-2 max-w-[260px] text-base leading-[1.6] text-text-secondary">
@@ -692,18 +689,18 @@ function BudgetBands() {
               key={b.label}
               to="/inventory"
               search={{ minPrice: b.min, maxPrice: b.max } as any}
-              className={`group flex cursor-pointer items-center justify-between rounded-xl border border-border bg-surface px-6 py-5 transition-all hover:border-gold-ui hover:shadow-lg sr-hidden ${isVisible ? "sr-visible" : ""}`}
+              className={`group flex cursor-pointer items-center justify-between rounded-xl border border-border bg-surface px-6 py-5 transition-all hover:border-text-primary hover:shadow-lg sr-hidden ${isVisible ? "sr-visible" : ""}`}
               style={{ transitionDelay: `${200 + i * 100}ms` }}
             >
               <div>
-                <span className="relative block tabular font-display text-2xl text-text-primary">
+                <span className="relative block tabular font-bold text-2xl text-text-primary">
                   {b.label}
                 </span>
                 <span className="relative mt-1 block text-sm font-medium text-text-secondary">
                   {b.desc}
                 </span>
               </div>
-              <ArrowRight className="relative mt-2 h-5 w-5 text-gold-ui/40 transition-all duration-300 group-hover:translate-x-1 group-hover:text-gold-ui" />
+              <ArrowRight className="relative mt-2 h-5 w-5 text-text-tertiary transition-all duration-300 group-hover:translate-x-1 group-hover:text-text-primary" />
             </Link>
           ))}
         </div>
@@ -727,9 +724,8 @@ function SellCTA() {
       <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-16 px-6 md:grid-cols-2">
         <div className={`sr-left-hidden ${isVisible ? "sr-left-visible" : ""}`}>
           <SectionEyebrow>Sell your car</SectionEyebrow>
-          <h2 className="mt-3 font-display text-4xl md:text-5xl text-white">
-            A fair number, without the{" "}
-            <span className="text-gold-display">theatre.</span>
+          <h2 className="mt-3 text-4xl font-bold md:text-5xl text-white">
+            A fair number, without the theatre.
           </h2>
           <p className="mt-6 max-w-lg text-base leading-[1.6] text-white/80">
             Share a few details and we will call you back with a considered
@@ -737,7 +733,7 @@ function SellCTA() {
           </p>
           <Link
             to="/sell-your-car"
-            className="mt-10 inline-flex items-center gap-2.5 rounded-lg bg-gold-ui px-8 py-4 text-[13px] font-bold uppercase tracking-widest text-white transition-all duration-300 hover:shadow-2xl hover:shadow-gold-ui/25 btn-shine"
+            className="mt-10 inline-flex items-center gap-2.5 rounded-lg bg-gold-ui px-8 py-4 text-[15px] font-bold text-white transition-all duration-300 hover:shadow-2xl hover:shadow-gold-ui/25 btn-shine"
           >
             Get a quote
             <ArrowRight className="h-4 w-4" />
@@ -866,7 +862,7 @@ function FinalCTA() {
 /* ─── Shared ─── */
 function SectionEyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-[13px] font-semibold uppercase tracking-[0.08em] text-gold-ui">
+    <div className="text-[14px] font-bold text-text-secondary">
       {children}
     </div>
   );

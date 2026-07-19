@@ -82,7 +82,7 @@ export function Header() {
             <ThemeToggle />
             <Link
               to="/inventory"
-              className="hidden rounded-md bg-champagne px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:bg-champagne/90 hover:shadow-lg hover:shadow-champagne/20 btn-shine md:block"
+              className="hidden rounded-md bg-gold-ui px-5 py-2.5 text-[14px] font-bold text-white transition-all duration-300 hover:bg-gold-ui/90 hover:shadow-lg hover:shadow-gold-ui/20 btn-shine md:block"
             >
               View Inventory
             </Link>
@@ -146,7 +146,7 @@ export function Header() {
           <Link
             to="/inventory"
             onClick={() => setMobileOpen(false)}
-            className={`mt-4 rounded-md bg-champagne px-8 py-3 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-500 ${
+            className={`mt-4 rounded-md bg-gold-ui px-8 py-3 text-[15px] font-bold text-white transition-all duration-500 ${
               mobileOpen
                 ? "translate-y-0 opacity-100"
                 : "translate-y-4 opacity-0"
@@ -200,7 +200,7 @@ export function Footer() {
           </div>
         </div>
         <div>
-          <div className="text-xs font-semibold uppercase tracking-widest text-champagne">
+          <div className="text-[15px] font-bold text-text-primary">
             Explore
           </div>
           <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
@@ -239,7 +239,7 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <div className="text-xs font-semibold uppercase tracking-widest text-champagne">
+          <div className="text-[15px] font-bold text-text-primary">
             Visit
           </div>
           <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
@@ -249,7 +249,7 @@ export function Footer() {
           </ul>
         </div>
         <div>
-          <div className="text-xs font-semibold uppercase tracking-widest text-champagne">
+          <div className="text-[15px] font-bold text-text-primary">
             Reach us
           </div>
           <ul className="mt-4 space-y-3 text-sm text-muted-foreground">

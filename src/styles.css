@@ -56,8 +56,8 @@
 :root {
   --radius: 0.5rem;
 
-  --font-display-family: "Playfair Display", ui-serif, Georgia, serif;
-  --font-sans-family: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-display-family: "Inter", system-ui, sans-serif;
+  --font-sans-family: "Inter", system-ui, sans-serif;
 
   /* --- LIGHT MODE (Crisp, airy, premium) --- */
   --bg: #FAF7F1;           /* cream background */

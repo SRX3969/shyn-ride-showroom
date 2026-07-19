@@ -178,13 +178,13 @@ function CarDetailContent({ car }: { car: any }) {
             )}
 
             {/* Image counter */}
-            <div className="absolute bottom-4 right-4 glass rounded-lg px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-foreground/80">
+            <div className="absolute bottom-4 right-4 glass rounded-lg px-3 py-1.5 text-[13px] font-bold text-foreground/80">
               {active + 1} / {car.images.length}
             </div>
 
             {/* Status badge */}
             {car.status !== "available" && (
-              <div className="absolute left-4 top-4 z-10 rounded-lg glass px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-champagne">
+              <div className="absolute left-4 top-4 z-10 rounded-lg glass px-4 py-2 text-[13px] font-bold text-text-primary">
                 {car.status}
               </div>
             )}
@@ -217,24 +217,24 @@ function CarDetailContent({ car }: { car: any }) {
         {/* Info */}
         <aside className="lg:col-span-2">
           <RevealSection direction="right">
-            <div className="text-[11px] font-bold uppercase tracking-[0.35em] text-champagne">
+            <div className="text-[15px] font-semibold text-text-secondary">
               {car.make}
             </div>
-            <h1 className="mt-3 font-display text-4xl leading-tight">
+            <h1 className="mt-3 font-bold text-4xl leading-tight text-text-primary">
               {car.model}
               {car.variant && (
-                <span className="mt-1 block text-lg font-normal text-muted-foreground/60">
+                <span className="mt-1 block text-lg font-normal text-text-secondary">
                   {car.variant}
                 </span>
               )}
             </h1>
 
             <div className="mt-8 flex items-end gap-4">
-              <div className="tabular font-display text-4xl text-gradient-gold">
+              <div className="tabular font-bold text-4xl text-text-primary">
                 {formatINR(car.price_inr)}
               </div>
               {car.price_negotiable && (
-                <div className="mb-1 rounded-md bg-champagne/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-champagne/70">
+                <div className="mb-1 rounded-md border border-border bg-surface px-2.5 py-1 text-[13px] font-medium text-text-secondary">
                   Negotiable
                 </div>
               )}
@@ -244,9 +244,9 @@ function CarDetailContent({ car }: { car: any }) {
             <div className="mt-6 flex gap-2">
               <a
                 href="tel:+910000000000"
-                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-champagne px-4 py-3.5 text-[10px] font-bold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:shadow-lg hover:shadow-champagne/20 btn-shine"
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gold-ui px-4 py-3.5 text-[15px] font-bold text-white transition-all duration-300 hover:shadow-lg hover:shadow-gold-ui/20 btn-shine"
               >
-                <Phone className="h-3.5 w-3.5" />
+                <Phone className="h-4 w-4" />
                 Call now
               </a>
               <button
@@ -271,7 +271,7 @@ function CarDetailContent({ car }: { car: any }) {
                     <Icon className="h-3.5 w-3.5" />
                   </div>
                   <div>
-                    <dt className="text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">
+                    <dt className="text-[13px] font-medium text-text-secondary">
                       {label}
                     </dt>
                     <dd className="mt-0.5 text-sm text-foreground tabular">
@@ -291,7 +291,7 @@ function CarDetailContent({ car }: { car: any }) {
       {car.description && (
         <RevealSection>
           <section className="mt-24 grid grid-cols-1 gap-12 border-t border-border/20 pt-16 md:grid-cols-3">
-            <div className="text-[11px] font-bold uppercase tracking-[0.35em] text-champagne">
+            <div className="text-[15px] font-bold text-text-secondary">
               About this car
             </div>
             <p className="whitespace-pre-line text-base leading-relaxed text-foreground/70 md:col-span-2">
