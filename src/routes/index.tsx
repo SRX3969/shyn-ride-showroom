@@ -136,18 +136,23 @@ function HeroSection() {
           {HERO_SLIDES.map((slide, index) => (
             <div
               key={index}
-              className="relative min-w-0 flex-[0_0_100%] h-full w-full"
+              className="relative min-w-0 flex-[0_0_100%] h-full w-full overflow-hidden"
             >
-              <img
-                src={slide.src}
-                alt={slide.alt}
-                width={1920}
-                height={1080}
-                className="h-full w-full object-cover transition-transform duration-[10000ms] ease-linear"
-                style={{
-                  transform: `translateY(${offset}px) scale(${selectedIndex === index ? 1.05 : 1})`,
-                }}
-              />
+              <div 
+                className="h-full w-full"
+                style={{ transform: `translateY(${offset}px)` }}
+              >
+                <img
+                  src={slide.src}
+                  alt={slide.alt}
+                  width={1920}
+                  height={1080}
+                  className="h-full w-full object-cover transition-transform duration-[10000ms] ease-linear"
+                  style={{
+                    transform: `scale(${selectedIndex === index ? 1.05 : 1})`,
+                  }}
+                />
+              </div>
             </div>
           ))}
         </div>
