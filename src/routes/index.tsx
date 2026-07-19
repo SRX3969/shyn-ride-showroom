@@ -255,9 +255,9 @@ function BrandMarquee() {
         {[...brands, ...brands].map((brand, i) => (
           <span
             key={i}
-            className="mx-10 inline-flex items-center gap-3 font-display text-base tracking-[0.15em] text-muted-foreground/30 transition-colors duration-500 hover:text-champagne/70 md:text-lg"
+            className="mx-10 inline-flex items-center gap-3 font-display text-base tracking-[0.15em] text-foreground/60 transition-colors duration-500 hover:text-champagne md:text-lg"
           >
-            <span className="h-1 w-1 rounded-full bg-champagne/20" />
+            <span className="h-1 w-1 rounded-full bg-champagne/60" />
             {brand}
           </span>
         ))}
