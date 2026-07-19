@@ -26,6 +26,8 @@ import {
   Eye,
   FileCheck,
   Truck,
+  Search,
+  ClipboardCheck,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
