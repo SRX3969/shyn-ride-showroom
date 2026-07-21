@@ -1,18 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { formatINR, formatKm } from "@/lib/utils";
 import { Plus, Edit2, Trash2, Search, Filter, MessageSquare, ChevronLeft, ChevronRight, Check } from "lucide-react";
 import { toast } from "sonner";
 import { CarFormModal } from "@/components/admin/car-form";
 import { formatDistanceToNow } from "date-fns";
+import { getSessionToken } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/inventory")({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      editCarId: search.editCarId as string | undefined,
+    };
+  },
   component: AdminInventoryPage,
 });
 
 function AdminInventoryPage() {
+  const searchParams = Route.useSearch();
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [search, setSearch] = useState("");
@@ -23,7 +30,10 @@ function AdminInventoryPage() {
   const [editingCar, setEditingCar] = useState<any | null>(null);
   const [isAdding, setIsAdding] = useState(false);
 
+  const token = getSessionToken() || "";
+
   const inventory = useQuery(api.inventory.list, { 
+    token,
     page, 
     limit, 
     search: search || undefined, 
@@ -36,10 +46,19 @@ function AdminInventoryPage() {
   const updateStatus = useMutation(api.inventory.updateStatus);
   const bulkUpdateStatus = useMutation(api.inventory.bulkUpdateStatus);
 
+  useEffect(() => {
+    if (searchParams.editCarId && inventory && !editingCar) {
+      const carToEdit = inventory.items.find((c: any) => c._id === searchParams.editCarId);
+      if (carToEdit) {
+        setEditingCar(carToEdit);
+      }
+    }
+  }, [searchParams.editCarId, inventory]);
+
   const handleBulkStatus = async (status: string) => {
     if (selectedIds.size === 0) return;
     try {
-      await bulkUpdateStatus({ ids: Array.from(selectedIds) as any, status });
+      await bulkUpdateStatus({ token, ids: Array.from(selectedIds) as any, status });
       toast.success(`Updated ${selectedIds.size} cars to ${status}`);
       setSelectedIds(new Set());
     } catch (err) {
@@ -52,7 +71,7 @@ function AdminInventoryPage() {
     if (!confirm(`Are you sure you want to delete ${selectedIds.size} cars? This action cannot be undone from the UI.`)) return;
     
     try {
-      await bulkSoftDelete({ ids: Array.from(selectedIds) as any });
+      await bulkSoftDelete({ token, ids: Array.from(selectedIds) as any });
       toast.success(`Deleted ${selectedIds.size} cars`);
       setSelectedIds(new Set());
     } catch (err) {
@@ -217,7 +236,7 @@ function AdminInventoryPage() {
                   <td className="px-6 py-4">
                     <select
                       value={car.status}
-                      onChange={(e) => updateStatus({ id: car._id, status: e.target.value })}
+                      onChange={(e) => updateStatus({ token, id: car._id, status: e.target.value })}
                       className={`rounded-md px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer ${
                         car.status === "available"
                           ? "bg-gold-ui/10 text-gold-ui border border-gold-ui/20"
@@ -252,7 +271,7 @@ function AdminInventoryPage() {
                       <button
                         onClick={() => {
                           if (confirm(`Remove ${car.make} ${car.model}? This removes it from the public site.`)) {
-                            softDelete({ id: car._id });
+                            softDelete({ token, id: car._id });
                           }
                         }}
                         className="p-2 text-text-tertiary hover:text-red-500 hover:bg-red-500/10 rounded-md transition-colors"

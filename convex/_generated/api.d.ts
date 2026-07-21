@@ -12,9 +12,12 @@ import type * as admin from "../admin.js";
 import type * as cars from "../cars.js";
 import type * as dashboard from "../dashboard.js";
 import type * as enquiries from "../enquiries.js";
+import type * as faqs from "../faqs.js";
 import type * as inventory from "../inventory.js";
+import type * as lib_requireAdmin from "../lib/requireAdmin.js";
 import type * as reports from "../reports.js";
 import type * as seed from "../seed.js";
+import type * as settings from "../settings.js";
 import type * as siteContent from "../siteContent.js";
 
 import type {
@@ -28,9 +31,12 @@ declare const fullApi: ApiFromModules<{
   cars: typeof cars;
   dashboard: typeof dashboard;
   enquiries: typeof enquiries;
+  faqs: typeof faqs;
   inventory: typeof inventory;
+  "lib/requireAdmin": typeof lib_requireAdmin;
   reports: typeof reports;
   seed: typeof seed;
+  settings: typeof settings;
   siteContent: typeof siteContent;
 }>;
 

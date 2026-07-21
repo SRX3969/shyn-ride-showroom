@@ -16,3 +16,15 @@ export function formatINR(amount: number): string {
 export function formatKm(km: number): string {
   return new Intl.NumberFormat("en-IN").format(km) + " km";
 }
+
+export function calculateEMI(price: number, downPaymentPct: number, annualRatePct: number, tenureMonths: number): number {
+  if (!price || price <= 0) return 0;
+  const principal = price * (1 - downPaymentPct / 100);
+  const r = annualRatePct / 12 / 100;
+  const n = tenureMonths;
+  
+  if (r === 0) return principal / n;
+  
+  const emi = (principal * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+  return Math.round(emi);
+}

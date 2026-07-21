@@ -2,6 +2,7 @@ import { mutation, query, action } from "./_generated/server";
 import { api } from "./_generated/api";
 import { v } from "convex/values";
 import bcrypt from "bcryptjs";
+import { requireAdmin } from "./lib/requireAdmin";
 
 // Queries
 
@@ -54,6 +55,7 @@ export const createSession = mutation({
 export const logout = mutation({
   args: { token: v.string() },
   handler: async (ctx, { token }) => {
+    await requireAdmin(ctx, token);
     const session = await ctx.db
       .query("sessions")
       .withIndex("by_token", (q) => q.eq("token", token))
@@ -136,9 +138,14 @@ export const bootstrapAdmin = action({
 });
 
 export const createAdminUser = mutation({
-  args: { username: v.string(), password_hash: v.string(), role: v.string() },
+  args: { token: v.string(), username: v.string(), password_hash: v.string(), role: v.string() },
   handler: async (ctx, args) => {
-    await ctx.db.insert("admin_users", args);
+    await requireAdmin(ctx, args.token);
+    await ctx.db.insert("admin_users", {
+      username: args.username,
+      password_hash: args.password_hash,
+      role: args.role
+    });
   },
 });
 
@@ -179,14 +186,18 @@ export const login = action({
 });
 
 export const listAdmins = query({
-  handler: async (ctx) => {
-    return await ctx.db.query("admin_users").collect();
+  args: { token: v.string() },
+  handler: async (ctx, { token }) => {
+    await requireAdmin(ctx, token);
+    const admins = await ctx.db.query("admin_users").collect();
+    return admins.map(({ password_hash, ...safe }) => safe);
   },
 });
 
 export const deleteAdmin = mutation({
-  args: { id: v.id("admin_users") },
-  handler: async (ctx, { id }) => {
+  args: { token: v.string(), id: v.id("admin_users") },
+  handler: async (ctx, { token, id }) => {
+    await requireAdmin(ctx, token);
     // Prevent deleting the last owner
     const allAdmins = await ctx.db.query("admin_users").collect();
     const target = await ctx.db.get(id);
@@ -204,16 +215,17 @@ export const deleteAdmin = mutation({
 });
 
 export const changePassword = action({
-  args: { id: v.id("admin_users"), new_password: v.string() },
-  handler: async (ctx, { id, new_password }) => {
+  args: { token: v.string(), id: v.id("admin_users"), new_password: v.string() },
+  handler: async (ctx, { token, id, new_password }) => {
     const password_hash = await bcrypt.hash(new_password, 12);
-    await ctx.runMutation(api.admin.updateAdminPassword, { id, password_hash });
+    await ctx.runMutation(api.admin.updateAdminPassword, { token, id, password_hash });
   },
 });
 
 export const updateAdminPassword = mutation({
-  args: { id: v.id("admin_users"), password_hash: v.string() },
-  handler: async (ctx, { id, password_hash }) => {
+  args: { token: v.string(), id: v.id("admin_users"), password_hash: v.string() },
+  handler: async (ctx, { token, id, password_hash }) => {
+    await requireAdmin(ctx, token);
     await ctx.db.patch(id, { password_hash });
   },
 });

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { formatINR } from "@/lib/utils";
@@ -21,14 +21,16 @@ import {
   ResponsiveContainer 
 } from "recharts";
 import { formatDistanceToNow } from "date-fns";
+import { getSessionToken } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminDashboard,
 });
 
 function AdminDashboard() {
-  const stats = useQuery(api.dashboard.getStats);
-  const activity = useQuery(api.dashboard.getRecentActivity);
+  const token = getSessionToken() || "";
+  const stats = useQuery(api.dashboard.getStats, { token });
+  const activity = useQuery(api.dashboard.getRecentActivity, { token });
 
   if (stats === undefined || activity === undefined) {
     return (
@@ -156,6 +158,13 @@ function AdminDashboard() {
                       <p className="text-sm font-medium text-text-primary">{car.make} {car.model}</p>
                       <p className="text-xs text-text-secondary mt-1">Listed for {car.daysListed} days • 0 enquiries</p>
                     </div>
+                    <Link
+                      to="/admin/inventory"
+                      search={{ editCarId: car.id }}
+                      className="text-xs font-bold bg-gold-ui/10 text-gold-ui hover:bg-gold-ui hover:text-white px-3 py-1.5 rounded-lg transition-colors border border-gold-ui/20 whitespace-nowrap"
+                    >
+                      Mark as Limited Offer
+                    </Link>
                   </div>
                 ))
               )}

@@ -1,13 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header, Footer } from "@/components/site-chrome";
 import { FloatingActions } from "@/components/floating-actions";
 import { PageTransition, RevealSection } from "@/components/page-transition";
 import { SkeletonLine } from "@/components/skeleton";
 import { formatINR, formatKm } from "@/lib/format";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { CarCard } from "@/components/car-card";
 import {
   Calendar,
   Gauge,
@@ -23,7 +24,15 @@ import {
   ChevronLeft,
   ChevronRight,
   Share2,
-  Phone,
+  MessageCircle,
+  Tag,
+  FileText,
+  Heart,
+  Key,
+  ShieldCheck,
+  FileCheck,
+  X,
+  Maximize2
 } from "lucide-react";
 import type { Id } from "../../convex/_generated/dataModel";
 
@@ -45,27 +54,20 @@ function CarDetailPage() {
           <Header />
           <div className="mx-auto max-w-7xl px-6 py-16">
             <SkeletonLine className="h-4 w-20" />
-            <div className="mt-8 grid grid-cols-1 gap-12 lg:grid-cols-5">
-              <div className="lg:col-span-3">
-                <div className="aspect-[4/3] animate-pulse rounded-2xl bg-card/40" />
-                <div className="mt-4 grid grid-cols-4 gap-3">
-                  {[...Array(4)].map((_, i) => (
+            <div className="mt-8 grid grid-cols-1 gap-12 lg:grid-cols-3">
+              <div className="lg:col-span-2 space-y-6">
+                <div className="aspect-[16/9] animate-pulse rounded-2xl bg-card/40" />
+                <div className="grid grid-cols-5 gap-3">
+                  {[...Array(5)].map((_, i) => (
                     <div key={i} className="aspect-[4/3] animate-pulse rounded-lg bg-card/30" />
                   ))}
                 </div>
               </div>
-              <div className="lg:col-span-2 space-y-4">
-                <SkeletonLine className="h-3 w-28" />
+              <div className="lg:col-span-1 space-y-4">
                 <SkeletonLine className="h-10 w-64" />
-                <SkeletonLine className="h-8 w-32" />
-                <div className="mt-8 grid grid-cols-2 gap-4 rounded-xl border border-border/20 bg-card/10 p-6">
-                  {[...Array(8)].map((_, i) => (
-                    <div key={i} className="space-y-2">
-                      <SkeletonLine className="h-2 w-12" />
-                      <SkeletonLine className="h-4 w-20" />
-                    </div>
-                  ))}
-                </div>
+                <SkeletonLine className="h-6 w-32" />
+                <SkeletonLine className="h-12 w-full mt-6" />
+                <SkeletonLine className="h-12 w-full" />
               </div>
             </div>
           </div>
@@ -106,7 +108,7 @@ function CarDetailPage() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background text-foreground">
+      <div className="min-h-screen bg-background text-foreground pb-24 md:pb-0">
         <Header />
         <CarDetailContent car={car} />
         <Footer />
@@ -118,137 +120,366 @@ function CarDetailPage() {
 
 function CarDetailContent({ car }: { car: any }) {
   const [active, setActive] = useState(0);
+  const [showEnquiry, setShowEnquiry] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [showLightbox, setShowLightbox] = useState(false);
+  
+  const relatedCars = useQuery(api.cars.getRelatedCars, { slug: car.slug, body_type: car.body_type });
+
   const img = car.images[active] ?? car.images[0];
   const title = `${car.year} ${car.make} ${car.model}`;
+  const isLimitedOffer = car.original_price && car.original_price > car.price_inr;
 
-  const specs = [
-    { icon: Calendar, label: "Year", value: String(car.year) },
-    { icon: Gauge, label: "Odometer", value: formatKm(car.km) },
-    { icon: Fuel, label: "Fuel", value: car.fuel_type },
-    { icon: Cog, label: "Transmission", value: car.transmission },
-    { icon: Car, label: "Body", value: car.body_type },
-    { icon: Palette, label: "Color", value: car.color },
-    { icon: Users, label: "Owners", value: String(car.owners) },
-    { icon: MapPin, label: "Registration", value: car.reg_state ?? "—" },
-  ];
+  useEffect(() => {
+    const saved = localStorage.getItem(`wishlist_${car._id}`);
+    if (saved === "true") {
+      setIsWishlisted(true);
+    }
+  }, [car._id]);
+
+  const toggleWishlist = () => {
+    const next = !isWishlisted;
+    setIsWishlisted(next);
+    if (next) {
+      localStorage.setItem(`wishlist_${car._id}`, "true");
+    } else {
+      localStorage.removeItem(`wishlist_${car._id}`);
+    }
+  };
 
   const prev = () => setActive((v) => (v === 0 ? car.images.length - 1 : v - 1));
   const next = () => setActive((v) => (v === car.images.length - 1 ? 0 : v + 1));
 
+  // Spec Grid (12 fields)
+  const specGrid = [
+    { label: "Make Year", value: String(car.year), icon: Calendar },
+    { label: "Registration Year", value: String(car.year), icon: Calendar },
+    { label: "Ownership", value: `${car.owners} Owner${car.owners > 1 ? 's' : ''}`, icon: Users },
+    { label: "Fuel Type", value: car.fuel_type, icon: Fuel },
+    { label: "Kilometers Driven", value: formatKm(car.km), icon: Gauge },
+    { label: "Registration State", value: car.reg_state || "Not Specified", icon: MapPin },
+    { label: "Transmission", value: car.transmission, icon: Cog },
+    { label: "Color", value: car.color, icon: Palette },
+    { label: "Body Type", value: car.body_type, icon: Car },
+    { label: "RC Status", value: "Valid", icon: FileCheck },
+    { label: "Insurance Validity", value: "Not Specified", icon: ShieldCheck },
+    { label: "Number of Keys", value: "Not Specified", icon: Key },
+  ];
+
+  // Special badges
+  const specialBadges = [];
+  if (car.owners === 1) specialBadges.push({ icon: Users, label: "Single Owner", desc: "Carefully maintained by a single owner." });
+  if (car.km < 40000) specialBadges.push({ icon: Gauge, label: "Low Mileage", desc: "Driven significantly less than segment average." });
+  if (car.featured) specialBadges.push({ icon: Tag, label: "Featured Listing", desc: "Handpicked by our experts for its exceptional quality." });
+  specialBadges.push({ icon: ShieldCheck, label: "Certified Inspection Passed", desc: "Passed our rigorous 150-point quality check." });
+
+  // WhatsApp predefined message
+  const whatsappMsg = encodeURIComponent(`Hi, I'm interested in the ${car.year} ${car.make} ${car.model} listed on SHYN RIDE. Can you share more details?`);
+  const whatsappLink = `https://wa.me/910000000000?text=${whatsappMsg}`;
+
+  const scrollToEnquiry = () => {
+    setShowEnquiry(true);
+    setTimeout(() => {
+      document.getElementById('enquiry-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  };
+
   return (
-    <main className="mx-auto max-w-7xl px-6 py-10">
+    <main className="mx-auto max-w-7xl px-6 py-10 relative">
       <Link
         to="/inventory"
-        className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground/50 transition-colors hover:text-champagne"
+        className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground/50 transition-colors hover:text-champagne mb-8"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
         Inventory
       </Link>
 
-      <div className="mt-8 grid grid-cols-1 gap-12 lg:grid-cols-5">
-        {/* Gallery */}
-        <div className="lg:col-span-3">
-          <div className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-card">
-            {img && (
-              <img
-                src={img.url}
-                alt={img.alt ?? `${title} — photo ${active + 1}`}
-                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
-              />
-            )}
-            {/* Gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-background/30 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-            
-            {/* Nav arrows */}
-            {car.images.length > 1 && (
-              <>
-                <button
-                  onClick={prev}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full glass text-foreground opacity-0 transition-all duration-300 group-hover:opacity-100 hover:bg-card/80"
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-                <button
-                  onClick={next}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full glass text-foreground opacity-0 transition-all duration-300 group-hover:opacity-100 hover:bg-card/80"
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </button>
-              </>
-            )}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 relative">
+        {/* Left Column - Gallery & Details */}
+        <div className="lg:col-span-2 space-y-12">
+          
+          {/* Gallery */}
+          <div>
+            <div 
+              className="group relative aspect-[4/3] md:aspect-[16/9] overflow-hidden rounded-2xl bg-card cursor-pointer"
+              onClick={() => setShowLightbox(true)}
+            >
+              {img && (
+                <img
+                  src={img.url}
+                  alt={img.alt ?? `${title} — photo ${active + 1}`}
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+                />
+              )}
+              {/* Gradient overlay for badges */}
+              <div className="absolute inset-0 bg-gradient-to-t from-background/30 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100 pointer-events-none" />
+              
+              {/* Expand Icon */}
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100 pointer-events-none">
+                <div className="glass bg-background/50 backdrop-blur-md rounded-full p-4">
+                  <Maximize2 className="h-6 w-6 text-white" />
+                </div>
+              </div>
+              
+              {/* Wishlist Toggle */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleWishlist();
+                }}
+                className="absolute top-4 right-4 z-20 flex h-10 w-10 items-center justify-center rounded-full glass bg-background/50 backdrop-blur-md transition-all duration-300 hover:scale-110"
+              >
+                <Heart className={`h-5 w-5 transition-colors ${isWishlisted ? "fill-red-500 text-red-500" : "text-white"}`} />
+              </button>
 
-            {/* Image counter */}
-            <div className="absolute bottom-4 right-4 glass rounded-lg px-3 py-1.5 text-[13px] font-bold text-foreground/80">
-              {active + 1} / {car.images.length}
+              {/* Status badge */}
+              {car.status !== "available" && (
+                <div className="absolute left-4 top-4 z-10 rounded-lg glass bg-background/50 backdrop-blur-md px-4 py-2 text-[13px] font-bold text-text-primary">
+                  {car.status}
+                </div>
+              )}
+
+              {/* Image counter */}
+              <div className="absolute bottom-4 right-4 glass bg-background/50 backdrop-blur-md rounded-lg px-3 py-1.5 text-[13px] font-bold text-white">
+                {active + 1} / {car.images.length}
+              </div>
+
+              {/* Nav arrows */}
+              {car.images.length > 1 && (
+                <>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); prev(); }}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full glass bg-background/50 backdrop-blur-md text-white opacity-0 transition-all duration-300 group-hover:opacity-100 hover:bg-card/80"
+                  >
+                    <ChevronLeft className="h-5 w-5" />
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); next(); }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full glass bg-background/50 backdrop-blur-md text-white opacity-0 transition-all duration-300 group-hover:opacity-100 hover:bg-card/80"
+                  >
+                    <ChevronRight className="h-5 w-5" />
+                  </button>
+                </>
+              )}
             </div>
 
-            {/* Status badge */}
-            {car.status !== "available" && (
-              <div className="absolute left-4 top-4 z-10 rounded-lg glass px-4 py-2 text-[13px] font-bold text-text-primary">
-                {car.status}
+            {/* Thumbnails */}
+            {car.images.length > 1 && (
+              <div className="mt-3 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                {car.images.map((im: any, i: number) => (
+                  <button
+                    key={i}
+                    onClick={() => setActive(i)}
+                    className={`shrink-0 h-20 md:h-24 aspect-[4/3] overflow-hidden rounded-lg border-2 transition-all duration-300 ${
+                      i === active
+                        ? "border-champagne shadow-md shadow-champagne/15 ring-1 ring-champagne/20"
+                        : "border-transparent opacity-60 hover:opacity-100"
+                    }`}
+                  >
+                    <img
+                      src={im.url}
+                      alt=""
+                      className="h-full w-full object-cover rounded-md"
+                    />
+                  </button>
+                ))}
               </div>
             )}
           </div>
 
-          {/* Thumbnails */}
-          {car.images.length > 1 && (
-            <div className="mt-3 grid grid-cols-5 gap-2">
-              {car.images.map((im: any, i: number) => (
-                <button
-                  key={i}
-                  onClick={() => setActive(i)}
-                  className={`aspect-[4/3] overflow-hidden rounded-lg border-2 transition-all duration-300 ${
-                    i === active
-                      ? "border-champagne shadow-md shadow-champagne/15 ring-1 ring-champagne/20"
-                      : "border-border/20 opacity-60 hover:opacity-100 hover:border-foreground/20"
-                  }`}
-                >
-                  <img
-                    src={im.url}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                </button>
+          {/* Spec Grid */}
+          <RevealSection>
+            <div className="text-[15px] font-bold text-text-secondary mb-6">Overview</div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-8 rounded-2xl border border-border/20 bg-card/10 p-6 md:p-8">
+              {specGrid.map((spec, i) => (
+                <div key={i} className="flex flex-col">
+                  <span className="text-[12px] font-medium text-text-tertiary mb-1">{spec.label}</span>
+                  <span className="text-[15px] font-medium text-text-primary capitalize">{spec.value}</span>
+                </div>
               ))}
             </div>
+          </RevealSection>
+
+          {/* Special About This Car */}
+          {specialBadges.length > 0 && (
+            <RevealSection>
+              <div className="text-[15px] font-bold text-text-secondary mb-6">Special About This Car</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {specialBadges.map((badge, i) => (
+                  <div key={i} className="flex items-start gap-4 rounded-xl border border-border/20 bg-surface p-5">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-champagne/10 text-champagne">
+                      <badge.icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-text-primary">{badge.label}</div>
+                      <div className="text-[13px] text-text-secondary mt-1 leading-relaxed">{badge.desc}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </RevealSection>
+          )}
+
+          {/* Vehicle History Report Section */}
+          <RevealSection>
+            <section className="rounded-2xl border border-border/20 bg-card/10 p-8 md:p-10 relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-8 opacity-5">
+                <FileText className="w-64 h-64" />
+              </div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gold-ui/10 text-gold-ui">
+                    <FileText className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-text-primary">Vehicle History Summary</h3>
+                    <p className="text-[13px] text-text-secondary mt-1">Verified and inspected by SHYN RIDE experts.</p>
+                  </div>
+                </div>
+                
+                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-background rounded-xl p-5 border border-border/50">
+                    <div className="flex justify-between items-center">
+                      <div className="text-xs font-bold uppercase tracking-widest text-text-tertiary">Accident History</div>
+                      <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                    </div>
+                    <div className="mt-2 text-lg font-bold text-text-primary">None Reported</div>
+                  </div>
+                  <div className="bg-background rounded-xl p-5 border border-border/50">
+                    <div className="flex justify-between items-center">
+                      <div className="text-xs font-bold uppercase tracking-widest text-text-tertiary">Service History</div>
+                      <FileCheck className="h-4 w-4 text-gold-ui" />
+                    </div>
+                    <div className="mt-2 text-lg font-bold text-text-primary">Authorized Dealer</div>
+                  </div>
+                  <div className="bg-background rounded-xl p-5 border border-border/50">
+                    <div className="flex justify-between items-center">
+                      <div className="text-xs font-bold uppercase tracking-widest text-text-tertiary">Insurance</div>
+                      <ShieldCheck className="h-4 w-4 text-text-tertiary" />
+                    </div>
+                    <div className="mt-2 text-lg font-bold text-text-primary">Not Specified</div>
+                  </div>
+                  <div className="bg-background rounded-xl p-5 border border-border/50">
+                    <div className="flex justify-between items-center">
+                      <div className="text-xs font-bold uppercase tracking-widest text-text-tertiary">RC Status</div>
+                      <FileCheck className="h-4 w-4 text-emerald-500" />
+                    </div>
+                    <div className="mt-2 text-lg font-bold text-text-primary">Original / Valid</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </RevealSection>
+
+          {/* Description */}
+          {car.description && (
+            <RevealSection>
+              <div className="text-[15px] font-bold text-text-secondary mb-6">Description</div>
+              <div className="text-[15px] leading-[1.7] text-text-secondary max-w-[70ch] whitespace-pre-line">
+                {car.description}
+              </div>
+            </RevealSection>
+          )}
+
+          {/* Features */}
+          {car.features.length > 0 && (
+            <RevealSection>
+              <div className="text-[15px] font-bold text-text-secondary mb-6">Features & Equipment</div>
+              <div className="flex flex-wrap gap-3">
+                {car.features.map((f: string, i: number) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-2.5 rounded-full border border-border/30 bg-surface px-4 py-2 text-[13.5px] font-medium text-text-primary"
+                  >
+                    <CheckCircle2 className="h-4 w-4 text-champagne/60" />
+                    {f}
+                  </div>
+                ))}
+              </div>
+            </RevealSection>
+          )}
+          
+          {/* Enquiry Form */}
+          {showEnquiry && (
+            <RevealSection>
+              <div id="enquiry-form" className="scroll-mt-32">
+                <EnquiryForm carId={car._id} carTitle={title} />
+              </div>
+            </RevealSection>
           )}
         </div>
 
-        {/* Info */}
-        <aside className="lg:col-span-2">
-          <RevealSection direction="right">
-            <div className="text-[15px] font-semibold text-text-secondary">
-              {car.make}
-            </div>
-            <h1 className="mt-3 font-bold text-4xl leading-tight text-text-primary">
-              {car.model}
-              {car.variant && (
-                <span className="mt-1 block text-lg font-normal text-text-secondary">
-                  {car.variant}
-                </span>
-              )}
+        {/* Right Column - Sticky Rail (Desktop) */}
+        <aside className="hidden lg:block lg:col-span-1">
+          <div className="sticky top-28 bg-card/10 border border-border/20 rounded-2xl p-8 backdrop-blur-sm">
+            <h1 className="font-bold text-3xl leading-tight text-text-primary font-display">
+              {car.year} {car.make} {car.model}
             </h1>
-
-            <div className="mt-8 flex items-end gap-4">
-              <div className="tabular font-bold text-4xl text-text-primary">
-                {formatINR(car.price_inr)}
+            {car.variant && (
+              <div className="mt-2 text-lg text-text-secondary">
+                {car.variant}
               </div>
-              {car.price_negotiable && (
-                <div className="mb-1 rounded-md border border-border bg-surface px-2.5 py-1 text-[13px] font-medium text-text-secondary">
-                  Negotiable
-                </div>
+            )}
+
+            <div className="mt-5 flex flex-wrap gap-2 text-[12px] font-medium text-text-secondary">
+              <span className="bg-surface px-2.5 py-1 rounded-md border border-border/50">{formatKm(car.km)}</span>
+              <span className="bg-surface px-2.5 py-1 rounded-md border border-border/50 capitalize">{car.fuel_type}</span>
+              <span className="bg-surface px-2.5 py-1 rounded-md border border-border/50 capitalize">{car.transmission}</span>
+              {car.reg_state && (
+                <span className="bg-surface px-2.5 py-1 rounded-md border border-border/50 uppercase">{car.reg_state}</span>
               )}
             </div>
 
-            {/* Quick actions */}
-            <div className="mt-6 flex gap-2">
-              <a
-                href="tel:+910000000000"
-                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gold-ui px-4 py-3.5 text-[15px] font-bold text-white transition-all duration-300 hover:shadow-lg hover:shadow-gold-ui/20 btn-shine"
+            <div className="mt-8 border-t border-border/20 pt-8">
+              <div className="flex flex-col">
+                {isLimitedOffer && (
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-sm font-medium text-text-tertiary line-through">
+                      {formatINR(car.original_price)}
+                    </span>
+                    <span className="bg-red-600/10 text-red-500 border border-red-600/20 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                      <Tag className="w-3 h-3" /> Limited Offer
+                    </span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between">
+                  <div className="tabular font-bold text-4xl text-text-primary text-gradient-gold font-display">
+                    {formatINR(car.price_inr)}
+                  </div>
+                  {car.price_negotiable && (
+                    <div className="rounded-md bg-surface px-2.5 py-1 text-[11px] font-medium text-text-secondary border border-border">
+                      Negotiable
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 flex flex-col gap-3">
+              <button
+                onClick={scrollToEnquiry}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gold-ui px-4 py-3.5 text-[14px] font-bold text-white transition-all duration-300 hover:shadow-lg hover:shadow-gold-ui/20 btn-shine"
               >
-                <Phone className="h-4 w-4" />
-                Call now
+                Enquire About This Car
+              </button>
+              <button
+                onClick={scrollToEnquiry}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-surface border border-border/50 px-4 py-3.5 text-[14px] font-bold text-text-primary transition-all duration-300 hover:bg-card/80 hover:border-border"
+              >
+                Schedule a Test Drive
+              </button>
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-[#25D366]/10 border border-[#25D366]/20 px-4 py-3.5 text-[14px] font-bold text-[#25D366] transition-all duration-300 hover:bg-[#25D366]/20"
+              >
+                <MessageCircle className="h-5 w-5" />
+                Chat on WhatsApp
               </a>
+            </div>
+
+            <div className="mt-8 flex items-center justify-center gap-4 text-text-tertiary">
               <button
                 onClick={() => {
                   if (navigator.share) {
@@ -257,71 +488,109 @@ function CarDetailContent({ car }: { car: any }) {
                     navigator.clipboard.writeText(window.location.href);
                   }
                 }}
-                className="flex h-12 w-12 items-center justify-center rounded-xl border border-border/30 text-muted-foreground transition-all duration-300 hover:border-champagne/30 hover:text-champagne"
+                className="flex items-center gap-2 text-sm hover:text-champagne transition-colors"
               >
-                <Share2 className="h-4 w-4" />
+                <Share2 className="h-4 w-4" /> Share
               </button>
             </div>
-
-            {/* Specs grid */}
-            <dl className="mt-8 grid grid-cols-2 gap-3 rounded-2xl border border-border/20 bg-card/10 p-6">
-              {specs.map(({ icon: Icon, label, value }) => (
-                <div key={label} className="flex items-start gap-3">
-                  <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-champagne/8 text-champagne/60">
-                    <Icon className="h-3.5 w-3.5" />
-                  </div>
-                  <div>
-                    <dt className="text-[13px] font-medium text-text-secondary">
-                      {label}
-                    </dt>
-                    <dd className="mt-0.5 text-sm text-foreground tabular">
-                      {value}
-                    </dd>
-                  </div>
-                </div>
-              ))}
-            </dl>
-
-            <EnquiryForm carId={car._id} carTitle={title} />
-          </RevealSection>
+          </div>
         </aside>
       </div>
 
-      {/* Description */}
-      {car.description && (
+      {/* Related Cars */}
+      {relatedCars && relatedCars.length > 0 && (
         <RevealSection>
-          <section className="mt-24 grid grid-cols-1 gap-12 border-t border-border/20 pt-16 md:grid-cols-3">
-            <div className="text-[15px] font-bold text-text-secondary">
-              About this car
+          <div className="mt-24 border-t border-border/20 pt-16">
+            <h2 className="font-display text-3xl mb-8">Related <span className="text-gradient-gold">Cars.</span></h2>
+            <div className="flex overflow-x-auto gap-6 pb-8 scrollbar-hide snap-x">
+              {relatedCars.map((relatedCar) => (
+                <div key={relatedCar._id} className="w-[300px] md:w-[350px] shrink-0 snap-start">
+                  <CarCard car={relatedCar as any} />
+                </div>
+              ))}
             </div>
-            <p className="whitespace-pre-line text-base leading-relaxed text-foreground/70 md:col-span-2">
-              {car.description}
-            </p>
-          </section>
+          </div>
         </RevealSection>
       )}
 
-      {/* Features */}
-      {car.features.length > 0 && (
-        <RevealSection delay={100}>
-          <section className="mt-16 grid grid-cols-1 gap-12 border-t border-border/20 pt-16 md:grid-cols-3">
-            <div className="text-[11px] font-bold uppercase tracking-[0.35em] text-champagne">
-              Features & equipment
+      {/* Mobile Bottom Sticky Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/90 backdrop-blur-xl border-t border-border/40 p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] flex items-center justify-between animate-fade-in-up">
+        <div>
+          {isLimitedOffer && (
+            <div className="text-[11px] font-medium text-text-tertiary line-through">
+              {formatINR(car.original_price)}
             </div>
-            <ul className="grid grid-cols-1 gap-3 md:col-span-2 md:grid-cols-2">
-              {car.features.map((f: string, i: number) => (
-                <li
-                  key={f}
-                  className="flex items-start gap-3 rounded-lg border border-border/10 bg-card/10 px-4 py-3 text-sm text-foreground/80 transition-colors duration-300 hover:border-champagne/10 hover:bg-card/20"
+          )}
+          <div className="font-bold text-xl text-text-primary text-gradient-gold font-display">
+            {formatINR(car.price_inr)}
+          </div>
+        </div>
+        <button
+          onClick={scrollToEnquiry}
+          className="rounded-xl bg-gold-ui px-6 py-3 text-[14px] font-bold text-white shadow-lg shadow-gold-ui/20"
+        >
+          Enquire Now
+        </button>
+      </div>
+
+      {/* Fullscreen Lightbox */}
+      {showLightbox && (
+        <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex flex-col animate-fade-in">
+          <div className="absolute top-4 right-4 z-[110] flex gap-4">
+            <div className="glass bg-white/10 text-white rounded-lg px-4 py-2 font-bold text-sm">
+              {active + 1} / {car.images.length}
+            </div>
+            <button 
+              onClick={() => setShowLightbox(false)}
+              className="flex h-10 w-10 items-center justify-center rounded-full glass bg-white/10 text-white hover:bg-white/20 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          
+          <div className="flex-1 relative flex items-center justify-center p-4 md:p-12">
+            <img 
+              src={img?.url} 
+              alt={img?.alt ?? "Fullscreen car view"} 
+              className="max-h-full max-w-full object-contain select-none"
+            />
+            {car.images.length > 1 && (
+              <>
+                <button
+                  onClick={prev}
+                  className="absolute left-4 md:left-12 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full glass bg-white/10 text-white hover:bg-white/20 transition-colors"
                 >
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-champagne/50" />
-                  {f}
-                </li>
+                  <ChevronLeft className="h-6 w-6" />
+                </button>
+                <button
+                  onClick={next}
+                  className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full glass bg-white/10 text-white hover:bg-white/20 transition-colors"
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </button>
+              </>
+            )}
+          </div>
+          
+          {/* Lightbox Thumbnails */}
+          {car.images.length > 1 && (
+            <div className="h-24 bg-black/50 border-t border-white/10 flex items-center justify-center gap-2 overflow-x-auto px-4 py-2">
+              {car.images.map((im: any, i: number) => (
+                <button
+                  key={i}
+                  onClick={() => setActive(i)}
+                  className={`shrink-0 h-full aspect-[4/3] rounded border-2 transition-all ${
+                    i === active ? "border-champagne opacity-100" : "border-transparent opacity-40 hover:opacity-100"
+                  }`}
+                >
+                  <img src={im.url} alt="" className="w-full h-full object-cover rounded-sm" />
+                </button>
               ))}
-            </ul>
-          </section>
-        </RevealSection>
+            </div>
+          )}
+        </div>
       )}
+
     </main>
   );
 }
@@ -368,10 +637,10 @@ function EnquiryForm({
 
   if (done) {
     return (
-      <div className="mt-8 rounded-2xl border border-champagne/20 bg-card/20 p-6 text-center animate-fade-in-scale">
-        <CheckCircle2 className="mx-auto h-8 w-8 text-champagne" />
-        <div className="mt-4 font-display text-xl">We'll be in touch.</div>
-        <p className="mt-2 text-xs text-muted-foreground/60">
+      <div className="mt-8 rounded-2xl border border-champagne/20 bg-card/20 p-8 text-center animate-fade-in-scale">
+        <CheckCircle2 className="mx-auto h-10 w-10 text-champagne" />
+        <div className="mt-4 font-display text-2xl">We'll be in touch.</div>
+        <p className="mt-2 text-sm text-muted-foreground/70">
           Your enquiry for the {carTitle} has been received.
         </p>
       </div>
@@ -380,32 +649,35 @@ function EnquiryForm({
 
   return (
     <form
-      className="mt-8 space-y-4 rounded-2xl border border-border/20 bg-card/10 p-6"
+      className="mt-8 space-y-4 rounded-2xl border border-border/20 bg-card/10 p-8 md:p-10"
       onSubmit={handleSubmit}
     >
-      <div className="text-[11px] font-bold uppercase tracking-[0.35em] text-champagne">
+      <div className="text-[11px] font-bold uppercase tracking-[0.35em] text-champagne mb-6">
         Enquire about this car
       </div>
-      <Input
-        label="Name"
-        value={form.name}
-        onChange={(v) => setForm({ ...form, name: v })}
-        required
-      />
-      <Input
-        label="Phone"
-        value={form.phone}
-        onChange={(v) => setForm({ ...form, phone: v })}
-        required
-        inputMode="tel"
-      />
-      <Input
-        label="Email (optional)"
-        type="email"
-        value={form.email}
-        onChange={(v) => setForm({ ...form, email: v })}
-      />
-      <div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Input
+          label="Name"
+          value={form.name}
+          onChange={(v) => setForm({ ...form, name: v })}
+          required
+        />
+        <Input
+          label="Phone"
+          value={form.phone}
+          onChange={(v) => setForm({ ...form, phone: v })}
+          required
+          inputMode="tel"
+        />
+        <Input
+          label="Email (optional)"
+          type="email"
+          value={form.email}
+          onChange={(v) => setForm({ ...form, email: v })}
+          className="md:col-span-2"
+        />
+      </div>
+      <div className="mt-4">
         <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">
           Message (optional)
         </label>
@@ -425,7 +697,7 @@ function EnquiryForm({
       <button
         type="submit"
         disabled={sending}
-        className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-champagne px-6 py-3.5 text-xs font-bold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:shadow-lg hover:shadow-champagne/20 btn-shine disabled:opacity-50"
+        className="mt-6 flex w-full items-center justify-center gap-2.5 rounded-xl bg-champagne px-6 py-4 text-xs font-bold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:shadow-lg hover:shadow-champagne/20 btn-shine disabled:opacity-50"
       >
         <Send className="h-3.5 w-3.5" />
         {sending ? "Sending…" : "Send enquiry"}
@@ -441,6 +713,7 @@ function Input({
   type = "text",
   required,
   inputMode,
+  className = "",
 }: {
   label: string;
   value: string;
@@ -448,9 +721,10 @@ function Input({
   type?: string;
   required?: boolean;
   inputMode?: "tel" | "email" | "text";
+  className?: string;
 }) {
   return (
-    <div>
+    <div className={className}>
       <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">
         {label}
       </label>

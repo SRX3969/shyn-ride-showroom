@@ -4,6 +4,7 @@ import { api } from "../../convex/_generated/api";
 import { formatINR } from "@/lib/utils";
 import { BarChart3, TrendingUp, PieChart, Activity } from "lucide-react";
 import { PieChart as RechartsPie, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import { getSessionToken } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/reports")({
   component: AdminReportsPage,
@@ -12,7 +13,8 @@ export const Route = createFileRoute("/admin/reports")({
 const COLORS = ['#8C6329', '#A67C40', '#C09557', '#DAAE6E', '#F4C785'];
 
 function AdminReportsPage() {
-  const analytics = useQuery(api.reports.getAnalytics);
+  const token = getSessionToken() || "";
+  const analytics = useQuery(api.reports.getAnalytics, { token });
 
   if (analytics === undefined) {
     return (

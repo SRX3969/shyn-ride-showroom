@@ -26,9 +26,7 @@ export const Route = createFileRoute("/faqs")({
 });
 
 function FaqPage() {
-  const siteContent = useQuery(api.siteContent.getAll);
-  const faqs: { q: string; a: string }[] =
-    (siteContent?.faqs as any) ?? [];
+  const faqs = useQuery(api.faqs.list) ?? [];
   const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
 
   return (
@@ -64,7 +62,7 @@ function FaqPage() {
           ) : (
             <div className="mt-16 space-y-0 rounded-2xl border border-border/20 bg-card/10 overflow-hidden">
               {faqs.map((f, i) => (
-                <FaqItem key={i} q={f.q} a={f.a} index={i} isLast={i === faqs.length - 1} />
+                <FaqItem key={i} q={f.question} a={f.answer} index={i} isLast={i === faqs.length - 1} />
               ))}
             </div>
           )}

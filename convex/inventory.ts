@@ -1,17 +1,21 @@
 import { mutation, query, action } from "./_generated/server";
 import { v } from "convex/values";
 import { api } from "./_generated/api";
+import { requireAdmin } from "./lib/requireAdmin";
 
 // Get paginated inventory
 export const list = query({
   args: {
+    token: v.string(),
     status: v.optional(v.string()),
     make: v.optional(v.string()),
     search: v.optional(v.string()),
     page: v.number(),
     limit: v.number(),
   },
-  handler: async (ctx, { status, make, search, page, limit }) => {
+  handler: async (ctx, { token, status, make, search, page, limit }) => {
+    await requireAdmin(ctx, token);
+
     let carsQuery = ctx.db.query("cars").filter((q) => q.neq(q.field("is_deleted"), true));
 
     if (status) {
@@ -72,21 +76,27 @@ export const list = query({
 });
 
 // Create upload URL for drag-and-drop photos
-export const generateUploadUrl = mutation(async (ctx) => {
-  return await ctx.storage.generateUploadUrl();
+export const generateUploadUrl = mutation({
+  args: { token: v.string() },
+  handler: async (ctx, { token }) => {
+    await requireAdmin(ctx, token);
+    return await ctx.storage.generateUploadUrl();
+  }
 });
 
 // Soft Delete
 export const softDelete = mutation({
-  args: { id: v.id("cars") },
-  handler: async (ctx, { id }) => {
+  args: { token: v.string(), id: v.id("cars") },
+  handler: async (ctx, { token, id }) => {
+    await requireAdmin(ctx, token);
     await ctx.db.patch(id, { is_deleted: true });
   }
 });
 
 export const bulkSoftDelete = mutation({
-  args: { ids: v.array(v.id("cars")) },
-  handler: async (ctx, { ids }) => {
+  args: { token: v.string(), ids: v.array(v.id("cars")) },
+  handler: async (ctx, { token, ids }) => {
+    await requireAdmin(ctx, token);
     for (const id of ids) {
       await ctx.db.patch(id, { is_deleted: true });
     }
@@ -94,15 +104,17 @@ export const bulkSoftDelete = mutation({
 });
 
 export const updateStatus = mutation({
-  args: { id: v.id("cars"), status: v.string() },
-  handler: async (ctx, { id, status }) => {
+  args: { token: v.string(), id: v.id("cars"), status: v.string() },
+  handler: async (ctx, { token, id, status }) => {
+    await requireAdmin(ctx, token);
     await ctx.db.patch(id, { status });
   }
 });
 
 export const bulkUpdateStatus = mutation({
-  args: { ids: v.array(v.id("cars")), status: v.string() },
-  handler: async (ctx, { ids, status }) => {
+  args: { token: v.string(), ids: v.array(v.id("cars")), status: v.string() },
+  handler: async (ctx, { token, ids, status }) => {
+    await requireAdmin(ctx, token);
     for (const id of ids) {
       await ctx.db.patch(id, { status });
     }
@@ -111,6 +123,7 @@ export const bulkUpdateStatus = mutation({
 
 export const saveCar = mutation({
   args: {
+    token: v.string(),
     id: v.optional(v.id("cars")),
     slug: v.string(),
     make: v.string(),
@@ -118,6 +131,7 @@ export const saveCar = mutation({
     variant: v.optional(v.string()),
     year: v.number(),
     price_inr: v.number(),
+    original_price: v.optional(v.number()),
     price_negotiable: v.boolean(),
     km: v.number(),
     fuel_type: v.string(),
@@ -146,7 +160,8 @@ export const saveCar = mutation({
     })),
   },
   handler: async (ctx, args) => {
-    const { id, images, ...carData } = args;
+    const { token, id, images, ...carData } = args;
+    await requireAdmin(ctx, token);
     
     let carId = id;
     if (carId) {

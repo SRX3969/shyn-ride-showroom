@@ -86,12 +86,14 @@ export const list = query({
           variant: car.variant ?? null,
           year: car.year,
           price_inr: car.price_inr,
+          original_price: car.original_price ?? null,
           price_negotiable: car.price_negotiable,
           km: car.km,
           fuel_type: car.fuel_type,
           transmission: car.transmission,
           body_type: car.body_type,
           color: car.color,
+          reg_state: car.reg_state ?? null,
           status: car.status,
           featured: car.featured,
           cover_url: images[0]?.url ?? null,
@@ -131,6 +133,7 @@ export const getBySlug = query({
       variant: car.variant ?? null,
       year: car.year,
       price_inr: car.price_inr,
+      original_price: car.original_price ?? null,
       price_negotiable: car.price_negotiable,
       km: car.km,
       fuel_type: car.fuel_type,
@@ -150,6 +153,67 @@ export const getBySlug = query({
         sort_order: img.sort_order,
       })),
     };
+  },
+});
+
+export const getRelatedCars = query({
+  args: { 
+    slug: v.string(),
+    body_type: v.string(),
+    limit: v.optional(v.number())
+  },
+  handler: async (ctx, args) => {
+    let cars = await ctx.db
+      .query("cars")
+      .withIndex("by_body_type", (q) => q.eq("body_type", args.body_type))
+      .collect();
+
+    // Filter out the current car and any deleted ones
+    cars = cars.filter(c => c.slug !== args.slug && !c.deleted_at && !c.is_deleted);
+    
+    // Sort by newest
+    cars.sort(
+      (a, b) =>
+        new Date(b._creationTime).getTime() -
+        new Date(a._creationTime).getTime(),
+    );
+
+    // Limit
+    const limit = args.limit ?? 4;
+    cars = cars.slice(0, limit);
+
+    // Attach cover images
+    const result = await Promise.all(
+      cars.map(async (car) => {
+        const images = await ctx.db
+          .query("car_images")
+          .withIndex("by_car", (q) => q.eq("car_id", car._id))
+          .collect();
+        images.sort((a, b) => a.sort_order - b.sort_order);
+        return {
+          _id: car._id,
+          slug: car.slug,
+          make: car.make,
+          model: car.model,
+          variant: car.variant ?? null,
+          year: car.year,
+          price_inr: car.price_inr,
+          original_price: car.original_price ?? null,
+          price_negotiable: car.price_negotiable,
+          km: car.km,
+          fuel_type: car.fuel_type,
+          transmission: car.transmission,
+          body_type: car.body_type,
+          color: car.color,
+          reg_state: car.reg_state ?? null,
+          status: car.status,
+          featured: car.featured,
+          cover_url: images[0]?.url ?? null,
+        };
+      })
+    );
+
+    return result;
   },
 });
 
@@ -176,14 +240,17 @@ export const listSlugs = query({
 });
 
 import { mutation } from "./_generated/server";
+import { requireAdmin } from "./lib/requireAdmin";
 
 export const create = mutation({
   args: {
+    token: v.string(),
     make: v.string(),
     model: v.string(),
     variant: v.optional(v.string()),
     year: v.number(),
     price_inr: v.number(),
+    original_price: v.optional(v.number()),
     price_negotiable: v.boolean(),
     km: v.number(),
     fuel_type: v.string(),
@@ -197,7 +264,8 @@ export const create = mutation({
     images: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
-    const { images, ...carData } = args;
+    const { token, images, ...carData } = args;
+    await requireAdmin(ctx, token);
     const slug = `${carData.year}-${carData.make}-${carData.model}-${Math.random().toString(36).slice(2, 6)}`.toLowerCase().replace(/[^a-z0-9]+/g, "-");
     const carId = await ctx.db.insert("cars", {
       ...carData,
@@ -224,12 +292,14 @@ export const create = mutation({
 
 export const update = mutation({
   args: {
+    token: v.string(),
     id: v.id("cars"),
     make: v.string(),
     model: v.string(),
     variant: v.optional(v.string()),
     year: v.number(),
     price_inr: v.number(),
+    original_price: v.optional(v.number()),
     price_negotiable: v.boolean(),
     km: v.number(),
     fuel_type: v.string(),
@@ -243,7 +313,8 @@ export const update = mutation({
     images: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
-    const { id, images, ...rest } = args;
+    const { token, id, images, ...rest } = args;
+    await requireAdmin(ctx, token);
     await ctx.db.patch(id, rest);
 
     if (images !== undefined) {
@@ -272,22 +343,25 @@ export const update = mutation({
 });
 
 export const updateStatus = mutation({
-  args: { id: v.id("cars"), status: v.string() },
+  args: { token: v.string(), id: v.id("cars"), status: v.string() },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx, args.token);
     await ctx.db.patch(args.id, { status: args.status });
   }
 });
 
 export const toggleFeatured = mutation({
-  args: { id: v.id("cars"), featured: v.boolean() },
+  args: { token: v.string(), id: v.id("cars"), featured: v.boolean() },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx, args.token);
     await ctx.db.patch(args.id, { featured: args.featured });
   }
 });
 
 export const remove = mutation({
-  args: { id: v.id("cars") },
+  args: { token: v.string(), id: v.id("cars") },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx, args.token);
     await ctx.db.patch(args.id, { deleted_at: new Date().toISOString() });
   }
 });

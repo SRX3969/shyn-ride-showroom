@@ -9,6 +9,7 @@ export default defineSchema({
     variant: v.optional(v.string()),
     year: v.number(),
     price_inr: v.number(),
+    original_price: v.optional(v.number()),
     price_negotiable: v.boolean(),
     km: v.number(),
     fuel_type: v.string(),
@@ -88,4 +89,19 @@ export default defineSchema({
     successful: v.boolean(),
   }).index("by_username", ["username"])
     .index("by_ip", ["ip"]),
+
+  site_settings: defineTable({
+    emiDownPaymentPct: v.number(),
+    emiAnnualRatePct: v.number(),
+    emiTenureMonths: v.number(),
+    address: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    workingHours: v.optional(v.string()),
+  }),
+
+  faqs: defineTable({
+    question: v.string(),
+    answer: v.string(),
+    order: v.number(),
+  }),
 });

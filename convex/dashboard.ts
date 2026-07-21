@@ -1,9 +1,12 @@
 import { query } from "./_generated/server";
 import { v } from "convex/values";
+import { requireAdmin } from "./lib/requireAdmin";
 import { subMonths, startOfMonth, endOfMonth, subWeeks } from "date-fns";
 
 export const getStats = query({
-  handler: async (ctx) => {
+  args: { token: v.string() },
+  handler: async (ctx, { token }) => {
+    await requireAdmin(ctx, token);
     const allCars = await ctx.db.query("cars").filter((q) => q.neq(q.field("is_deleted"), true)).collect();
     const allEnquiries = await ctx.db.query("enquiries").collect();
 
@@ -90,7 +93,9 @@ export const getStats = query({
 });
 
 export const getRecentActivity = query({
-  handler: async (ctx) => {
+  args: { token: v.string() },
+  handler: async (ctx, { token }) => {
+    await requireAdmin(ctx, token);
     return await ctx.db
       .query("activity_logs")
       .order("desc")

@@ -1,7 +1,11 @@
 import { query } from "./_generated/server";
+import { v } from "convex/values";
+import { requireAdmin } from "./lib/requireAdmin";
 
 export const getLedger = query({
-  handler: async (ctx) => {
+  args: { token: v.string() },
+  handler: async (ctx, { token }) => {
+    await requireAdmin(ctx, token);
     // Only return cars that have purchase_price OR are sold
     const cars = await ctx.db.query("cars")
       .filter((q) => q.neq(q.field("is_deleted"), true))
@@ -42,7 +46,9 @@ export const getLedger = query({
 });
 
 export const getAnalytics = query({
-  handler: async (ctx) => {
+  args: { token: v.string() },
+  handler: async (ctx, { token }) => {
+    await requireAdmin(ctx, token);
     const cars = await ctx.db.query("cars")
       .filter((q) => q.neq(q.field("is_deleted"), true))
       .collect();

@@ -4,13 +4,15 @@ import { api } from "../../convex/_generated/api";
 import { useState } from "react";
 import { MessageSquare, Car, Phone, Mail, Clock, CheckCircle2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { getSessionToken } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/enquiries")({
   component: AdminEnquiriesPage,
 });
 
 function AdminEnquiriesPage() {
-  const enquiries = useQuery(api.enquiries.list);
+  const token = getSessionToken() || "";
+  const enquiries = useQuery(api.enquiries.list, { token });
   const updateStatus = useMutation(api.enquiries.updateStatus);
   const [filter, setFilter] = useState("all");
 
@@ -119,7 +121,7 @@ function AdminEnquiriesPage() {
               </span>
               {enquiry.status === "new" && (
                 <button
-                  onClick={() => updateStatus({ id: enquiry._id, status: "read" })}
+                  onClick={() => updateStatus({ token, id: enquiry._id, status: "read" })}
                   className="flex items-center gap-1.5 text-xs font-bold text-text-secondary hover:text-gold-ui transition-colors"
                 >
                   <CheckCircle2 className="h-4 w-4" />

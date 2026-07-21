@@ -1,5 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { requireAdmin } from "./lib/requireAdmin";
 
 export const submit = mutation({
   args: {
@@ -27,7 +28,9 @@ export const submit = mutation({
 });
 
 export const list = query({
-  handler: async (ctx) => {
+  args: { token: v.string() },
+  handler: async (ctx, { token }) => {
+    await requireAdmin(ctx, token);
     const enquiries = await ctx.db.query("enquiries").order("desc").collect();
     return enquiries;
   },
@@ -35,10 +38,12 @@ export const list = query({
 
 export const updateStatus = mutation({
   args: {
+    token: v.string(),
     id: v.id("enquiries"),
     status: v.string(),
   },
   handler: async (ctx, args) => {
+    await requireAdmin(ctx, args.token);
     await ctx.db.patch(args.id, { status: args.status });
     return { ok: true };
   },

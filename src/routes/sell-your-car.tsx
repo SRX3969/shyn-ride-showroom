@@ -101,7 +101,7 @@ function SellPage() {
           <div className="mt-16 grid grid-cols-2 gap-4 md:grid-cols-4">
             {benefits.map((b, i) => (
               <RevealSection key={b.title} direction="scale" delay={i * 100}>
-                <div className="group rounded-xl border border-border/20 bg-card/10 p-5 transition-all duration-500 hover:border-champagne/15 hover:bg-card/30">
+                <div className="group rounded-xl border border-border/20 bg-card/10 p-5 transition-all duration-500 hover:border-champagne/15 hover:bg-card/30 h-full">
                   <b.icon className="h-5 w-5 text-champagne transition-transform duration-500 group-hover:scale-110" />
                   <div className="mt-3 text-sm font-medium text-foreground">{b.title}</div>
                   <div className="mt-1 text-xs text-muted-foreground/50">{b.desc}</div>
@@ -109,6 +109,31 @@ function SellPage() {
               </RevealSection>
             ))}
           </div>
+
+          <RevealSection delay={300}>
+            <div className="mt-16 overflow-hidden rounded-2xl border border-gold-ui/30 bg-gold-ui/5 p-8 md:p-12 relative flex flex-col md:flex-row items-center gap-8 justify-between">
+              <div className="flex-1">
+                <div className="inline-flex items-center gap-2 rounded-full bg-gold-ui/10 px-3 py-1 mb-4 border border-gold-ui/20">
+                  <div className="h-2 w-2 rounded-full bg-gold-ui animate-pulse" />
+                  <span className="text-xs font-bold uppercase tracking-widest text-gold-ui">New</span>
+                </div>
+                <h2 className="font-display text-3xl md:text-4xl">
+                  The SHYN RIDE <span className="text-gradient-gold">Exchange Program.</span>
+                </h2>
+                <p className="mt-4 text-base text-muted-foreground/80 max-w-lg leading-relaxed">
+                  Looking to upgrade? Trade in your current car and seamlessly apply its value toward your new SHYN RIDE purchase. We offer the best exchange bonus in Bangalore.
+                </p>
+                <div className="mt-6 flex flex-col sm:flex-row gap-4">
+                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                    <CheckCircle2 className="w-4 h-4 text-gold-ui" /> One unified process
+                  </div>
+                  <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                    <CheckCircle2 className="w-4 h-4 text-gold-ui" /> Save on taxes
+                  </div>
+                </div>
+              </div>
+            </div>
+          </RevealSection>
 
           {done ? (
             <div className="mt-20 rounded-2xl border border-champagne/20 bg-card/30 p-12 text-center animate-fade-in-scale max-w-2xl mx-auto">

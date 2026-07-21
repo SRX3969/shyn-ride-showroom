@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import { useMutation, useAction } from "convex/react";
+import { useMutation, useAction, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { z } from "zod";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X, Upload, Loader2, GripVertical, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { calculateEMI, formatINR } from "@/lib/utils";
+import { getSessionToken } from "@/lib/auth";
 
 const carSchema = z.object({
   make: z.string().min(1, "Make is required"),
@@ -20,13 +22,14 @@ const carSchema = z.object({
   body_type: z.string().min(1),
   color: z.string().min(1),
   owners: z.coerce.number().min(1),
-  reg_state: z.string().optional(),
+  reg_state: z.string().optional().default("KA"),
   status: z.enum(["draft", "available", "booked", "sold"]),
   featured: z.boolean().default(false),
   description: z.string().optional(),
   features: z.array(z.string()).default([]),
   
   // Ledger/Admin fields
+  original_price: z.coerce.number().optional(),
   purchase_price: z.coerce.number().optional(),
   purchase_date: z.string().optional(),
   purchase_source: z.string().optional(),
@@ -52,6 +55,8 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
   
   const generateUploadUrl = useMutation(api.inventory.generateUploadUrl);
   const saveCar = useMutation(api.inventory.saveCar);
+  const settings = useQuery(api.settings.get);
+  const token = getSessionToken() || "";
 
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm<CarFormValues>({
     resolver: zodResolver(carSchema),
@@ -64,6 +69,7 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
       status: "draft",
       featured: false,
       price_negotiable: false,
+      reg_state: "KA",
       features: [],
       images: []
     }
@@ -88,7 +94,7 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
           continue;
         }
         
-        const uploadUrl = await generateUploadUrl();
+        const uploadUrl = await generateUploadUrl({ token });
         const res = await fetch(uploadUrl, {
           method: "POST",
           headers: { "Content-Type": file.type },
@@ -122,6 +128,7 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
       const slug = car?.slug || `${data.year}-${data.make}-${data.model}-${Date.now()}`.toLowerCase().replace(/[^a-z0-9]+/g, "-");
       
       await saveCar({
+        token,
         id: car?._id,
         slug,
         ...data,
@@ -218,7 +225,22 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
                   <input type="number" {...register("price_inr")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" />
                   {errors.price_inr && <p className="text-xs text-red-500 mt-1">{errors.price_inr.message}</p>}
                 </div>
-                <div className="flex items-center gap-2 mt-6">
+                <div>
+                  <label className="text-sm font-medium text-text-secondary">Original Price (For Limited Offer)</label>
+                  <input type="number" {...register("original_price")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" />
+                </div>
+                {settings && (
+                  <div className="col-span-2 bg-gold-ui/10 border border-gold-ui/20 rounded-lg p-4 flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-gold-ui font-medium uppercase tracking-wider mb-1">Live EMI Preview</p>
+                      <p className="text-sm text-text-secondary">Based on {settings.emiDownPaymentPct}% down, {settings.emiAnnualRatePct}% interest for {settings.emiTenureMonths} months.</p>
+                    </div>
+                    <div className="text-xl font-bold text-text-primary">
+                      {formatINR(calculateEMI(watch("price_inr") || 0, settings.emiDownPaymentPct, settings.emiAnnualRatePct, settings.emiTenureMonths))}/m*
+                    </div>
+                  </div>
+                )}
+                <div className="flex items-center gap-2 mt-2">
                   <input type="checkbox" id="neg" {...register("price_negotiable")} className="w-4 h-4 rounded border-border" />
                   <label htmlFor="neg" className="text-sm font-medium text-text-primary">Price is Negotiable</label>
                 </div>

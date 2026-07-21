@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useState } from "react";
 import { Header, Footer } from "@/components/site-chrome";
@@ -35,6 +35,7 @@ function ContactPage() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const submitEnquiry = useMutation(api.enquiries.submit);
+  const settings = useQuery(api.settings.get);
   const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -61,22 +62,26 @@ function ContactPage() {
     {
       icon: MapPin,
       title: "Showroom",
-      lines: ["Indiranagar, Bangalore", "Karnataka, India"],
+      lines: settings?.showroomAddress 
+        ? settings.showroomAddress.split("\n")
+        : ["Indiranagar, Bangalore", "Karnataka, India"],
     },
     {
       icon: Clock,
       title: "Hours",
-      lines: ["Mon – Sat · 10am – 8pm", "Sunday by appointment"],
+      lines: settings?.showroomHours 
+        ? settings.showroomHours.split("\n")
+        : ["Mon – Sat · 10am – 8pm", "Sunday by appointment"],
     },
     {
       icon: Phone,
       title: "Phone",
-      lines: ["+91 00000 00000"],
+      lines: [settings?.showroomPhone || "+91 00000 00000"],
     },
     {
       icon: Mail,
       title: "Email",
-      lines: ["hello@shynride.in"],
+      lines: ["hello@shynride.in"], // Keep static or add to settings if needed
     },
     {
       icon: MessageCircle,
@@ -131,6 +136,26 @@ function ContactPage() {
                   </div>
                 </RevealSection>
               ))}
+
+              {/* Map embed */}
+              <RevealSection direction="left" delay={400}>
+                <div className="mt-6 overflow-hidden rounded-xl border border-border/20 bg-card/10 h-64 md:h-80">
+                  {settings?.showroomMapIframe ? (
+                    <div 
+                      className="w-full h-full [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-0"
+                      dangerouslySetInnerHTML={{ __html: settings.showroomMapIframe }}
+                    />
+                  ) : (
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124415.71963953531!2d77.50293141517521!3d12.97304193551522!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae1670c9b44e6d%3A0xf8dfc3e8517e4fe0!2sBengaluru%2C%20Karnataka!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+                      className="h-full w-full border-0 grayscale invert opacity-70"
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
+                  )}
+                </div>
+              </RevealSection>
             </div>
 
             {/* Form */}

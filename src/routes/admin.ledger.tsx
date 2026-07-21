@@ -5,13 +5,15 @@ import { formatINR } from "@/lib/utils";
 import { Download, FileText, TrendingUp, TrendingDown } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { getSessionToken } from "@/lib/auth";
 
 export const Route = createFileRoute("/admin/ledger")({
   component: AdminLedgerPage,
 });
 
 function AdminLedgerPage() {
-  const ledger = useQuery(api.reports.getLedger);
+  const token = getSessionToken() || "";
+  const ledger = useQuery(api.reports.getLedger, { token });
 
   const exportCSV = () => {
     if (!ledger || ledger.length === 0) return;

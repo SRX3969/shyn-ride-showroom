@@ -5,9 +5,12 @@ import { getSessionToken, clearSessionToken } from "@/lib/auth";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { toast } from "sonner";
+import { ConvexHttpClient } from "convex/browser";
+
+const convex = new ConvexHttpClient(import.meta.env.VITE_CONVEX_URL as string);
 
 export const Route = createFileRoute("/admin")({
-  beforeLoad: ({ location }) => {
+  beforeLoad: async ({ location }) => {
     if (typeof window !== "undefined") {
       const token = getSessionToken();
       if (!token && location.pathname !== "/admin/login") {
@@ -15,6 +18,21 @@ export const Route = createFileRoute("/admin")({
           to: "/admin/login",
           search: { redirect: location.pathname },
         });
+      }
+
+      if (token && location.pathname !== "/admin/login") {
+        try {
+          const user = await convex.query(api.admin.verifySession, { token });
+          if (!user) {
+            throw new Error("Invalid session");
+          }
+        } catch (error) {
+          clearSessionToken();
+          throw redirect({
+            to: "/admin/login",
+            search: { redirect: location.pathname },
+          });
+        }
       }
     }
   },

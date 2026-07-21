@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Menu, X, Instagram, Phone, Mail, Sun, Moon } from "lucide-react";
 import { useTheme } from "./theme-provider";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -164,6 +166,8 @@ export function Header() {
 }
 
 export function Footer() {
+  const settings = useQuery(api.settings.get);
+
   return (
     <footer className="border-t border-border/40 bg-card/30 noise-overlay">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-16 md:grid-cols-4">
@@ -243,9 +247,23 @@ export function Footer() {
             Visit
           </div>
           <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-            <li>Bangalore, India</li>
-            <li>Mon – Sat, 10am – 8pm</li>
-            <li>By appointment</li>
+            {settings?.showroomAddress ? (
+              settings.showroomAddress.split("\n").map((line, i) => (
+                <li key={`addr-${i}`}>{line}</li>
+              ))
+            ) : (
+              <li>Bangalore, India</li>
+            )}
+            {settings?.showroomHours ? (
+              settings.showroomHours.split("\n").map((line, i) => (
+                <li key={`hour-${i}`}>{line}</li>
+              ))
+            ) : (
+              <>
+                <li>Mon – Sat, 10am – 8pm</li>
+                <li>By appointment</li>
+              </>
+            )}
           </ul>
         </div>
         <div>
@@ -254,7 +272,7 @@ export function Footer() {
           </div>
           <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
             <li>hello@shynride.in</li>
-            <li>+91 00000 00000</li>
+            <li>{settings?.showroomPhone || "+91 00000 00000"}</li>
             <li>
               <Link
                 to="/contact"
@@ -273,7 +291,7 @@ export function Footer() {
             © {new Date().getFullYear()} SHYN RIDE. All rights reserved.
           </span>
           <span className="font-medium tracking-wider">
-            Made with ♥ by <span className="text-champagne">Abhir</span>
+            Powered BY <span className="text-champagne">SHYN</span>
           </span>
         </div>
       </div>

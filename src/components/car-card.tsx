@@ -1,6 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { Fuel, Gauge, Calendar, ArrowRight } from "lucide-react";
+import { Fuel, Gauge, Calendar, ArrowRight, Tag } from "lucide-react";
 import { formatINR, formatKm } from "@/lib/format";
+import { calculateEMI } from "@/lib/utils";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 export type CarCardData = {
   _id: string;
@@ -10,12 +13,14 @@ export type CarCardData = {
   variant: string | null;
   year: number;
   price_inr: number;
+  original_price?: number | null;
   price_negotiable: boolean;
   km: number;
   fuel_type: string;
   transmission: string;
   body_type: string;
   color: string;
+  reg_state?: string | null;
   status: string;
   featured: boolean;
   cover_url: string | null;
@@ -23,6 +28,10 @@ export type CarCardData = {
 
 export function CarCard({ car, className = "" }: { car: CarCardData; className?: string }) {
   const title = `${car.year} ${car.make} ${car.model}`;
+  const settings = useQuery(api.settings.get);
+  const isLimitedOffer = car.original_price && car.original_price > car.price_inr;
+  const emi = settings ? calculateEMI(car.price_inr, settings.emiDownPaymentPct, settings.emiAnnualRatePct, settings.emiTenureMonths) : 0;
+
   return (
     <Link
       to="/inventory/$slug"
@@ -57,6 +66,13 @@ export function CarCard({ car, className = "" }: { car: CarCardData; className?:
             Featured
           </div>
         )}
+
+        {/* Limited Offer Badge */}
+        {isLimitedOffer && car.status === "available" && (
+          <div className="absolute left-3 bottom-3 z-10 rounded-md bg-red-600 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-white shadow-lg flex items-center gap-1">
+            <Tag className="w-3 h-3" /> Limited Offer
+          </div>
+        )}
       </div>
 
       <div className="mt-5 space-y-3">
@@ -83,15 +99,26 @@ export function CarCard({ car, className = "" }: { car: CarCardData; className?:
           <span className="capitalize">{car.transmission}</span>
           <span className="text-border px-1">•</span>
           <span>{car.year}</span>
+          {car.reg_state && (
+            <>
+              <span className="text-border px-1">•</span>
+              <span className="uppercase text-text-primary bg-background border border-border/50 px-1.5 py-0.5 rounded text-[11px] font-bold">{car.reg_state}</span>
+            </>
+          )}
         </div>
 
         <div className="mt-4 pt-4 border-t border-border/50 flex flex-col">
-          <div className="text-[13px] font-medium text-text-tertiary mb-1">
-            Price
+          <div className="text-[13px] font-medium text-text-tertiary mb-1 flex items-center justify-between">
+            <span>Price</span>
+            {isLimitedOffer && car.original_price && (
+              <span className="line-through text-text-secondary text-xs">{formatINR(car.original_price)}</span>
+            )}
           </div>
           <div className="flex items-center justify-between">
-            <div className="font-bold text-[22px] tracking-tight text-text-primary">
-              {formatINR(car.price_inr)}
+            <div className="flex items-baseline gap-2">
+              <div className="font-bold text-[22px] tracking-tight text-text-primary">
+                {formatINR(car.price_inr)}
+              </div>
             </div>
             {car.price_negotiable && (
               <div className="text-[12px] font-medium text-text-secondary bg-surface px-2 py-1 rounded-sm border border-border">
@@ -99,6 +126,11 @@ export function CarCard({ car, className = "" }: { car: CarCardData; className?:
               </div>
             )}
           </div>
+          {emi > 0 && (
+            <div className="mt-2 text-xs font-medium text-text-secondary">
+              EMI from <span className="text-gold-ui">{formatINR(emi)}/m*</span>
+            </div>
+          )}
         </div>
       </div>
     </Link>
