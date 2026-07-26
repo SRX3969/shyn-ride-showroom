@@ -136,4 +136,15 @@ export default defineSchema({
     answer: v.string(),
     order: v.number(),
   }),
+
+  testimonials: defineTable({
+    client_name: v.string(),
+    location: v.optional(v.string()),
+    car_title: v.string(),
+    review: v.string(),
+    rating: v.number(),
+    image_url: v.string(),
+    delivery_date: v.optional(v.string()),
+    order: v.number(),
+  }),
 });

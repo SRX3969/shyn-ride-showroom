@@ -2,6 +2,8 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAdmin } from "./lib/requireAdmin";
 
+import { api } from "./_generated/api";
+
 export const submit = mutation({
   args: {
     type: v.string(),
@@ -29,6 +31,20 @@ export const submit = mutation({
       notes: args.notes,
       follow_up_date: args.follow_up_date,
     });
+
+    // Schedule real-time email notification to shreeram.prakasan23@gmail.com
+    try {
+      await ctx.scheduler.runAfter(0, api.notifications.sendLeadEmailAlert, {
+        leadType: args.type || "General Inquiry",
+        customerName: args.name,
+        customerPhone: args.phone,
+        customerEmail: args.email,
+        details: args.message || (args.car_details ? JSON.stringify(args.car_details) : undefined),
+      });
+    } catch (err) {
+      console.error("Scheduler notification error:", err);
+    }
+
     return { ok: true, id };
   },
 });

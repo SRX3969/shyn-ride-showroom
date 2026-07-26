@@ -46,9 +46,8 @@ export const Route = createFileRoute("/")({
       },
       {
         property: "og:description",
-        content: "A curated pre-owned luxury car showroom in Bangalore.",
+        content: "Curated luxury pre-owned cars in Bangalore. Certified, 150-point inspection, transparent pricing, door-step test drive.",
       },
-      { property: "og:url", content: "/" },
     ],
     links: [{ rel: "canonical", href: "/" }],
   }),
@@ -70,7 +69,7 @@ function HomePage() {
           <HowItWorks />
           <BudgetBands />
           <SellCTA />
-          <Testimonials />
+          <DeliveryTestimonials />
           <FinalCTA />
         </main>
         <Footer />

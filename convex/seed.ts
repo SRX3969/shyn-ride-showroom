@@ -328,7 +328,49 @@ It is the ultimate sleeper sedan—comfortable and quiet for the daily commute, 
       ],
     });
 
-    return { message: "Seeded successfully" };
+    const existingTestimonials = await ctx.db.query("testimonials").collect();
+    for (const t of existingTestimonials) {
+      await ctx.db.delete(t._id);
+    }
+
+    const initialDeliveries = [
+      {
+        client_name: "Vikram & Ananya R.",
+        location: "Indiranagar, Bangalore",
+        car_title: "Porsche 911 Carrera S (992)",
+        review: "SHYN RIDE made purchasing my dream 911 smooth and unhurried. The 150-point inspection report gave us total peace of mind!",
+        rating: 5,
+        image_url: "https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=1200&auto=format&fit=crop",
+        delivery_date: "July 2026",
+        order: 1,
+      },
+      {
+        client_name: "Rohan & Sneha Kapoor",
+        location: "UB City, Bangalore",
+        car_title: "BMW M4 Competition Coupe",
+        review: "Outstanding white-glove service. From home test drive to instant RTO transfer, the experience was truly VIP grade.",
+        rating: 5,
+        image_url: "https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=1200&auto=format&fit=crop",
+        delivery_date: "June 2026",
+        order: 2,
+      },
+      {
+        client_name: "Dr. Siddharth Nair",
+        location: "Koramangala, Bangalore",
+        car_title: "Mercedes-AMG G63 V8 Biturbo",
+        review: "Mint condition vehicle, transparent history, and seamless delivery directly to my doorstep. Highly recommended!",
+        rating: 5,
+        image_url: "https://images.unsplash.com/photo-1520050206274-a1ae44613e6d?q=80&w=1200&auto=format&fit=crop",
+        delivery_date: "May 2026",
+        order: 3,
+      },
+    ];
+
+    for (const del of initialDeliveries) {
+      await ctx.db.insert("testimonials", del);
+    }
+
+    return { message: "Seeded successfully with delivery testimonials" };
   },
 });
 

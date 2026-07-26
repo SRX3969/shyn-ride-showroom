@@ -2,6 +2,8 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAdmin } from "./lib/requireAdmin";
 
+import { api } from "./_generated/api";
+
 export const create = mutation({
   args: {
     car_id: v.optional(v.id("cars")),
@@ -29,18 +31,33 @@ export const create = mutation({
       created_at: Date.now(),
     });
 
+    const bookingMsg = `[${args.booking_type.toUpperCase()}] Date: ${args.preferred_date}, Slot: ${args.preferred_slot}. ${args.notes || ""}`;
+
     // Also record as a lead enquiry for central CRM
     await ctx.db.insert("enquiries", {
       type: "booking",
       name: args.name,
       phone: args.phone,
       email: args.email,
-      message: `[${args.booking_type.toUpperCase()}] Date: ${args.preferred_date}, Slot: ${args.preferred_slot}. ${args.notes || ""}`,
+      message: bookingMsg,
       car_id: args.car_id,
       car_details: { title: args.car_title },
       status: "new",
       source: `online_booking_${args.booking_type}`,
     });
+
+    // Schedule real-time email notification to shreeram.prakasan23@gmail.com
+    try {
+      await ctx.scheduler.runAfter(0, api.notifications.sendLeadEmailAlert, {
+        leadType: `Online Booking (${args.booking_type})`,
+        customerName: args.name,
+        customerPhone: args.phone,
+        customerEmail: args.email,
+        details: `${args.car_title || "Car"} | ${bookingMsg}`,
+      });
+    } catch (err) {
+      console.error("Scheduler notification error:", err);
+    }
 
     return { ok: true, bookingId };
   },

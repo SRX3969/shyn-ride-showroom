@@ -1,10 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Header, Footer } from "@/components/site-chrome";
 import { FloatingActions } from "@/components/floating-actions";
 import { PageTransition, RevealSection } from "@/components/page-transition";
+import { DeliveryTestimonials } from "@/components/delivery-testimonials";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { useCountUpString } from "@/hooks/useCountUp";
-import { Link } from "@tanstack/react-router";
 import heroImg from "@/assets/hero-showroom.jpg";
 import suvImg from "@/assets/car-suv-1.jpg";
 import {
@@ -203,6 +203,7 @@ function AboutPage() {
               </RevealSection>
             </div>
           </section>
+          <DeliveryTestimonials />
         </main>
         <Footer />
         <FloatingActions />
