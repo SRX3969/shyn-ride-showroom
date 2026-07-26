@@ -34,6 +34,9 @@ import {
   X,
   Maximize2
 } from "lucide-react";
+import { SEO, getCarVehicleSchema } from "@/components/seo";
+import { BookingModal } from "@/components/booking-modal";
+import { getWhatsAppUrl } from "@/lib/whatsapp";
 import type { Id } from "../../convex/_generated/dataModel";
 
 export const Route = createFileRoute("/inventory/$slug")({
@@ -123,11 +126,20 @@ function CarDetailContent({ car }: { car: any }) {
   const [showEnquiry, setShowEnquiry] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [showLightbox, setShowLightbox] = useState(false);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+
+  const logAnalytics = useMutation(api.analytics.logEvent);
+
+  useEffect(() => {
+    try {
+      logAnalytics({ event_type: "page_view", car_id: car._id, car_slug: car.slug });
+    } catch (e) {}
+  }, [car._id]);
   
   const relatedCars = useQuery(api.cars.getRelatedCars, { slug: car.slug, body_type: car.body_type });
 
   const img = car.images[active] ?? car.images[0];
-  const title = `${car.year} ${car.make} ${car.model}`;
+  const title = `${car.year} ${car.make} ${car.model} ${car.variant || ""}`.trim();
   const isLimitedOffer = car.original_price && car.original_price > car.price_inr;
 
   useEffect(() => {
@@ -174,8 +186,7 @@ function CarDetailContent({ car }: { car: any }) {
   specialBadges.push({ icon: ShieldCheck, label: "Certified Inspection Passed", desc: "Passed our rigorous 150-point quality check." });
 
   // WhatsApp predefined message
-  const whatsappMsg = encodeURIComponent(`Hi, I'm interested in the ${car.year} ${car.make} ${car.model} listed on SHYN RIDE. Can you share more details?`);
-  const whatsappLink = `https://wa.me/910000000000?text=${whatsappMsg}`;
+  const whatsappLink = getWhatsAppUrl("car", car);
 
   const scrollToEnquiry = () => {
     setShowEnquiry(true);
@@ -186,6 +197,8 @@ function CarDetailContent({ car }: { car: any }) {
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-10 relative">
+      <SEO title={`${title} — SHYN RIDE`} description={`Explore this ${title} with ${formatKm(car.km)} driven. Certified and ready.`} jsonLd={getCarVehicleSchema(car)} />
+      <BookingModal isOpen={isBookingOpen} onClose={() => setIsBookingOpen(false)} carId={car._id} carTitle={title} />
       <Link
         to="/inventory"
         className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground/50 transition-colors hover:text-champagne mb-8"
@@ -463,7 +476,7 @@ function CarDetailContent({ car }: { car: any }) {
                 Enquire About This Car
               </button>
               <button
-                onClick={scrollToEnquiry}
+                onClick={() => setIsBookingOpen(true)}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-surface border border-border/50 px-4 py-3.5 text-[14px] font-bold text-text-primary transition-all duration-300 hover:bg-card/80 hover:border-border"
               >
                 Schedule a Test Drive

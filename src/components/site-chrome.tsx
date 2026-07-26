@@ -188,14 +188,14 @@ export function Footer() {
               <Instagram className="h-4 w-4" />
             </a>
             <a
-              href="#"
+              href="tel:+919902500649"
               className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-all duration-300 hover:border-champagne hover:text-champagne hover:scale-110"
               aria-label="Phone"
             >
               <Phone className="h-4 w-4" />
             </a>
             <a
-              href="#"
+              href="mailto:shreeram.prakasan23@gmail.com"
               className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-all duration-300 hover:border-champagne hover:text-champagne hover:scale-110"
               aria-label="Email"
             >
@@ -247,15 +247,15 @@ export function Footer() {
             Visit
           </div>
           <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-            {settings?.showroomAddress ? (
-              settings.showroomAddress.split("\n").map((line, i) => (
+            {settings?.address ? (
+              settings.address.split("\n").map((line, i) => (
                 <li key={`addr-${i}`}>{line}</li>
               ))
             ) : (
               <li>Bangalore, India</li>
             )}
-            {settings?.showroomHours ? (
-              settings.showroomHours.split("\n").map((line, i) => (
+            {settings?.workingHours ? (
+              settings.workingHours.split("\n").map((line, i) => (
                 <li key={`hour-${i}`}>{line}</li>
               ))
             ) : (
@@ -271,8 +271,16 @@ export function Footer() {
             Reach us
           </div>
           <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-            <li>hello@shynride.in</li>
-            <li>{settings?.showroomPhone || "+91 00000 00000"}</li>
+            <li>
+              <a href="mailto:shreeram.prakasan23@gmail.com" className="hover:text-champagne transition-colors">
+                shreeram.prakasan23@gmail.com
+              </a>
+            </li>
+            <li>
+              <a href="tel:+919902500649" className="hover:text-champagne transition-colors">
+                {settings?.phone || "+91 99025 00649"}
+              </a>
+            </li>
             <li>
               <Link
                 to="/contact"

@@ -62,31 +62,34 @@ function ContactPage() {
     {
       icon: MapPin,
       title: "Showroom",
-      lines: settings?.showroomAddress 
-        ? settings.showroomAddress.split("\n")
-        : ["Indiranagar, Bangalore", "Karnataka, India"],
+      lines: settings?.address 
+        ? settings.address.split("\n")
+        : ["123 Main Street, Indiranagar", "Bangalore, Karnataka 560038"],
     },
     {
       icon: Clock,
       title: "Hours",
-      lines: settings?.showroomHours 
-        ? settings.showroomHours.split("\n")
+      lines: settings?.workingHours 
+        ? settings.workingHours.split("\n")
         : ["Mon – Sat · 10am – 8pm", "Sunday by appointment"],
     },
     {
       icon: Phone,
       title: "Phone",
-      lines: [settings?.showroomPhone || "+91 00000 00000"],
+      lines: [settings?.phone || "+91 99025 00649"],
+      action: "tel:+919902500649",
     },
     {
       icon: Mail,
       title: "Email",
-      lines: ["hello@shynride.in"], // Keep static or add to settings if needed
+      lines: [settings?.email || "shreeram.prakasan23@gmail.com"],
+      action: "mailto:shreeram.prakasan23@gmail.com",
     },
     {
       icon: MessageCircle,
       title: "WhatsApp",
-      lines: ["Quick enquiries welcome"],
+      lines: ["+91 99025 00649", "Quick enquiries welcome"],
+      action: "https://wa.me/919902500649?text=Hi%20SHYN%20RIDE%2C%20I%20have%20an%20enquiry",
     },
   ];
 

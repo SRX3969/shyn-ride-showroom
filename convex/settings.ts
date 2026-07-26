@@ -14,7 +14,8 @@ export const get = query({
       emiAnnualRatePct: 10.5,
       emiTenureMonths: 60,
       address: "123 Main Street, in the heart of Bangalore, Karnataka",
-      phone: "+91 98765 43210",
+      phone: "+91 99025 00649",
+      email: "shreeram.prakasan23@gmail.com",
       workingHours: "Mon - Sun: 10:00 AM - 7:00 PM",
     };
   }
@@ -29,6 +30,7 @@ export const update = mutation({
     emiTenureMonths: v.number(),
     address: v.optional(v.string()),
     phone: v.optional(v.string()),
+    email: v.optional(v.string()),
     workingHours: v.optional(v.string()),
   },
   handler: async (ctx, args) => {

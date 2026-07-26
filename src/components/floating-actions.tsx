@@ -1,14 +1,28 @@
 import { useState, useEffect } from "react";
 import { ArrowUp, MessageCircle } from "lucide-react";
+import { useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { WHATSAPP_NUMBER, getWhatsAppUrl } from "../lib/whatsapp";
 
 export function FloatingActions() {
   const [showTop, setShowTop] = useState(false);
+  const logAnalytics = useMutation(api.analytics.logEvent);
 
   useEffect(() => {
     const onScroll = () => setShowTop(window.scrollY > 600);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const handleWhatsAppClick = () => {
+    try {
+      logAnalytics({ event_type: "whatsapp_click", metadata: "floating_widget" });
+    } catch (e) {
+      // ignore offline/uncaught
+    }
+  };
+
+  const whatsappUrl = getWhatsAppUrl("general");
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3">
@@ -27,12 +41,17 @@ export function FloatingActions() {
 
       {/* WhatsApp */}
       <a
-        href="https://wa.me/910000000000?text=Hi%2C%20I%27m%20interested%20in%20a%20car%20from%20SHYN%20RIDE"
+        href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={handleWhatsAppClick}
         aria-label="Chat on WhatsApp"
-        className="group flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-[#25D366]/30 transition-all duration-300 hover:scale-110 hover:shadow-xl hover:shadow-[#25D366]/40"
+        className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-[#25D366]/30 transition-all duration-300 hover:scale-110 hover:shadow-xl hover:shadow-[#25D366]/40"
       >
+        <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
+        </span>
         <MessageCircle className="h-6 w-6 transition-transform duration-300 group-hover:scale-110" />
       </a>
     </div>

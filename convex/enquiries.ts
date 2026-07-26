@@ -11,9 +11,12 @@ export const submit = mutation({
     message: v.optional(v.string()),
     car_id: v.optional(v.id("cars")),
     car_details: v.optional(v.any()),
+    source: v.optional(v.string()),
+    notes: v.optional(v.string()),
+    follow_up_date: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert("enquiries", {
+    const id = await ctx.db.insert("enquiries", {
       type: args.type,
       name: args.name,
       phone: args.phone,
@@ -22,8 +25,11 @@ export const submit = mutation({
       car_id: args.car_id,
       car_details: args.car_details,
       status: "new",
+      source: args.source || "website",
+      notes: args.notes,
+      follow_up_date: args.follow_up_date,
     });
-    return { ok: true };
+    return { ok: true, id };
   },
 });
 
@@ -45,6 +51,26 @@ export const updateStatus = mutation({
   handler: async (ctx, args) => {
     await requireAdmin(ctx, args.token);
     await ctx.db.patch(args.id, { status: args.status });
+    return { ok: true };
+  },
+});
+
+export const updateLead = mutation({
+  args: {
+    token: v.string(),
+    id: v.id("enquiries"),
+    status: v.optional(v.string()),
+    notes: v.optional(v.string()),
+    follow_up_date: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    await requireAdmin(ctx, args.token);
+    const updates: Partial<{ status: string; notes: string; follow_up_date: string }> = {};
+    if (args.status !== undefined) updates.status = args.status;
+    if (args.notes !== undefined) updates.notes = args.notes;
+    if (args.follow_up_date !== undefined) updates.follow_up_date = args.follow_up_date;
+
+    await ctx.db.patch(args.id, updates);
     return { ok: true };
   },
 });

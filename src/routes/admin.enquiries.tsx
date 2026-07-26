@@ -13,7 +13,7 @@ export const Route = createFileRoute("/admin/enquiries")({
 function AdminEnquiriesPage() {
   const token = getSessionToken() || "";
   const enquiries = useQuery(api.enquiries.list, { token });
-  const updateStatus = useMutation(api.enquiries.updateStatus);
+  const updateLead = useMutation(api.enquiries.updateLead);
   const [filter, setFilter] = useState("all");
 
   if (enquiries === undefined) return (
@@ -23,118 +23,167 @@ function AdminEnquiriesPage() {
   );
 
   const filtered = enquiries.filter(e => {
+    if (filter === "all") return true;
     if (filter === "new") return e.status === "new";
-    if (filter === "read") return e.status === "read";
+    if (filter === "contacted") return e.status === "contacted";
+    if (filter === "booking") return e.type === "booking" || e.source?.includes("booking");
+    if (filter === "sell") return e.type === "sell_request";
     return true;
   });
+
+  const handleStatusChange = (id: any, newStatus: string) => {
+    updateLead({ token, id, status: newStatus });
+  };
 
   return (
     <div className="p-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">Enquiries</h1>
-          <p className="mt-1 text-sm text-text-secondary">Manage customer messages and leads.</p>
+          <h1 className="text-2xl font-bold text-text-primary">Lead Management CRM</h1>
+          <p className="mt-1 text-sm text-text-secondary">Track, contact, and close inquiries from all channels.</p>
         </div>
-        <div className="flex rounded-lg border border-border bg-surface p-1">
-          {["all", "new", "read"].map((f) => (
+        <div className="flex flex-wrap gap-1 rounded-lg border border-border bg-surface p-1">
+          {[
+            { id: "all", label: "All Leads" },
+            { id: "new", label: "New" },
+            { id: "contacted", label: "Contacted" },
+            { id: "booking", label: "Bookings" },
+            { id: "sell", label: "Sell Inquiries" },
+          ].map((f) => (
             <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`rounded-md px-4 py-1.5 text-sm font-medium capitalize transition-colors ${
-                filter === f
-                  ? "bg-gold-ui/10 text-gold-ui"
+              key={f.id}
+              onClick={() => setFilter(f.id)}
+              className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
+                filter === f.id
+                  ? "bg-gold-ui text-white shadow-sm"
                   : "text-text-secondary hover:text-text-primary"
               }`}
             >
-              {f}
+              {f.label}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((enquiry) => (
-          <div key={enquiry._id} className={`flex flex-col justify-between rounded-2xl border p-6 transition-colors shadow-sm ${
-            enquiry.status === "new" ? "border-gold-ui/40 bg-gold-ui/5" : "border-border bg-surface"
-          }`}>
-            <div>
-              <div className="flex items-start justify-between">
-                <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${
-                  enquiry.type === "sell_request" 
-                    ? "bg-emerald-500/10 text-emerald-500"
-                    : enquiry.type === "car_enquiry"
-                      ? "bg-blue-500/10 text-blue-500"
-                      : "bg-background border border-border text-text-secondary"
-                }`}>
-                  {enquiry.type.replace("_", " ")}
-                </span>
-                <span className="text-xs text-text-tertiary flex items-center gap-1">
-                  <Clock className="h-3.5 w-3.5" />
-                  {formatDistanceToNow(enquiry._creationTime, { addSuffix: true })}
-                </span>
-              </div>
+      <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {filtered.map((enquiry) => {
+          const cleanPhone = enquiry.phone.replace(/\D/g, "");
+          const waUrl = `https://wa.me/${cleanPhone.length === 10 ? "91" + cleanPhone : cleanPhone}?text=${encodeURIComponent(`Hi ${enquiry.name}, thank you for contacting SHYN RIDE luxury pre-owned showroom.`)}`;
 
-              <div className="mt-5">
-                <div className="text-xl font-bold text-text-primary">{enquiry.name}</div>
-                <div className="mt-3 flex flex-col gap-2 text-sm text-text-secondary">
-                  <a href={`tel:${enquiry.phone}`} className="flex items-center gap-2 hover:text-gold-ui transition-colors w-fit">
-                    <Phone className="h-4 w-4" />
-                    {enquiry.phone}
-                  </a>
-                  {enquiry.email && (
-                    <a href={`mailto:${enquiry.email}`} className="flex items-center gap-2 hover:text-gold-ui transition-colors w-fit">
-                      <Mail className="h-4 w-4" />
-                      {enquiry.email}
-                    </a>
-                  )}
-                </div>
-              </div>
-
-              {enquiry.car_details && (
-                <div className="mt-4 rounded-xl bg-background border border-border/50 p-3 text-sm">
-                  <div className="flex items-center gap-2 text-gold-ui mb-1.5">
-                    <Car className="h-4 w-4" />
-                    <span className="text-xs font-semibold">Car Details</span>
+          return (
+            <div
+              key={enquiry._id}
+              className={`flex flex-col justify-between rounded-2xl border p-6 transition-all shadow-md ${
+                enquiry.status === "new" ? "border-gold-ui/50 bg-gold-ui/5" : "border-border bg-surface"
+              }`}
+            >
+              <div>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex flex-wrap gap-1.5">
+                    <span className="rounded-full bg-background border border-border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-gold-ui">
+                      {enquiry.source || enquiry.type}
+                    </span>
+                    <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase ${
+                      enquiry.status === "new" ? "bg-amber-500/10 text-amber-500" : "bg-emerald-500/10 text-emerald-500"
+                    }`}>
+                      {enquiry.status}
+                    </span>
                   </div>
-                  {enquiry.car_details.car ? (
-                    <div className="font-medium text-text-primary">{enquiry.car_details.car}</div>
-                  ) : (
+                  <span className="text-[11px] text-text-tertiary flex items-center gap-1 shrink-0">
+                    <Clock className="h-3 w-3" />
+                    {formatDistanceToNow(enquiry._creationTime, { addSuffix: true })}
+                  </span>
+                </div>
+
+                <div className="mt-4">
+                  <div className="text-lg font-bold text-text-primary">{enquiry.name}</div>
+                  <div className="mt-2 flex flex-col gap-1.5 text-xs text-text-secondary">
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-3.5 w-3.5 text-gold-ui" />
+                      <span>{enquiry.phone}</span>
+                    </div>
+                    {enquiry.email && (
+                      <div className="flex items-center gap-2">
+                        <Mail className="h-3.5 w-3.5 text-gold-ui" />
+                        <span className="truncate">{enquiry.email}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {enquiry.car_details && (
+                  <div className="mt-4 rounded-xl bg-background border border-border/50 p-3 text-xs">
+                    <div className="flex items-center gap-1.5 text-gold-ui font-bold mb-1">
+                      <Car className="h-3.5 w-3.5" /> Vehicle Reference
+                    </div>
                     <div className="font-medium text-text-primary">
-                      {enquiry.car_details.year} {enquiry.car_details.make} {enquiry.car_details.model} <span className="text-text-tertiary font-normal">({enquiry.car_details.km} km)</span>
+                      {enquiry.car_details.title || enquiry.car_details.car || `${enquiry.car_details.year || ""} ${enquiry.car_details.make || ""} ${enquiry.car_details.model || ""}`.trim()}
+                    </div>
+                  </div>
+                )}
+
+                {enquiry.message && (
+                  <div className="mt-3 text-xs text-text-secondary bg-background/60 rounded-lg p-2.5 italic border border-border/30">
+                    "{enquiry.message}"
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-6 border-t border-border/50 pt-4 flex flex-col gap-3">
+                {/* Direct Action Row */}
+                <div className="grid grid-cols-3 gap-2">
+                  <a
+                    href={waUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center justify-center gap-1 rounded-lg bg-[#25D366]/10 py-2 text-xs font-bold text-[#25D366] hover:bg-[#25D366]/20 transition-colors"
+                  >
+                    <MessageSquare className="h-3.5 w-3.5" /> WhatsApp
+                  </a>
+                  <a
+                    href={`tel:${enquiry.phone}`}
+                    className="flex items-center justify-center gap-1 rounded-lg bg-blue-500/10 py-2 text-xs font-bold text-blue-400 hover:bg-blue-500/20 transition-colors"
+                  >
+                    <Phone className="h-3.5 w-3.5" /> Call
+                  </a>
+                  {enquiry.email ? (
+                    <a
+                      href={`mailto:${enquiry.email}`}
+                      className="flex items-center justify-center gap-1 rounded-lg bg-amber-500/10 py-2 text-xs font-bold text-amber-400 hover:bg-amber-500/20 transition-colors"
+                    >
+                      <Mail className="h-3.5 w-3.5" /> Email
+                    </a>
+                  ) : (
+                    <div className="flex items-center justify-center rounded-lg bg-card/20 py-2 text-xs text-text-tertiary">
+                      No Email
                     </div>
                   )}
                 </div>
-              )}
 
-              {enquiry.message && (
-                <div className="mt-4 text-sm text-text-secondary bg-background/50 rounded-lg p-3 italic">
-                  "{enquiry.message}"
+                {/* Pipeline Status Selector */}
+                <div className="flex items-center justify-between gap-2 pt-1">
+                  <span className="text-[11px] font-semibold uppercase text-text-tertiary">Status</span>
+                  <select
+                    value={enquiry.status}
+                    onChange={(e) => handleStatusChange(enquiry._id, e.target.value)}
+                    className="rounded-lg border border-border bg-background px-2.5 py-1 text-xs text-text-primary focus:border-gold-ui focus:outline-none"
+                  >
+                    <option value="new">New Lead</option>
+                    <option value="contacted">Contacted</option>
+                    <option value="scheduled">Test Drive Scheduled</option>
+                    <option value="won">Closed Won</option>
+                    <option value="lost">Closed Lost</option>
+                  </select>
                 </div>
-              )}
+              </div>
             </div>
+          );
+        })}
 
-            <div className="mt-6 flex items-center justify-between border-t border-border/50 pt-4">
-              <span className={`text-xs font-semibold uppercase ${
-                enquiry.status === "new" ? "text-gold-ui" : "text-text-tertiary"
-              }`}>
-                {enquiry.status}
-              </span>
-              {enquiry.status === "new" && (
-                <button
-                  onClick={() => updateStatus({ token, id: enquiry._id, status: "read" })}
-                  className="flex items-center gap-1.5 text-xs font-bold text-text-secondary hover:text-gold-ui transition-colors"
-                >
-                  <CheckCircle2 className="h-4 w-4" />
-                  MARK AS READ
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
         {filtered.length === 0 && (
           <div className="col-span-full py-16 text-center bg-surface rounded-2xl border border-border">
             <MessageSquare className="h-12 w-12 text-border mx-auto mb-3" />
-            <p className="text-text-primary font-medium">No {filter !== "all" ? filter : ""} enquiries found.</p>
+            <p className="text-text-primary font-medium">No leads found in this view.</p>
           </div>
         )}
       </div>

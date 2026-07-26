@@ -23,6 +23,9 @@ export default defineSchema({
     description: v.optional(v.string()),
     features: v.array(v.string()),
     deleted_at: v.optional(v.string()),
+    video_url: v.optional(v.string()),
+    rc_status: v.optional(v.string()),
+    insurance_validity: v.optional(v.string()),
     // Admin fields
     purchase_price: v.optional(v.number()),
     purchase_date: v.optional(v.string()),
@@ -55,7 +58,35 @@ export default defineSchema({
     car_id: v.optional(v.id("cars")),
     car_details: v.optional(v.any()),
     status: v.string(),
+    source: v.optional(v.string()),
+    notes: v.optional(v.string()),
+    follow_up_date: v.optional(v.string()),
   }).index("by_status", ["status"]),
+
+  bookings: defineTable({
+    car_id: v.optional(v.id("cars")),
+    car_title: v.optional(v.string()),
+    name: v.string(),
+    phone: v.string(),
+    email: v.optional(v.string()),
+    booking_type: v.string(),
+    preferred_date: v.string(),
+    preferred_slot: v.string(),
+    status: v.string(),
+    notes: v.optional(v.string()),
+    created_at: v.optional(v.number()),
+  }).index("by_status", ["status"]),
+
+  analytics_events: defineTable({
+    event_type: v.string(),
+    car_id: v.optional(v.id("cars")),
+    car_slug: v.optional(v.string()),
+    timestamp: v.number(),
+    metadata: v.optional(v.string()),
+  })
+    .index("by_event_type", ["event_type"])
+    .index("by_car", ["car_id"])
+    .index("by_timestamp", ["timestamp"]),
 
   site_content: defineTable({
     key: v.string(),
@@ -96,6 +127,7 @@ export default defineSchema({
     emiTenureMonths: v.number(),
     address: v.optional(v.string()),
     phone: v.optional(v.string()),
+    email: v.optional(v.string()),
     workingHours: v.optional(v.string()),
   }),
 
