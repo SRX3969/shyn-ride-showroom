@@ -42,7 +42,7 @@ export function DeliveryTestimonials() {
   const list = testimonials && testimonials.length > 0 ? testimonials : defaultDeliveries;
 
   return (
-    <section className="py-24 bg-card/20 relative overflow-hidden noise-overlay">
+    <section className="py-14 sm:py-24 bg-card/20 relative overflow-hidden noise-overlay">
       <div className="mx-auto max-w-7xl px-6">
         <div className="text-center max-w-2xl mx-auto">
           <div className="inline-flex items-center gap-2 rounded-full border border-champagne/30 bg-champagne/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-champagne mb-4">
@@ -56,11 +56,11 @@ export function DeliveryTestimonials() {
           </p>
         </div>
 
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="mt-12 sm:mt-16 flex md:grid md:grid-cols-3 gap-6 md:gap-8 overflow-x-auto md:overflow-visible snap-x scrollbar-hide pb-4 md:pb-0">
           {list.map((item) => (
             <div
               key={item._id}
-              className="group relative flex flex-col justify-between rounded-2xl border border-border/40 bg-card/40 p-6 backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:border-gold-ui/50 hover:shadow-2xl hover:shadow-gold-ui/10"
+              className="w-[88%] sm:w-[70%] md:w-auto shrink-0 snap-center group relative flex flex-col justify-between rounded-2xl border border-border/40 bg-card/40 p-6 backdrop-blur-md transition-all duration-500 hover:-translate-y-2 hover:border-gold-ui/50 hover:shadow-2xl hover:shadow-gold-ui/10"
             >
               <div>
                 {/* Handover Picture */}
@@ -68,16 +68,16 @@ export function DeliveryTestimonials() {
                   <img
                     src={item.image_url}
                     alt={`${item.car_title} delivery`}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                   
                   <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-white/90">
-                    <span className="font-semibold px-2.5 py-1 rounded-md glass bg-black/40 backdrop-blur-md text-[11px]">
+                    <span className="font-semibold px-2.5 py-1 rounded-md glass bg-black/40 backdrop-blur-md text-[11px] truncate max-w-[70%]">
                       {item.car_title}
                     </span>
                     {item.delivery_date && (
-                      <span className="text-[11px] opacity-80">{item.delivery_date}</span>
+                      <span className="text-[11px] opacity-80 shrink-0">{item.delivery_date}</span>
                     )}
                   </div>
                 </div>

@@ -22,6 +22,7 @@ import {
   TrendingUp,
   ArrowRight,
   Star,
+  ChevronLeft,
   ChevronRight,
   Sparkles,
   Eye,
@@ -65,12 +66,12 @@ function HomePage() {
           <TheShowroom />
           <TrustStrip />
           <FeaturedInventory />
-          <LifestyleGallery />
+          <DeliveryTestimonials />
           <WhyShynRide />
           <HowItWorks />
           <BudgetBands />
           <SellCTA />
-          <DeliveryTestimonials />
+          <LifestyleGallery />
           <FinalCTA />
         </main>
         <Footer />
@@ -389,64 +390,127 @@ function StatItem({
 function FeaturedInventory() {
   const featured = useQuery(api.cars.list, {
     featured: true,
-    limit: 6,
+    limit: 8,
     sort: "newest",
   });
   const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
-  const { containerRef, visibleItems } = useStaggerReveal(
-    featured?.length ?? 6,
-  );
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: false,
+    align: "start",
+    slidesToScroll: 1,
+    containScroll: "trimSnaps",
+  });
+
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
+
+  const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
+  const scrollTo = useCallback((index: number) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setCanScrollPrev(emblaApi.canScrollPrev());
+    setCanScrollNext(emblaApi.canScrollNext());
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    setScrollSnaps(emblaApi.scrollSnapList());
+    onSelect();
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+  }, [emblaApi, onSelect]);
 
   return (
-    <section className="py-16">
+    <section className="py-14 sm:py-20 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6">
         <div
           ref={ref}
-          className={`flex items-end justify-between sr-hidden ${isVisible ? "sr-visible" : ""}`}
+          className={`flex flex-col sm:flex-row sm:items-end justify-between gap-4 sr-hidden ${isVisible ? "sr-visible" : ""}`}
         >
           <div>
             <SectionEyebrow>Featured</SectionEyebrow>
-            <h2 className="mt-3 font-display text-4xl md:text-5xl">
+            <h2 className="mt-3 font-display text-3xl md:text-5xl">
               On the floor <span className="text-gradient-gold">now.</span>
             </h2>
-            <p className="mt-4 max-w-md text-sm text-muted-foreground/70">
-              Hand-picked from our current collection. Each one inspected, certified, and ready to drive.
+            <p className="mt-3 max-w-md text-sm text-muted-foreground/70">
+              Hand-picked from our current collection. Swipe or use controls to view.
             </p>
           </div>
-          <Link
-            to="/inventory"
-            className="hidden items-center gap-2 rounded-lg border border-border px-5 py-2.5 text-[14px] font-bold text-text-secondary transition-all duration-300 hover:border-gold-ui hover:text-gold-ui hover:bg-gold-ui/5 md:flex"
-          >
-            View all
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
+
+          <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0">
+            {/* Slider Navigation Buttons */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={scrollPrev}
+                disabled={!canScrollPrev}
+                aria-label="Previous featured car"
+                className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full border border-border/50 bg-card/60 text-foreground transition-all duration-300 hover:border-gold-ui hover:bg-gold-ui/10 hover:text-gold-ui disabled:opacity-30 disabled:pointer-events-none"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                onClick={scrollNext}
+                disabled={!canScrollNext}
+                aria-label="Next featured car"
+                className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full border border-border/50 bg-card/60 text-foreground transition-all duration-300 hover:border-gold-ui hover:bg-gold-ui/10 hover:text-gold-ui disabled:opacity-30 disabled:pointer-events-none"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+
+            <Link
+              to="/inventory"
+              className="flex items-center gap-2 rounded-lg border border-border/50 px-4 py-2 sm:px-5 sm:py-2.5 text-xs sm:text-[14px] font-bold text-text-secondary transition-all duration-300 hover:border-gold-ui hover:text-gold-ui hover:bg-gold-ui/5"
+            >
+              View all
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
         </div>
-        <div
-          ref={containerRef}
-          className="mt-14 grid grid-cols-1 gap-x-8 gap-y-14 md:grid-cols-2 lg:grid-cols-3"
-        >
-          {featured === undefined
-            ? Array.from({ length: 6 }).map((_, i) => (
-                <SkeletonCard key={i} />
-              ))
-            : featured.map((car, i) => (
-                <div
-                  key={car._id}
-                  className={`sr-scale-hidden ${visibleItems[i] ? "sr-scale-visible" : ""}`}
-                >
-                  <CarCard car={car} />
-                </div>
-              ))}
+
+        {/* Carousel Viewport */}
+        <div className="mt-8 sm:mt-10 overflow-hidden" ref={emblaRef}>
+          <div className="flex -ml-4 touch-pan-y">
+            {featured === undefined
+              ? Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="pl-4 min-w-0 flex-[0_0_88%] sm:flex-[0_0_48%] lg:flex-[0_0_33.333%] shrink-0">
+                    <SkeletonCard />
+                  </div>
+                ))
+              : featured.map((car) => (
+                  <div
+                    key={car._id}
+                    className="pl-4 min-w-0 flex-[0_0_88%] sm:flex-[0_0_48%] lg:flex-[0_0_33.333%] shrink-0"
+                  >
+                    <CarCard car={car} />
+                  </div>
+                ))}
+          </div>
         </div>
-        <div className="mt-12 text-center md:hidden">
-          <Link
-            to="/inventory"
-            className="inline-flex items-center gap-2 rounded-lg border border-border/40 px-6 py-3 text-[15px] font-bold text-text-primary transition-all duration-300 hover:border-gold-ui/40"
-          >
-            View all inventory
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
+
+        {/* Slide Indicators / Dots */}
+        {scrollSnaps.length > 1 && (
+          <div className="mt-6 sm:mt-8 flex justify-center items-center gap-2">
+            {scrollSnaps.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => scrollTo(index)}
+                aria-label={`Go to slide ${index + 1}`}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  selectedIndex === index
+                    ? "w-8 bg-gold-ui"
+                    : "w-2 bg-border hover:bg-muted-foreground"
+                }`}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
