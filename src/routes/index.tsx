@@ -3,6 +3,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Header, Footer } from "@/components/site-chrome";
 import { CarCard } from "@/components/car-card";
+import { DeliveryTestimonials } from "@/components/delivery-testimonials";
 import { FloatingActions } from "@/components/floating-actions";
 import { SkeletonCard } from "@/components/skeleton";
 import { PageTransition, RevealSection } from "@/components/page-transition";
@@ -682,24 +683,24 @@ function BudgetBands() {
             Find your <span className="text-gradient-gold">range.</span>
           </h2>
         </div>
-        <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="mt-8 md:mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-4">
           {BUDGET_BANDS.map((b, i) => (
             <Link
               key={b.label}
               to="/inventory"
               search={{ minPrice: b.min, maxPrice: b.max } as any}
-              className={`group flex cursor-pointer items-center justify-between rounded-xl border border-border bg-surface px-6 py-5 transition-all hover:border-text-primary hover:shadow-lg sr-hidden ${isVisible ? "sr-visible" : ""}`}
+              className={`group flex cursor-pointer items-center justify-between rounded-xl border border-border bg-surface px-5 py-4 sm:px-6 sm:py-5 transition-all hover:border-text-primary hover:shadow-lg sr-hidden ${isVisible ? "sr-visible" : ""}`}
               style={{ transitionDelay: `${200 + i * 100}ms` }}
             >
               <div>
-                <span className="relative block tabular font-bold text-2xl text-text-primary">
+                <span className="relative block tabular font-bold text-xl sm:text-2xl text-text-primary">
                   {b.label}
                 </span>
-                <span className="relative mt-1 block text-sm font-medium text-text-secondary">
+                <span className="relative mt-1 block text-xs sm:text-sm font-medium text-text-secondary">
                   {b.desc}
                 </span>
               </div>
-              <ArrowRight className="relative mt-2 h-5 w-5 text-text-tertiary transition-all duration-300 group-hover:translate-x-1 group-hover:text-text-primary" />
+              <ArrowRight className="relative h-5 w-5 text-text-tertiary transition-all duration-300 group-hover:translate-x-1 group-hover:text-text-primary shrink-0 ml-2" />
             </Link>
           ))}
         </div>

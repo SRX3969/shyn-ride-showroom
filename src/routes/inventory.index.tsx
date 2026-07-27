@@ -95,67 +95,71 @@ function InventoryPage() {
           </div>
 
           {/* Filters */}
-          <div className="mt-12 rounded-2xl border border-border/30 bg-card/20 p-4 md:p-5">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <div className="flex items-center gap-2 text-muted-foreground/50 mr-1">
-                <SlidersHorizontal className="h-4 w-4" />
-              </div>
-              <FilterChip
-                label="All"
-                active={!search.bodyType}
-                onClick={() => update({ bodyType: undefined })}
-              />
-              {BODY_TYPES.map((bt) => (
+          <div className="mt-8 md:mt-12 rounded-2xl border border-border/30 bg-card/20 p-4 md:p-5">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
+                <div className="flex items-center gap-2 text-muted-foreground/50 shrink-0 mr-1">
+                  <SlidersHorizontal className="h-4 w-4" />
+                </div>
                 <FilterChip
-                  key={bt}
-                  label={bt}
-                  active={search.bodyType === bt}
-                  onClick={() => update({ bodyType: bt })}
+                  label="All"
+                  active={!search.bodyType}
+                  onClick={() => update({ bodyType: undefined })}
                 />
-              ))}
-              <div className="mx-1 h-5 w-px bg-border/30" />
-              <select
-                value={search.fuelType ?? ""}
-                onChange={(e) =>
-                  update({ fuelType: e.target.value || undefined })
-                }
-                className="rounded-lg border border-border/30 bg-card/40 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-foreground transition-all duration-300 focus:border-champagne/40 focus:outline-none hover:border-foreground/20"
-              >
-                <option value="">Any fuel</option>
-                {FUELS.map((f) => (
-                  <option key={f} value={f}>
-                    {f}
-                  </option>
+                {BODY_TYPES.map((bt) => (
+                  <FilterChip
+                    key={bt}
+                    label={bt}
+                    active={search.bodyType === bt}
+                    onClick={() => update({ bodyType: bt })}
+                  />
                 ))}
-              </select>
-              <select
-                value={search.transmission ?? ""}
-                onChange={(e) =>
-                  update({ transmission: e.target.value || undefined })
-                }
-                className="rounded-lg border border-border/30 bg-card/40 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-foreground transition-all duration-300 focus:border-champagne/40 focus:outline-none hover:border-foreground/20"
-              >
-                <option value="">Any transmission</option>
-                {TRANSMISSIONS.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-              <div className="ml-auto flex items-center gap-2">
-                <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">
-                  Sort
-                </span>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 pt-3 lg:pt-0 border-t border-border/20 lg:border-0">
                 <select
-                  value={search.sort ?? "newest"}
-                  onChange={(e) => update({ sort: e.target.value as any })}
-                  className="rounded-lg border border-border/30 bg-card/40 px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-foreground transition-all duration-300 focus:border-champagne/40 focus:outline-none hover:border-foreground/20"
+                  value={search.fuelType ?? ""}
+                  onChange={(e) =>
+                    update({ fuelType: e.target.value || undefined })
+                  }
+                  className="rounded-lg border border-border/30 bg-card/40 px-3 py-2.5 text-[11px] font-bold uppercase tracking-widest text-foreground transition-all duration-300 focus:border-champagne/40 focus:outline-none hover:border-foreground/20"
                 >
-                  <option value="newest">Newest</option>
-                  <option value="price_asc">Price · low to high</option>
-                  <option value="price_desc">Price · high to low</option>
-                  <option value="year_desc">Year · newest</option>
+                  <option value="">Any fuel</option>
+                  {FUELS.map((f) => (
+                    <option key={f} value={f}>
+                      {f}
+                    </option>
+                  ))}
                 </select>
+                <select
+                  value={search.transmission ?? ""}
+                  onChange={(e) =>
+                    update({ transmission: e.target.value || undefined })
+                  }
+                  className="rounded-lg border border-border/30 bg-card/40 px-3 py-2.5 text-[11px] font-bold uppercase tracking-widest text-foreground transition-all duration-300 focus:border-champagne/40 focus:outline-none hover:border-foreground/20"
+                >
+                  <option value="">Any transmission</option>
+                  {TRANSMISSIONS.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+                <div className="ml-auto flex items-center gap-2">
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">
+                    Sort
+                  </span>
+                  <select
+                    value={search.sort ?? "newest"}
+                    onChange={(e) => update({ sort: e.target.value as any })}
+                    className="rounded-lg border border-border/30 bg-card/40 px-3 py-2.5 text-[11px] font-bold uppercase tracking-widest text-foreground transition-all duration-300 focus:border-champagne/40 focus:outline-none hover:border-foreground/20"
+                  >
+                    <option value="newest">Newest</option>
+                    <option value="price_asc">Price · low to high</option>
+                    <option value="price_desc">Price · high to low</option>
+                    <option value="year_desc">Year · newest</option>
+                  </select>
+                </div>
               </div>
             </div>
             {hasFilters && (
@@ -232,7 +236,7 @@ function FilterChip({
   return (
     <button
       onClick={onClick}
-      className={`rounded-lg border px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 ${
+      className={`shrink-0 rounded-lg border px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 ${
         active
           ? "border-champagne bg-champagne text-primary-foreground shadow-md shadow-champagne/20"
           : "border-border/30 text-muted-foreground/60 hover:border-foreground/20 hover:text-foreground"
