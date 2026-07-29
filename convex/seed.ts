@@ -2,22 +2,20 @@ import { mutation } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 import { v } from "convex/values";
 
-export const forceSeedCars = mutation({
+export const ensureSeeded = mutation({
   handler: async (ctx) => {
-    // 1. Clear existing data
     const existingCars = await ctx.db.query("cars").collect();
-    for (const car of existingCars) {
-      await ctx.db.delete(car._id);
+    if (existingCars.length > 0) {
+      return { message: "Database already contains car data. Preserving existing data." };
     }
-    const existingImages = await ctx.db.query("car_images").collect();
-    for (const img of existingImages) {
-      await ctx.db.delete(img._id);
-    }
-    const existingSiteContent = await ctx.db.query("site_content").collect();
-    for (const sc of existingSiteContent) {
-      await ctx.db.delete(sc._id);
-    }
+    // Call internal seeding logic without deleting existing records
+    return await seedCarsInternal(ctx);
+  },
+});
 
+async function seedCarsInternal(ctx: any) {
+  const existingCars = await ctx.db.query("cars").collect();
+  if (existingCars.length === 0) {
     const cars = [
       {
         slug: "2023-mercedes-benz-s-class-s350d",
@@ -369,8 +367,23 @@ It is the ultimate sleeper sedan—comfortable and quiet for the daily commute, 
     for (const del of initialDeliveries) {
       await ctx.db.insert("testimonials", del);
     }
+  }
 
-    return { message: "Seeded successfully with delivery testimonials" };
+  return { message: "Seeded successfully with delivery testimonials" };
+}
+
+export const forceSeedCars = mutation({
+  handler: async (ctx) => {
+    // Clear only if force seed is explicitly invoked
+    const existingCars = await ctx.db.query("cars").collect();
+    for (const car of existingCars) {
+      await ctx.db.delete(car._id);
+    }
+    const existingImages = await ctx.db.query("car_images").collect();
+    for (const img of existingImages) {
+      await ctx.db.delete(img._id);
+    }
+    return await seedCarsInternal(ctx);
   },
 });
 

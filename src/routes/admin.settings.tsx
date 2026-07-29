@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { Settings, Shield, User, Key, UserPlus, Trash2, Loader2, Check, Plus, Edit, X } from "lucide-react";
+import { Settings, Shield, User, Key, UserPlus, Trash2, Loader2, Check, Plus, Edit, X, Database, Download, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -55,6 +55,9 @@ function AdminSettingsPage() {
   const updateFaq = useMutation(api.faqs.update);
   const removeFaq = useMutation(api.faqs.remove);
   const seedFaqs = useMutation(api.faqs.seedInitialFaqs);
+
+  const backupData = useQuery(api.admin.exportDatabaseBackup, token ? { token } : "skip");
+  const ensureSeeded = useMutation(api.seed.ensureSeeded);
 
   const [activeTab, setActiveTab] = useState("users");
   const [changingPasswordId, setChangingPasswordId] = useState<string | null>(null);
@@ -173,7 +176,7 @@ function AdminSettingsPage() {
       </div>
 
       <div className="flex border-b border-border overflow-x-auto">
-        {["users", "preferences", "faqs"].map(tab => (
+        {["users", "preferences", "faqs", "backup"].map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -181,7 +184,7 @@ function AdminSettingsPage() {
               activeTab === tab ? "border-gold-ui text-gold-ui" : "border-transparent text-text-secondary hover:text-text-primary"
             }`}
           >
-            {tab.replace("-", " ")}
+            {tab === "backup" ? "Data Safety & Backup" : tab.replace("-", " ")}
           </button>
         ))}
       </div>
@@ -429,6 +432,79 @@ function AdminSettingsPage() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {activeTab === "backup" && (
+        <div className="space-y-6">
+          <div className="bg-surface border border-border rounded-2xl p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-gold-ui/10 text-gold-ui rounded-xl">
+                <Database className="w-6 h-6" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-text-primary">Database Persistence & JSON Backup</h2>
+                <p className="text-sm text-text-secondary">Export all showroom data (cars, enquiries, bookings, settings) or ensure initial dataset is preserved.</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-border">
+              <div className="bg-background border border-border rounded-xl p-5 space-y-3">
+                <div className="flex items-center gap-2 font-bold text-text-primary text-sm">
+                  <Download className="w-4 h-4 text-gold-ui" /> Full JSON Export
+                </div>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  Download a complete backup snapshot of all inventory cars, photos, enquiries, test drive bookings, FAQs, and site settings.
+                </p>
+                <button
+                  onClick={() => {
+                    if (!backupData) {
+                      toast.error("Backup data is preparing...");
+                      return;
+                    }
+                    const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
+                      JSON.stringify(backupData, null, 2)
+                    )}`;
+                    const downloadAnchor = document.createElement("a");
+                    downloadAnchor.setAttribute("href", jsonString);
+                    downloadAnchor.setAttribute(
+                      "download",
+                      `shyn_ride_backup_${new Date().toISOString().slice(0, 10)}.json`
+                    );
+                    document.body.appendChild(downloadAnchor);
+                    downloadAnchor.click();
+                    downloadAnchor.remove();
+                    toast.success("Database backup downloaded successfully!");
+                  }}
+                  className="w-full bg-gold-ui hover:bg-gold-ui/90 text-white font-bold text-xs py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all"
+                >
+                  <Download className="w-4 h-4" /> Download Backup JSON
+                </button>
+              </div>
+
+              <div className="bg-background border border-border rounded-xl p-5 space-y-3">
+                <div className="flex items-center gap-2 font-bold text-text-primary text-sm">
+                  <ShieldCheck className="w-4 h-4 text-emerald-500" /> Safe Data Protection
+                </div>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  Ensure all baseline showroom content exists without clearing or overwriting any existing inventory listings or customer leads.
+                </p>
+                <button
+                  onClick={async () => {
+                    try {
+                      const res = await ensureSeeded();
+                      toast.success(res?.message || "Data integrity check passed");
+                    } catch (e: any) {
+                      toast.error("Failed to run data check");
+                    }
+                  }}
+                  className="w-full bg-surface border border-border hover:border-gold-ui hover:text-gold-ui text-text-primary font-bold text-xs py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all"
+                >
+                  <ShieldCheck className="w-4 h-4 text-emerald-500" /> Verify & Safeguard Data
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 

@@ -127,6 +127,11 @@ function CarDetailContent({ car }: { car: any }) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [showLightbox, setShowLightbox] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false);
+
+  // Touch Swipe Gesture State
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchEndX, setTouchEndX] = useState<number | null>(null);
 
   const logAnalytics = useMutation(api.analytics.logEvent);
 
@@ -161,6 +166,27 @@ function CarDetailContent({ car }: { car: any }) {
 
   const prev = () => setActive((v) => (v === 0 ? car.images.length - 1 : v - 1));
   const next = () => setActive((v) => (v === car.images.length - 1 ? 0 : v + 1));
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.targetTouches[0].clientX);
+    setTouchEndX(null);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartX === null || touchEndX === null) return;
+    const distance = touchStartX - touchEndX;
+    if (distance > 50) {
+      next();
+    } else if (distance < -50) {
+      prev();
+    }
+    setTouchStartX(null);
+    setTouchEndX(null);
+  };
 
   // Spec Grid (12 fields)
   const specGrid = [
@@ -214,8 +240,11 @@ function CarDetailContent({ car }: { car: any }) {
           {/* Gallery */}
           <div>
             <div 
-              className="group relative aspect-[4/3] md:aspect-[16/9] overflow-hidden rounded-2xl bg-card cursor-pointer"
+              className="group relative aspect-[4/3] md:aspect-[16/9] overflow-hidden rounded-2xl bg-card cursor-pointer touch-pan-y"
               onClick={() => setShowLightbox(true)}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
             >
               {img && (
                 <img
@@ -561,11 +590,19 @@ function CarDetailContent({ car }: { car: any }) {
             </button>
           </div>
           
-          <div className="flex-1 relative flex items-center justify-center p-4 md:p-12">
+          <div 
+            className="flex-1 relative flex items-center justify-center p-4 md:p-12 touch-pan-y"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
             <img 
               src={img?.url} 
               alt={img?.alt ?? "Fullscreen car view"} 
-              className="max-h-full max-w-full object-contain select-none"
+              onClick={() => setIsZoomed((v) => !v)}
+              className={`max-h-full max-w-full object-contain select-none transition-transform duration-300 ${
+                isZoomed ? "scale-150 cursor-zoom-out" : "scale-100 cursor-zoom-in"
+              }`}
             />
             {car.images.length > 1 && (
               <>

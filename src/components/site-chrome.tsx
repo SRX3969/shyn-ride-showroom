@@ -45,16 +45,12 @@ export function Header() {
   return (
     <>
       <header
-        className={`sticky top-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? "glass border-b border-border/40 shadow-lg shadow-black/20"
-            : "bg-transparent border-b border-transparent"
-        }`}
+        className="sticky top-0 z-50 bg-surface border-b border-border/60 shadow-sm transition-shadow duration-300"
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 sm:px-6 py-3.5 sm:py-4">
           <Link
             to="/"
-            className="font-display text-xl tracking-tight transition-transform duration-300 hover:scale-105"
+            className="font-display text-xl tracking-tight transition-transform duration-300 hover:scale-105 min-h-[44px] flex items-center"
             onClick={() => setMobileOpen(false)}
           >
             SHYN <span className="text-gradient-gold">RIDE</span>
@@ -92,7 +88,7 @@ export function Header() {
             {/* Mobile hamburger */}
             <button
               onClick={() => setMobileOpen((v) => !v)}
-              className="relative z-50 flex h-10 w-10 items-center justify-center rounded-md transition-colors hover:bg-card md:hidden"
+              className="relative z-50 flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-md transition-colors hover:bg-card md:hidden"
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
             >
               <div className="relative h-5 w-5">
@@ -114,26 +110,25 @@ export function Header() {
 
       {/* Mobile overlay */}
       <div
-        className={`fixed inset-0 z-40 bg-background/95 backdrop-blur-xl transition-all duration-500 md:hidden ${
+        className={`fixed inset-0 z-40 bg-surface/98 backdrop-blur-xl transition-all duration-500 md:hidden ${
           mobileOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
         }`}
       >
-        <nav className="flex h-full flex-col items-center justify-center gap-8">
+        <nav className="flex h-full flex-col items-center justify-center gap-7 px-6">
           {[
             { to: "/" as const, label: "Home" },
             { to: "/inventory" as const, label: "Inventory" },
             { to: "/sell-your-car" as const, label: "Sell Your Car" },
             { to: "/about" as const, label: "About" },
-            { to: "/faqs" as const, label: "FAQs" },
             { to: "/contact" as const, label: "Contact" },
           ].map((link, i) => (
             <Link
               key={link.to}
               to={link.to}
               onClick={() => setMobileOpen(false)}
-              className={`font-display text-3xl text-foreground transition-all duration-500 hover:text-champagne ${
+              className={`font-display text-2xl text-foreground transition-all duration-500 hover:text-champagne py-1.5 min-h-[44px] flex items-center ${
                 mobileOpen
                   ? "translate-y-0 opacity-100"
                   : "translate-y-4 opacity-0"
@@ -145,20 +140,6 @@ export function Header() {
               {link.label}
             </Link>
           ))}
-          <Link
-            to="/inventory"
-            onClick={() => setMobileOpen(false)}
-            className={`mt-4 rounded-md bg-gold-ui px-8 py-3 text-[15px] font-bold text-white transition-all duration-500 ${
-              mobileOpen
-                ? "translate-y-0 opacity-100"
-                : "translate-y-4 opacity-0"
-            }`}
-            style={{
-              transitionDelay: mobileOpen ? "500ms" : "0ms",
-            }}
-          >
-            View Inventory
-          </Link>
         </nav>
       </div>
     </>

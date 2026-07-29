@@ -4,7 +4,7 @@ import { api } from "../../../convex/_generated/api";
 import { z } from "zod";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X, Upload, Loader2, GripVertical, Trash2 } from "lucide-react";
+import { X, Upload, Loader2, GripVertical, Trash2, Camera } from "lucide-react";
 import { toast } from "sonner";
 import { calculateEMI, formatINR } from "@/lib/utils";
 import { getSessionToken } from "@/lib/auth";
@@ -292,22 +292,39 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
 
             {/* Photos */}
             <div className={activeTab === 2 ? "block" : "hidden"}>
-              <div className="border-2 border-dashed border-border rounded-xl p-8 text-center bg-background/50 relative">
-                <input 
-                  type="file" 
-                  multiple 
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={handleFileUpload}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                />
-                <div className="flex flex-col items-center pointer-events-none">
-                  <Upload className="w-8 h-8 text-text-tertiary mb-3" />
-                  <p className="text-sm font-medium text-text-primary">Drag & drop photos or click to browse</p>
-                  <p className="text-xs text-text-tertiary mt-1">JPEG, PNG, WebP up to 5MB. 6 photos required for 'Available' status.</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="border-2 border-dashed border-border rounded-xl p-6 text-center bg-background/50 relative">
+                  <input 
+                    type="file" 
+                    multiple 
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleFileUpload}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  <div className="flex flex-col items-center pointer-events-none">
+                    <Upload className="w-7 h-7 text-text-tertiary mb-2" />
+                    <p className="text-sm font-medium text-text-primary">Upload from Files</p>
+                    <p className="text-xs text-text-tertiary mt-1">Select JPEG, PNG, WebP</p>
+                  </div>
+                  {uploadProgress > 0 && (
+                    <div className="absolute bottom-0 left-0 h-1 bg-gold-ui transition-all" style={{ width: `${uploadProgress * 100}%` }} />
+                  )}
                 </div>
-                {uploadProgress > 0 && (
-                  <div className="absolute bottom-0 left-0 h-1 bg-gold-ui transition-all" style={{ width: `${uploadProgress * 100}%` }} />
-                )}
+
+                <div className="border-2 border-dashed border-gold-ui/40 rounded-xl p-6 text-center bg-gold-ui/5 relative">
+                  <input 
+                    type="file" 
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleFileUpload}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  <div className="flex flex-col items-center pointer-events-none">
+                    <Camera className="w-7 h-7 text-gold-ui mb-2 animate-pulse" />
+                    <p className="text-sm font-medium text-gold-ui">Take Photo with Phone Camera</p>
+                    <p className="text-xs text-text-tertiary mt-1">Direct camera upload on mobile</p>
+                  </div>
+                </div>
               </div>
 
               {errors.images && <p className="text-xs text-red-500 mt-2">{errors.images.message}</p>}

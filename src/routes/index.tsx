@@ -89,20 +89,20 @@ import { useCallback, useEffect, useState } from "react";
 const HERO_SLIDES = [
   {
     src: heroImg,
-    alt: "A black luxury sedan in a dark showroom",
+    alt: "Luxury showroom display in Bangalore",
   },
   {
-    src: "https://images.unsplash.com/photo-1562141989-c5c79ac8f576?q=80&w=1920&auto=format&fit=crop",
-    alt: "Modern luxury car showroom interior",
+    src: sedanImg,
+    alt: "Executive sedan showcase",
   },
   {
-    src: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1920&auto=format&fit=crop",
-    alt: "Mercedes S-Class side profile",
+    src: suvImg,
+    alt: "Luxury SUV showcase",
   },
   {
-    src: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1920&auto=format&fit=crop",
-    alt: "Elegant dealership showcase floor",
-  }
+    src: coupeImg,
+    alt: "Grand tourer sports coupe",
+  },
 ];
 
 function HeroSection() {
@@ -130,7 +130,7 @@ function HeroSection() {
   return (
     <section
       ref={parallaxRef}
-      className="relative h-[95vh] min-h-[650px] w-full overflow-hidden bg-foreground/5"
+      className="relative h-[65vh] min-h-[480px] md:h-[95vh] md:min-h-[650px] w-full overflow-hidden bg-foreground/5"
     >
       <div className="absolute inset-0 h-full w-full" ref={emblaRef}>
         <div className="flex h-full w-full touch-pan-y">
@@ -165,7 +165,7 @@ function HeroSection() {
       <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background/40 to-transparent pointer-events-none" />
 
       {/* Slide Indicators */}
-      <div className="absolute bottom-12 right-6 flex gap-2 z-10 md:right-12">
+      <div className="absolute bottom-6 sm:bottom-12 right-5 sm:right-6 flex gap-2 z-10 md:right-12">
         {HERO_SLIDES.map((_, index) => (
            <button
             key={index}
@@ -180,17 +180,17 @@ function HeroSection() {
         ))}
       </div>
 
-      <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-24 pointer-events-none">
+      <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-end px-5 sm:px-6 pb-12 sm:pb-24 pointer-events-none">
         <div className="max-w-2xl pointer-events-auto">
           <div
-            className="inline-flex items-center gap-2 rounded-full border border-border/40 bg-black/40 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-md animate-fade-in"
+            className="inline-flex items-center gap-2 rounded-full border border-border/40 bg-black/40 px-3.5 py-1 text-xs sm:text-sm font-medium text-white backdrop-blur-md animate-fade-in"
             style={{ animationDelay: "200ms" }}
           >
-            <Sparkles className="h-4 w-4 text-gold-ui" />
+            <Sparkles className="h-3.5 w-3.5 text-gold-ui" />
             Curated in Bangalore
           </div>
           <h1
-            className="mt-6 font-display text-5xl leading-[1.05] text-white drop-shadow-lg md:text-7xl lg:text-8xl animate-slide-up"
+            className="mt-3 sm:mt-6 font-display text-4xl sm:text-6xl leading-[1.05] text-white drop-shadow-lg lg:text-8xl animate-slide-up"
             style={{ animationDelay: "400ms" }}
           >
             {hero.headline ? (
@@ -203,29 +203,29 @@ function HeroSection() {
             )}
           </h1>
           <p
-            className="mt-6 max-w-lg text-base leading-relaxed text-white/90 drop-shadow md:text-lg animate-slide-up"
+            className="mt-3 sm:mt-6 max-w-lg text-sm sm:text-base leading-relaxed text-white/90 drop-shadow md:text-lg animate-slide-up"
             style={{ animationDelay: "600ms" }}
           >
             {hero.subhead ??
               "A curated pre-owned luxury showroom in Bangalore. Certified. Transparent. Unhurried."}
           </p>
           <div
-            className="mt-10 flex flex-wrap items-center gap-4 animate-slide-up"
+            className="mt-6 sm:mt-10 flex flex-wrap items-center gap-4 animate-slide-up"
             style={{ animationDelay: "800ms" }}
           >
             <Link
               to="/inventory"
-              className="group flex items-center gap-2.5 rounded-lg bg-gold-ui px-7 py-4 text-[15px] font-bold text-white transition-all duration-300 hover:shadow-2xl hover:shadow-gold-ui/25 btn-shine animate-pulse-glow"
+              className="group inline-flex items-center gap-2.5 rounded-lg bg-gold-ui px-6 py-3.5 text-sm sm:text-[15px] font-bold text-white transition-all duration-300 hover:shadow-2xl hover:shadow-gold-ui/25 min-h-[44px]"
             >
               {hero.cta ?? "View Inventory"}
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
             <Link
               to="/sell-your-car"
-              className="group flex items-center gap-2.5 rounded-lg border border-white/30 px-7 py-4 text-[15px] font-bold text-white transition-all duration-300 hover:border-gold-ui hover:text-gold-ui hover:bg-black/40 backdrop-blur-sm"
+              className="group inline-flex items-center gap-1.5 text-sm font-medium text-white hover:text-champagne transition-colors py-2 px-2 min-h-[44px]"
             >
               Sell Your Car
-              <ChevronRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+              <ChevronRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
           </div>
         </div>
@@ -278,52 +278,27 @@ function TheShowroom() {
   const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
 
   return (
-    <section ref={ref} className="relative bg-background py-16 overflow-hidden">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className={`grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-20 items-center sr-hidden ${isVisible ? "sr-visible" : ""}`}>
-          <div className="order-2 lg:order-1 relative">
-            <div className="absolute -inset-4 bg-champagne/5 blur-2xl rounded-full" />
-            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl shadow-2xl">
-              <img
-                src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1200&auto=format&fit=crop"
-                alt="SHYN RIDE Showroom Bangalore"
-                className="h-full w-full object-cover transition-transform duration-1000 hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
-              <div className="absolute bottom-6 left-6 right-6">
-                <div className="flex items-center gap-3 text-text-secondary font-semibold text-[13px]">
-                  <span>Bangalore, India</span>
-                </div>
-              </div>
+    <section ref={ref} className="relative bg-background py-10 sm:py-16 overflow-hidden">
+      <div className="mx-auto max-w-4xl px-5 sm:px-6">
+        <div className={`sr-hidden ${isVisible ? "sr-visible" : ""}`}>
+          <SectionEyebrow>The Destination</SectionEyebrow>
+          <h2 className="mt-3 font-display text-3xl md:text-5xl leading-tight text-foreground">
+            A space for <span className="text-gradient-gold">automotive excellence.</span>
+          </h2>
+          <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
+            Located in Bangalore, our curated showroom presents certified luxury vehicles in an unhurried, transparent environment.
+          </p>
+
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-6 border-t border-border/40 pt-6">
+            <div className="rounded-xl border border-border/40 bg-surface/50 p-4">
+              <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-gold-ui">Hours</div>
+              <div className="mt-1 text-xs sm:text-sm font-bold text-foreground">Mon – Sat: 10AM – 8PM</div>
+              <div className="text-[11px] sm:text-xs text-muted-foreground">Sunday by appointment</div>
             </div>
-          </div>
-          
-          <div className="order-1 lg:order-2">
-            <SectionEyebrow>The Destination</SectionEyebrow>
-            <h2 className="mt-4 font-display text-4xl leading-[1.1] md:text-5xl lg:text-6xl text-foreground">
-              A space designed for <br />
-              <span className="text-gradient-gold">automotive excellence.</span>
-            </h2>
-            <div className="mt-8 space-y-6 text-base leading-relaxed text-muted-foreground">
-              <p>
-                Located in the heart of Bangalore, our facility is more than just a dealership. It is a curated gallery where the world's most exceptional pre-owned luxury vehicles are displayed exactly as they were intended to be seen.
-              </p>
-              <p>
-                We believe that buying a luxury vehicle should be as refined an experience as driving one. There are no high-pressure salespeople here. Just passionate experts, a beautifully lit floor, and a collection of cars that speak for themselves.
-              </p>
-            </div>
-            
-            <div className="mt-12 grid grid-cols-2 gap-6 border-t border-border/40 pt-8">
-              <div>
-                <div className="text-[11px] font-bold uppercase tracking-widest text-gold-ui">Hours</div>
-                <div className="mt-2 text-sm font-medium text-foreground">Mon – Sat: 10AM – 8PM</div>
-                <div className="text-sm text-muted-foreground">Sunday by appointment</div>
-              </div>
-              <div>
-                <div className="text-[11px] font-bold uppercase tracking-widest text-gold-ui">Experience</div>
-                <div className="mt-2 text-sm font-medium text-foreground">Private Viewing Room</div>
-                <div className="text-sm text-muted-foreground">Valet Parking Available</div>
-              </div>
+            <div className="rounded-xl border border-border/40 bg-surface/50 p-4">
+              <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-gold-ui">Experience</div>
+              <div className="mt-1 text-xs sm:text-sm font-bold text-foreground">Private Viewing Room</div>
+              <div className="text-[11px] sm:text-xs text-muted-foreground">Valet Parking Available</div>
             </div>
           </div>
         </div>
@@ -340,16 +315,14 @@ function TrustStrip() {
   const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
 
   return (
-    <section ref={ref} className="relative border-b border-border/20 bg-card/20 overflow-hidden">
-      {/* Subtle gradient accent */}
-      <div className="absolute inset-0 bg-gradient-to-r from-champagne/[0.02] via-transparent to-champagne/[0.02]" />
-      <div className="relative mx-auto grid max-w-7xl grid-cols-2 gap-8 px-6 py-20 md:grid-cols-4">
+    <section ref={ref} className="relative border-y border-border/40 bg-surface py-10 sm:py-16 overflow-hidden">
+      <div className="relative mx-auto grid max-w-7xl grid-cols-2 gap-6 px-5 sm:px-6 md:grid-cols-4">
         {stats.map((s, i) => (
           <StatItem
             key={i}
             value={s.value}
             label={s.label}
-            delay={i * 150}
+            delay={i * 100}
             visible={isVisible}
           />
         ))}
@@ -376,10 +349,10 @@ function StatItem({
       className={`text-center md:text-left sr-hidden ${visible ? "sr-visible" : ""}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
-      <div className="tabular font-bold text-4xl text-text-primary md:text-5xl">
+      <div className="tabular font-bold text-3xl sm:text-4xl text-text-primary md:text-5xl">
         {displayValue}
       </div>
-      <div className="mt-3 text-[15px] font-semibold text-text-secondary">
+      <div className="mt-2 text-xs sm:text-[15px] font-semibold text-text-secondary">
         {label}
       </div>
     </div>
@@ -475,18 +448,18 @@ function FeaturedInventory() {
         </div>
 
         {/* Carousel Viewport */}
-        <div className="mt-8 sm:mt-10 overflow-hidden" ref={emblaRef}>
+        <div className="mt-6 sm:mt-10 overflow-hidden" ref={emblaRef}>
           <div className="flex -ml-4 touch-pan-y">
             {featured === undefined
               ? Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="pl-4 min-w-0 flex-[0_0_88%] sm:flex-[0_0_48%] lg:flex-[0_0_33.333%] shrink-0">
+                  <div key={i} className="pl-4 min-w-0 flex-[0_0_100%] sm:flex-[0_0_48%] lg:flex-[0_0_33.333%] shrink-0">
                     <SkeletonCard />
                   </div>
                 ))
               : featured.map((car) => (
                   <div
                     key={car._id}
-                    className="pl-4 min-w-0 flex-[0_0_88%] sm:flex-[0_0_48%] lg:flex-[0_0_33.333%] shrink-0"
+                    className="pl-4 min-w-0 flex-[0_0_100%] sm:flex-[0_0_48%] lg:flex-[0_0_33.333%] shrink-0"
                   >
                     <CarCard car={car} />
                   </div>
@@ -590,56 +563,51 @@ function WhyShynRide() {
     {
       icon: Shield,
       title: "Certified Inspection",
-      desc: "Every car passes a 180-point mechanical, cosmetic and paperwork inspection before it is listed.",
+      desc: "180-point mechanical, cosmetic and paperwork check.",
       accent: "from-champagne/10 to-champagne/5",
     },
     {
       icon: TrendingUp,
       title: "Transparent Pricing",
-      desc: "Honest, researched prices. If a car is marked negotiable, there is room. If not, the number is the number.",
+      desc: "Honest, researched prices with clear room for negotiation.",
       accent: "from-emerald-deep/30 to-emerald-deep/10",
     },
     {
       icon: Headset,
       title: "Concierge Service",
-      desc: "Doorstep test drives, RTO paperwork, finance liaison, and a delivery experience worthy of the car.",
+      desc: "Doorstep test drives, RTO finance liaison, and white-glove delivery.",
       accent: "from-champagne/10 to-champagne/5",
     },
   ];
 
   return (
-    <section ref={ref} className="py-16">
-      <div className="mx-auto max-w-7xl px-6">
+    <section ref={ref} className="py-10 sm:py-16">
+      <div className="mx-auto max-w-7xl px-5 sm:px-6">
         <div className={`max-w-2xl sr-hidden ${isVisible ? "sr-visible" : ""}`}>
-          <SectionEyebrow>The showroom</SectionEyebrow>
-          <h2 className="mt-3 font-display text-4xl md:text-5xl">
-            A quieter way to buy a{" "}
-            <span className="text-gradient-gold">serious car.</span>
+          <SectionEyebrow>The Showroom</SectionEyebrow>
+          <h2 className="mt-2 font-display text-2xl sm:text-4xl md:text-5xl">
+            A quieter way to buy a <span className="text-gradient-gold">serious car.</span>
           </h2>
-          <p className="mt-4 text-sm text-muted-foreground/70">
-            No floor salespeople. No pressure. Just a beautiful space, honest information, and cars that deserve your attention.
+          <p className="mt-2 text-xs sm:text-sm text-muted-foreground/80">
+            No pressure. Just honest information and cars that deserve your attention.
           </p>
         </div>
-        <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="mt-6 sm:mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-6">
           {features.map((f, i) => (
             <div
               key={f.title}
-              className={`group relative overflow-hidden rounded-2xl border border-border/30 bg-card/20 p-8 transition-all duration-500 hover:border-champagne/20 hover:bg-card/40 hover:shadow-xl hover:shadow-champagne/5 sr-hidden ${isVisible ? "sr-visible" : ""}`}
-              style={{ transitionDelay: `${200 + i * 150}ms` }}
+              className={`group rounded-xl border border-border/40 bg-surface p-3.5 sm:p-6 transition-all hover:border-gold-ui/30 sr-hidden ${isVisible ? "sr-visible" : ""}`}
+              style={{ transitionDelay: `${200 + i * 100}ms` }}
             >
-              {/* Accent gradient */}
-              <div className={`absolute -right-16 -top-16 h-40 w-40 rounded-full bg-gradient-to-br ${f.accent} opacity-0 blur-3xl transition-opacity duration-700 group-hover:opacity-100`} />
-              <div className="relative">
-                <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gold-ui/10 text-gold-ui ring-1 ring-gold-ui/10 transition-all duration-500 group-hover:bg-gold-ui/15 group-hover:scale-110 group-hover:ring-gold-ui/20">
-                  <f.icon className="h-6 w-6" />
-                </div>
-                <h3 className="mt-6 font-display text-xl text-foreground">
-                  {f.title}
-                </h3>
-                <p className="mt-4 text-sm leading-relaxed text-foreground/60">
-                  {f.desc}
-                </p>
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gold-ui/10 text-gold-ui mb-3">
+                <f.icon className="h-5 w-5" />
               </div>
+              <h3 className="font-bold text-sm sm:text-base text-foreground leading-tight">
+                {f.title}
+              </h3>
+              <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                {f.desc}
+              </p>
             </div>
           ))}
         </div>
@@ -653,70 +621,55 @@ function HowItWorks() {
   const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
   const steps = [
     {
-      num: 1,
       title: "Browse digitally",
-      desc: "Explore our collection with high-fidelity imagery and transparent history.",
+      desc: "Explore high-res imagery & transparent vehicle history.",
       icon: Search,
     },
     {
-      num: 2,
       title: "Schedule viewing",
-      desc: "Book a private appointment at our showroom or request a home visit.",
+      desc: "Book a showroom appointment or home visit.",
       icon: Eye,
     },
     {
-      num: 3,
-      title: "Expert inspection",
-      desc: "Every vehicle passes our rigorous 150-point quality assurance check.",
+      title: "150-Point check",
+      desc: "Rigorous quality and mechanical inspection.",
       icon: ClipboardCheck,
     },
     {
-      num: 4,
       title: "Doorstep delivery",
-      desc: "Seamless paperwork and delivery of your new vehicle to your home.",
+      desc: "Seamless paperwork & direct delivery.",
       icon: Truck,
     },
   ];
 
   return (
-    <section ref={ref} className="relative border-y border-border/20 bg-card/10 py-16 overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full bg-champagne/[0.02] blur-[120px]" />
-      <div className="relative mx-auto max-w-7xl px-6">
+    <section ref={ref} className="relative border-y border-border/20 bg-card/10 py-10 sm:py-16 overflow-hidden">
+      <div className="relative mx-auto max-w-7xl px-5 sm:px-6">
         <div
           className={`text-center sr-hidden ${isVisible ? "sr-visible" : ""}`}
         >
           <SectionEyebrow>How it works</SectionEyebrow>
-          <h2 className="mt-3 font-display text-4xl md:text-5xl">
+          <h2 className="mt-2 font-display text-2xl sm:text-4xl md:text-5xl">
             Four simple <span className="text-gradient-gold">steps.</span>
           </h2>
-          <p className="mx-auto mt-4 max-w-md text-sm text-muted-foreground/70">
+          <p className="mx-auto mt-2 max-w-md text-xs sm:text-sm text-muted-foreground/80">
             From first glance to first drive — we make every step effortless.
           </p>
         </div>
-        <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-4">
+        <div className="mt-6 sm:mt-12 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-6">
           {steps.map((step, i) => (
             <div
-              key={step.num}
-              className={`group relative text-center sr-hidden ${isVisible ? "sr-visible" : ""}`}
-              style={{ transitionDelay: `${300 + i * 150}ms` }}
+              key={step.title}
+              className={`group rounded-xl border border-border/40 bg-surface p-3.5 sm:p-6 transition-all hover:border-gold-ui/30 sr-hidden ${isVisible ? "sr-visible" : ""}`}
+              style={{ transitionDelay: `${200 + i * 100}ms` }}
             >
-              {/* Connecting line */}
-              {i < steps.length - 1 && (
-                <div className="absolute right-0 top-10 hidden h-px w-full translate-x-1/2 md:block">
-                  <div className="h-full w-full bg-gradient-to-r from-champagne/30 via-champagne/10 to-transparent" />
-                </div>
-              )}
-              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl border border-border bg-surface transition-all duration-500 group-hover:border-gold-ui/30 group-hover:shadow-xl">
-                <step.icon className="h-8 w-8 text-gold-ui transition-transform duration-500 group-hover:scale-110" strokeWidth={2} />
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gold-ui/10 text-gold-ui mb-2.5">
+                <step.icon className="h-4 w-4" />
               </div>
-              <div className="mt-4 text-[14px] font-bold text-text-secondary">
-                Step 0{step.num}
-              </div>
-              <h3 className="mt-2 text-xl font-bold text-text-primary">
+              <h3 className="font-bold text-sm sm:text-base text-text-primary leading-tight">
                 {step.title}
               </h3>
-              <p className="mx-auto mt-2 max-w-[260px] text-base leading-[1.6] text-text-secondary">
+              <p className="mt-1 text-xs text-text-secondary leading-relaxed line-clamp-2">
                 {step.desc}
               </p>
             </div>

@@ -229,3 +229,28 @@ export const updateAdminPassword = mutation({
     await ctx.db.patch(id, { password_hash });
   },
 });
+
+export const exportDatabaseBackup = query({
+  args: { token: v.string() },
+  handler: async (ctx, { token }) => {
+    await requireAdmin(ctx, token);
+    const cars = await ctx.db.query("cars").collect();
+    const carImages = await ctx.db.query("car_images").collect();
+    const enquiries = await ctx.db.query("enquiries").collect();
+    const bookings = await ctx.db.query("bookings").collect();
+    const settings = await ctx.db.query("site_settings").collect();
+    const faqs = await ctx.db.query("faqs").collect();
+    const testimonials = await ctx.db.query("testimonials").collect();
+
+    return {
+      exportedAt: new Date().toISOString(),
+      cars,
+      carImages,
+      enquiries,
+      bookings,
+      settings,
+      faqs,
+      testimonials,
+    };
+  },
+});

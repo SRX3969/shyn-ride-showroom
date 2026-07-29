@@ -8,7 +8,8 @@ import { FloatingActions } from "@/components/floating-actions";
 import { SkeletonCard } from "@/components/skeleton";
 import { PageTransition } from "@/components/page-transition";
 import { useScrollReveal, useStaggerReveal } from "@/hooks/useScrollReveal";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, SlidersHorizontal, RotateCw, MapPin, X, Filter, Check } from "lucide-react";
 
 const searchSchema = z.object({
   bodyType: z.string().optional(),
@@ -43,12 +44,18 @@ export const Route = createFileRoute("/inventory/")(
 );
 
 const BODY_TYPES = ["Sedan", "SUV", "Coupe", "Convertible"];
+const MAKES = ["BMW", "Mercedes-Benz", "Porsche", "Land Rover", "Audi"];
 const FUELS = ["Petrol", "Diesel", "Hybrid", "Electric"];
 const TRANSMISSIONS = ["Automatic", "Manual"];
 
 function InventoryPage() {
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
+
+  const [showMobileFilter, setShowMobileFilter] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [pullY, setPullY] = useState(0);
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
 
   const cars = useQuery(api.cars.list, {
     bodyType: search.bodyType,
@@ -70,23 +77,83 @@ function InventoryPage() {
     navigate({ search: (s: any) => ({ ...s, ...patch }) as any });
   };
 
-  const hasFilters = search.bodyType || search.fuelType || search.transmission;
+  const hasFilters = search.bodyType || search.make || search.fuelType || search.transmission;
+
+  // Touch Pull-To-Refresh
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (window.scrollY === 0) {
+      setTouchStartY(e.touches[0].clientY);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (touchStartY !== null && window.scrollY === 0) {
+      const currentY = e.touches[0].clientY;
+      const diff = currentY - touchStartY;
+      if (diff > 0) {
+        setPullY(Math.min(diff * 0.4, 80));
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (pullY > 50) {
+      setRefreshing(true);
+      setTimeout(() => {
+        setRefreshing(false);
+        setPullY(0);
+      }, 1000);
+    } else {
+      setPullY(0);
+    }
+    setTouchStartY(null);
+  };
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background text-foreground">
+      <div 
+        className="min-h-screen bg-background text-foreground relative"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {/* Pull to refresh indicator */}
+        {(pullY > 0 || refreshing) && (
+          <div 
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-full glass bg-card/80 border border-gold-ui/30 px-4 py-2 text-xs font-bold text-champagne shadow-xl transition-all duration-200"
+            style={{ transform: `translate(-50%, ${pullY}px)` }}
+          >
+            <RotateCw className={`w-4 h-4 ${refreshing ? "animate-spin text-gold-ui" : ""}`} />
+            {refreshing ? "Refreshing inventory..." : pullY > 50 ? "Release to refresh" : "Pull to refresh"}
+          </div>
+        )}
+
         <Header />
         <main className="mx-auto max-w-7xl px-6 py-16">
           <div
             ref={headerRef}
             className={`sr-hidden ${headerVisible ? "sr-visible" : ""}`}
           >
-            <div className="text-[11px] font-bold uppercase tracking-[0.35em] text-champagne">
-              Inventory
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-[11px] font-bold uppercase tracking-[0.35em] text-champagne">
+                  Inventory
+                </div>
+                <h1 className="mt-4 font-display text-5xl md:text-6xl">
+                  The <span className="text-gradient-gold">floor.</span>
+                </h1>
+              </div>
+
+              {/* Mobile Bottom Sheet Filter Trigger */}
+              <button
+                onClick={() => setShowMobileFilter(true)}
+                className="flex lg:hidden items-center gap-2 rounded-xl bg-gold-ui/10 border border-gold-ui/30 px-4 py-2.5 text-xs font-bold text-gold-ui hover:bg-gold-ui/20 transition-all"
+              >
+                <Filter className="w-4 h-4" />
+                Filter ({[search.bodyType, search.make, search.fuelType, search.transmission].filter(Boolean).length})
+              </button>
             </div>
-            <h1 className="mt-4 font-display text-5xl md:text-6xl">
-              The <span className="text-gradient-gold">floor.</span>
-            </h1>
+
             <p className="mt-4 max-w-xl text-sm text-muted-foreground/70">
               {cars === undefined
                 ? "Loading inventory…"
@@ -217,6 +284,134 @@ function InventoryPage() {
             </div>
           )}
         </main>
+
+        {/* Mobile Bottom Sheet Filter Modal */}
+        {showMobileFilter && (
+          <div className="fixed inset-0 z-50 flex flex-col justify-end bg-black/70 backdrop-blur-sm lg:hidden animate-fade-in">
+            <div className="bg-card border-t border-border rounded-t-3xl p-6 space-y-6 max-h-[85vh] overflow-y-auto animate-slide-up">
+              <div className="flex items-center justify-between pb-3 border-b border-border/40">
+                <div className="flex items-center gap-2 font-display text-xl">
+                  <Filter className="w-5 h-5 text-gold-ui" /> Filter Showroom
+                </div>
+                <button
+                  onClick={() => setShowMobileFilter(false)}
+                  className="p-2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Brand Chips */}
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 block">
+                  Brand / Make
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  <FilterChip
+                    label="All Makes"
+                    active={!search.make}
+                    onClick={() => update({ make: undefined })}
+                  />
+                  {MAKES.map((m) => (
+                    <FilterChip
+                      key={m}
+                      label={m}
+                      active={search.make === m}
+                      onClick={() => update({ make: search.make === m ? undefined : m })}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Body Type Chips */}
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 block">
+                  Body Style
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  <FilterChip
+                    label="All Styles"
+                    active={!search.bodyType}
+                    onClick={() => update({ bodyType: undefined })}
+                  />
+                  {BODY_TYPES.map((bt) => (
+                    <FilterChip
+                      key={bt}
+                      label={bt}
+                      active={search.bodyType === bt}
+                      onClick={() => update({ bodyType: search.bodyType === bt ? undefined : bt })}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Fuel Type Chips */}
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 block">
+                  Fuel Type
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  <FilterChip
+                    label="Any Fuel"
+                    active={!search.fuelType}
+                    onClick={() => update({ fuelType: undefined })}
+                  />
+                  {FUELS.map((f) => (
+                    <FilterChip
+                      key={f}
+                      label={f}
+                      active={search.fuelType === f}
+                      onClick={() => update({ fuelType: search.fuelType === f ? undefined : f })}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Transmission Chips */}
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 block">
+                  Transmission
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  <FilterChip
+                    label="Any Transmission"
+                    active={!search.transmission}
+                    onClick={() => update({ transmission: undefined })}
+                  />
+                  {TRANSMISSIONS.map((t) => (
+                    <FilterChip
+                      key={t}
+                      label={t}
+                      active={search.transmission === t}
+                      onClick={() => update({ transmission: search.transmission === t ? undefined : t })}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-3 pt-4 border-t border-border/40">
+                {hasFilters && (
+                  <button
+                    onClick={() => {
+                      navigate({ search: { sort: search.sort } as any });
+                    }}
+                    className="w-1/3 border border-border rounded-xl py-3 text-xs font-bold text-muted-foreground hover:text-foreground"
+                  >
+                    Reset
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowMobileFilter(false)}
+                  className="flex-1 bg-gold-ui text-white rounded-xl py-3 text-xs font-bold shadow-lg shadow-gold-ui/20"
+                >
+                  Show Cars ({cars?.length ?? 0})
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <Footer />
         <FloatingActions />
       </div>

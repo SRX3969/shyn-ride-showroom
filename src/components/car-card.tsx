@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Fuel, Gauge, Calendar, ArrowRight, Tag } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { formatINR, formatKm } from "@/lib/format";
 import { calculateEMI } from "@/lib/utils";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import fallbackCarImg from "@/assets/car-sedan-1.jpg";
 
 export type CarCardData = {
   _id: string;
@@ -29,108 +31,83 @@ export type CarCardData = {
 export function CarCard({ car, className = "" }: { car: CarCardData; className?: string }) {
   const title = `${car.year} ${car.make} ${car.model}`;
   const settings = useQuery(api.settings.get);
-  const isLimitedOffer = car.original_price && car.original_price > car.price_inr;
   const emi = settings ? calculateEMI(car.price_inr, settings.emiDownPaymentPct, settings.emiAnnualRatePct, settings.emiTenureMonths) : 0;
+  const [imgSrc, setImgSrc] = useState<string>(car.cover_url || fallbackCarImg);
+
+  const specParts = [
+    car.year,
+    formatKm(car.km),
+    car.fuel_type,
+    car.transmission,
+    car.reg_state ? car.reg_state.toUpperCase() : null,
+  ].filter(Boolean);
 
   return (
     <Link
       to="/inventory/$slug"
       params={{ slug: car.slug }}
-      className={`group block hover-lift rounded-lg overflow-hidden ${className}`}
+      className={`group block rounded-xl overflow-hidden bg-surface shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-xl ${className}`}
     >
-      <div className="chrome-sweep aspect-[4/3] w-full overflow-hidden rounded-lg bg-card">
-        {car.cover_url ? (
-          <img
-            src={car.cover_url}
-            alt={`${title} — sample photo`}
-            loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-card to-secondary text-muted-foreground text-sm">
-            <span className="font-display text-lg opacity-40">SHYN RIDE</span>
-          </div>
-        )}
+      {/* 1. Image container (4:3 aspect ratio, rounded-t-xl, no border) */}
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-card">
+        <img
+          src={imgSrc}
+          alt={`${title} — photo`}
+          loading="lazy"
+          onError={() => setImgSrc(fallbackCarImg)}
+          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.05]"
+        />
         <div className="chrome-sweep-inner" />
 
-        {/* Status badge */}
-        {car.status !== "available" && (
-          <div className="absolute right-3 top-3 z-10 glass rounded-md px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-champagne">
+        {/* On-image status / featured badge top-left */}
+        {car.status !== "available" ? (
+          <div className="absolute left-3 top-3 z-10 rounded-full bg-black/70 backdrop-blur-md px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-champagne">
             {car.status}
           </div>
-        )}
-
-        {/* Featured badge */}
-        {car.featured && car.status === "available" && (
-          <div className="absolute left-3 top-3 z-10 rounded-md bg-champagne/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-primary-foreground">
+        ) : car.featured ? (
+          <div className="absolute left-3 top-3 z-10 rounded-full bg-black/70 backdrop-blur-md px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white">
             Featured
           </div>
-        )}
+        ) : null}
 
-        {/* Limited Offer Badge */}
-        {isLimitedOffer && car.status === "available" && (
-          <div className="absolute left-3 bottom-3 z-10 rounded-md bg-red-600 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-white shadow-lg flex items-center gap-1">
-            <Tag className="w-3 h-3" /> Limited Offer
-          </div>
-        )}
+        {/* On-image price bold pill bottom-right */}
+        <div className="absolute bottom-3 right-3 z-10 rounded-full bg-black/80 backdrop-blur-md px-3 py-1 text-xs sm:text-sm font-bold text-white shadow-md">
+          {formatINR(car.price_inr)}
+          {car.price_negotiable && (
+            <span className="ml-1 text-[10px] font-normal text-white/80">· Neg.</span>
+          )}
+        </div>
       </div>
 
-      <div className="mt-5 space-y-3">
-        <div>
-          <div className="text-[13px] font-semibold text-text-secondary">
-            {car.make}
-          </div>
-          <div className="mt-1 font-bold text-xl leading-tight text-text-primary">
-            {car.model}{" "}
-            {car.variant && (
-              <span className="text-[15px] font-medium text-text-secondary">
-                {car.variant}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Specs row (Cars24 style - simple grey text) */}
-        <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] font-medium text-text-secondary bg-surface rounded-md px-3 py-2 border border-border/50">
-          <span>{formatKm(car.km)}</span>
-          <span className="text-border px-1">•</span>
-          <span className="capitalize">{car.fuel_type}</span>
-          <span className="text-border px-1">•</span>
-          <span className="capitalize">{car.transmission}</span>
-          <span className="text-border px-1">•</span>
-          <span>{car.year}</span>
-          {car.reg_state && (
-            <>
-              <span className="text-border px-1">•</span>
-              <span className="uppercase text-text-primary bg-background border border-border/50 px-1.5 py-0.5 rounded text-[11px] font-bold">{car.reg_state}</span>
-            </>
+      {/* 2. Below image: max 3 clean text elements without boxes/borders */}
+      <div className="p-4 space-y-1.5">
+        {/* Line 1: Model name */}
+        <div className="font-bold text-base text-text-primary truncate leading-tight">
+          {car.make} {car.model}{" "}
+          {car.variant && (
+            <span className="font-normal text-text-secondary text-sm">
+              {car.variant}
+            </span>
           )}
         </div>
 
-        <div className="mt-4 pt-4 border-t border-border/50 flex flex-col">
-          <div className="text-[13px] font-medium text-text-tertiary mb-1 flex items-center justify-between">
-            <span>Price</span>
-            {isLimitedOffer && car.original_price && (
-              <span className="line-through text-text-secondary text-xs">{formatINR(car.original_price)}</span>
-            )}
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-baseline gap-2">
-              <div className="font-bold text-[22px] tracking-tight text-text-primary">
-                {formatINR(car.price_inr)}
-              </div>
-            </div>
-            {car.price_negotiable && (
-              <div className="text-[12px] font-medium text-text-secondary bg-surface px-2 py-1 rounded-sm border border-border">
-                Negotiable
-              </div>
-            )}
-          </div>
-          {emi > 0 && (
-            <div className="mt-2 text-xs font-medium text-text-secondary">
-              EMI from <span className="text-gold-ui">{formatINR(emi)}/m*</span>
-            </div>
+        {/* Line 2: Compact spec line using middot separators */}
+        <div className="text-xs text-text-secondary font-medium truncate capitalize">
+          {specParts.join(" · ")}
+        </div>
+
+        {/* Line 3: EMI & View Details link */}
+        <div className="pt-1 flex items-center justify-between text-xs">
+          {emi > 0 ? (
+            <span className="text-text-tertiary">
+              EMI from <span className="font-medium text-text-secondary">{formatINR(emi)}/mo</span>
+            </span>
+          ) : (
+            <span className="text-text-tertiary">Certified luxury</span>
           )}
+          <span className="font-bold text-gold-ui group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
+            View details <ArrowRight className="h-3 w-3 inline" />
+          </span>
         </div>
       </div>
     </Link>
