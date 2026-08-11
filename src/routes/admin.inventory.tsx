@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useState, useEffect } from "react";
 import { formatINR, formatKm } from "@/lib/utils";
-import { Plus, Edit2, Trash2, Search, Filter, MessageSquare, ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { Plus, Edit2, Trash2, Search, Filter, MessageSquare, ChevronLeft, ChevronRight, Check, CarFront } from "lucide-react";
 import { toast } from "sonner";
 import { CarFormModal } from "@/components/admin/car-form";
 import { formatDistanceToNow } from "date-fns";

@@ -48,6 +48,38 @@ type CarFormValues = z.infer<typeof carSchema>;
 
 const TABS = ["Basic Info", "Pricing & Condition", "Photos", "Description", "Internal"];
 
+const POPULAR_MODELS: Record<string, string[]> = {
+  "Tata": ["Harrier", "Nexon", "Safari", "Punch", "Altroz", "Tiago", "Tigor", "Curvv", "Nexon EV"],
+  "Hyundai": ["Creta", "Venue", "Verna", "i20", "Tucson", "Alcazar", "Exster", "Aura", "Ioniq 5"],
+  "Mercedes-Benz": ["C-Class", "E-Class", "GLC", "GLE", "S-Class", "CLA", "GLA", "GLS", "AMG GT", "EQS"],
+  "BMW": ["3 Series", "5 Series", "X1", "X3", "X5", "7 Series", "X7", "M3", "i4", "Z4"],
+  "Audi": ["A4", "A6", "Q3", "Q5", "Q7", "A8 L", "Q8", "e-tron", "RS5"],
+  "Mahindra": ["Thar", "XUV700", "Scorpio-N", "Scorpio Classic", "XUV300", "Bolero Neo", "XUV400"],
+  "Toyota": ["Fortuner", "Innova Crysta", "Innova Hycross", "Glanza", "Urban Cruiser Hyryder", "Camry", "Vellfire"],
+  "Kia": ["Seltos", "Sonet", "Carens", "Carnival", "EV6"],
+  "Honda": ["City", "Amaze", "Elevate", "Civic", "CR-V"],
+  "MG": ["Hector", "Astor", "ZSEV", "Gloster", "Comet EV"],
+  "Skoda": ["Slavia", "Kushaq", "Kodiaq", "Octavia", "Superb"],
+  "Volkswagen": ["Virtus", "Taigun", "Tiguan", "Polo"],
+  "Land Rover": ["Defender", "Range Rover Evoque", "Range Rover Velar", "Discovery Sport", "Range Rover Sport"],
+  "Volvo": ["XC60", "XC90", "XC40 Recharge", "S90"],
+  "Porsche": ["Cayenne", "Macan", "911 Carrera", "Panamera", "Taycan"],
+  "Jaguar": ["F-Pace", "XE", "XF", "F-Type"]
+};
+
+const ALL_MODELS = Array.from(new Set(Object.values(POPULAR_MODELS).flat()));
+
+const POPULAR_VARIANTS = [
+  "XZA Plus", "XZ+ Dual Tone", "SX (O)", "SX", "ZX", "VX", "200d AMG Line", "220d",
+  "320d M Sport", "Technology", "LXI", "VXI", "ZXI+", "AX7 L Turbo", "Z8 L", "V6 Petrol"
+];
+
+const RECENT_YEARS = Array.from({ length: 15 }, (_, i) => (new Date().getFullYear() - i).toString());
+
+const INDIAN_STATES = [
+  "KA", "MH", "DL", "HR", "TN", "TS", "KL", "GA", "AP", "WB", "GJ", "UP", "PB", "RJ"
+];
+
 export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClose: () => void, onSaved: () => void }) {
   const [activeTab, setActiveTab] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,7 +91,7 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
   const token = getSessionToken() || "";
 
   const { register, handleSubmit, control, watch, setValue, formState: { errors } } = useForm<CarFormValues>({
-    resolver: zodResolver(carSchema),
+    resolver: zodResolver(carSchema) as any,
     defaultValues: car ? {
       ...car,
       images: car.images || [],
@@ -145,10 +177,46 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
   };
 
   return (
+  const selectedMake = watch("make");
+  const modelOptions = (selectedMake && POPULAR_MODELS[selectedMake]) ? POPULAR_MODELS[selectedMake] : ALL_MODELS;
+
+  return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="w-full max-w-4xl max-h-[90vh] bg-surface border border-border rounded-2xl flex flex-col shadow-2xl">
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <h2 className="text-lg font-bold text-text-primary">{car ? "Edit Car" : "Add New Car"}</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-bold text-text-primary">{car ? "Edit Car" : "Add New Car"}</h2>
+            {!car && (
+              <button
+                type="button"
+                onClick={() => {
+                  setValue("make", "Mercedes-Benz", { shouldValidate: true });
+                  setValue("model", "C-Class", { shouldValidate: true });
+                  setValue("variant", "C 200d AMG Line", { shouldValidate: true });
+                  setValue("year", 2022, { shouldValidate: true });
+                  setValue("body_type", "Sedan", { shouldValidate: true });
+                  setValue("color", "White", { shouldValidate: true });
+                  setValue("price_inr", 4250000, { shouldValidate: true });
+                  setValue("original_price", 4600000);
+                  setValue("km", 24000, { shouldValidate: true });
+                  setValue("fuel_type", "diesel", { shouldValidate: true });
+                  setValue("transmission", "automatic", { shouldValidate: true });
+                  setValue("owners", 1, { shouldValidate: true });
+                  setValue("reg_state", "KA");
+                  setValue("status", "available");
+                  setValue("featured", true);
+                  setValue("description", "Pristine condition single-owner Mercedes C-Class 200d. Full service history with authorized Mercedes dealership.");
+                  setValue("features", ["Sunroof", "Leather Seats", "360 Camera", "Ambient Lighting", "Burmester Audio"]);
+                  setValue("purchase_price", 3800000);
+                  setValue("purchase_source", "Direct Owner (Bangalore)");
+                  toast.success("Sample car data loaded!");
+                }}
+                className="text-xs bg-gold-ui/15 text-gold-ui hover:bg-gold-ui/25 px-3 py-1.5 rounded-lg font-medium border border-gold-ui/30 transition-all flex items-center gap-1 cursor-pointer"
+              >
+                ⚡ Quick Fill Sample Car
+              </button>
+            )}
+          </div>
           <button onClick={onClose} className="p-2 hover:bg-border/50 rounded-full transition-colors text-text-secondary">
             <X className="w-5 h-5" />
           </button>
@@ -177,41 +245,53 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
               <datalist id="car-makes">
                 {["Maruti Suzuki", "Hyundai", "Tata", "Mahindra", "Kia", "Toyota", "Honda", "MG", "Skoda", "Volkswagen", "Renault", "Nissan", "Jeep", "Audi", "BMW", "Mercedes-Benz", "Volvo", "Land Rover", "Jaguar", "Porsche", "Lexus", "Mini", "Isuzu", "Force Motors"].map(opt => <option key={opt} value={opt} />)}
               </datalist>
+              <datalist id="car-models">
+                {modelOptions.map(opt => <option key={opt} value={opt} />)}
+              </datalist>
+              <datalist id="car-variants">
+                {POPULAR_VARIANTS.map(opt => <option key={opt} value={opt} />)}
+              </datalist>
+              <datalist id="car-years">
+                {RECENT_YEARS.map(opt => <option key={opt} value={opt} />)}
+              </datalist>
               <datalist id="body-types">
                 {["Hatchback", "Sedan", "SUV", "MUV", "Coupe", "Convertible", "Wagon", "Pickup", "Minivan"].map(opt => <option key={opt} value={opt} />)}
               </datalist>
               <datalist id="car-colors">
                 {["White", "Silver", "Grey", "Black", "Red", "Blue", "Brown", "Green", "Beige", "Yellow", "Orange", "Purple", "Gold"].map(opt => <option key={opt} value={opt} />)}
               </datalist>
+              <datalist id="reg-states">
+                {INDIAN_STATES.map(opt => <option key={opt} value={opt} />)}
+              </datalist>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Make *</label>
-                  <input list="car-makes" {...register("make")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" placeholder="e.g. Tata, Hyundai..." autoComplete="off" />
+                  <input list="car-makes" {...register("make")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. Tata, Hyundai..." autoComplete="off" />
                   {errors.make && <p className="text-xs text-red-500 mt-1">{errors.make.message}</p>}
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Model *</label>
-                  <input {...register("model")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" />
+                  <input list="car-models" {...register("model")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. Harrier, Creta, C-Class..." autoComplete="off" />
                   {errors.model && <p className="text-xs text-red-500 mt-1">{errors.model.message}</p>}
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Variant</label>
-                  <input {...register("variant")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" />
+                  <input list="car-variants" {...register("variant")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. XZA Plus, SX(O), 200d..." autoComplete="off" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Year *</label>
-                  <input type="number" {...register("year")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" />
+                  <input type="number" list="car-years" {...register("year")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. 2022" autoComplete="off" />
                   {errors.year && <p className="text-xs text-red-500 mt-1">{errors.year.message}</p>}
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Body Type *</label>
-                  <input list="body-types" {...register("body_type")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" placeholder="e.g. SUV, Sedan..." autoComplete="off" />
+                  <input list="body-types" {...register("body_type")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. SUV, Sedan..." autoComplete="off" />
                   {errors.body_type && <p className="text-xs text-red-500 mt-1">{errors.body_type.message}</p>}
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Color *</label>
-                  <input list="car-colors" {...register("color")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" placeholder="e.g. White, Black..." autoComplete="off" />
+                  <input list="car-colors" {...register("color")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. White, Black..." autoComplete="off" />
                   {errors.color && <p className="text-xs text-red-500 mt-1">{errors.color.message}</p>}
                 </div>
               </div>
@@ -222,12 +302,12 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Selling Price (INR) *</label>
-                  <input type="number" {...register("price_inr")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" />
+                  <input type="number" {...register("price_inr")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. 1850000" />
                   {errors.price_inr && <p className="text-xs text-red-500 mt-1">{errors.price_inr.message}</p>}
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Original Price (For Limited Offer)</label>
-                  <input type="number" {...register("original_price")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" />
+                  <input type="number" {...register("original_price")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. 2100000" />
                 </div>
                 {settings && (
                   <div className="col-span-2 bg-gold-ui/10 border border-gold-ui/20 rounded-lg p-4 flex items-center justify-between">
@@ -246,12 +326,12 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">KM Driven *</label>
-                  <input type="number" {...register("km")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" />
+                  <input type="number" {...register("km")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. 35000" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Fuel Type *</label>
                   <select {...register("fuel_type")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary">
-                    <option value="">Select...</option>
+                    <option value="">Select Fuel Type...</option>
                     <option value="petrol">Petrol</option>
                     <option value="diesel">Diesel</option>
                     <option value="electric">Electric</option>
@@ -261,18 +341,18 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Transmission *</label>
                   <select {...register("transmission")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary">
-                    <option value="">Select...</option>
+                    <option value="">Select Transmission...</option>
                     <option value="automatic">Automatic</option>
                     <option value="manual">Manual</option>
                   </select>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Owners *</label>
-                  <input type="number" {...register("owners")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" />
+                  <input type="number" {...register("owners")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. 1" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Reg State</label>
-                  <input {...register("reg_state")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" />
+                  <input list="reg-states" {...register("reg_state")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. KA, MH, DL..." autoComplete="off" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Status *</label>
@@ -356,14 +436,14 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
             <div className={activeTab === 3 ? "block" : "hidden"}>
               <div>
                 <label className="text-sm font-medium text-text-secondary">Description</label>
-                <textarea {...register("description")} rows={6} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary resize-none" placeholder="Write a detailed description..." />
+                <textarea {...register("description")} rows={6} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary resize-none" placeholder="e.g. Single owner, dealer maintained with full service history, pristine condition..." />
               </div>
               <div className="mt-4">
                 <label className="text-sm font-medium text-text-secondary">Features (Comma separated)</label>
                 <textarea 
                   rows={3} 
-                  className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary resize-none" 
-                  placeholder="Sunroof, Leather Seats, 360 Camera..."
+                  className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary resize-none" 
+                  placeholder="e.g. Sunroof, Leather Seats, 360 Camera, Ventilated Seats..."
                   defaultValue={watch("features")?.join(", ")}
                   onChange={(e) => {
                     const vals = e.target.value.split(",").map(v => v.trim()).filter(Boolean);
@@ -381,7 +461,7 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Purchase Price (INR)</label>
-                  <input type="number" {...register("purchase_price")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" />
+                  <input type="number" {...register("purchase_price")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. 1500000" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Purchase Date</label>
@@ -389,11 +469,11 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
                 </div>
                 <div className="col-span-2">
                   <label className="text-sm font-medium text-text-secondary">Purchase Source / Seller Contact</label>
-                  <input {...register("purchase_source")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" />
+                  <input {...register("purchase_source")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. Direct Owner (Ramesh - 9876543210) / Trade-in" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Sold Price (INR)</label>
-                  <input type="number" {...register("sold_price")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary" />
+                  <input type="number" {...register("sold_price")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. 1800000" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Sold Date</label>
@@ -401,7 +481,7 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
                 </div>
                 <div className="col-span-2">
                   <label className="text-sm font-medium text-text-secondary">Internal Notes</label>
-                  <textarea {...register("internal_notes")} rows={3} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary resize-none" />
+                  <textarea {...register("internal_notes")} rows={3} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary resize-none" placeholder="e.g. Serviced at dealership on purchase, new front tires installed..." />
                 </div>
               </div>
             </div>

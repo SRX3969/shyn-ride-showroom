@@ -143,10 +143,10 @@ function ContactPage() {
               {/* Map embed */}
               <RevealSection direction="left" delay={400}>
                 <div className="mt-6 overflow-hidden rounded-xl border border-border/20 bg-card/10 h-64 md:h-80">
-                  {settings?.showroomMapIframe ? (
+                  {(settings as any)?.showroomMapIframe ? (
                     <div 
                       className="w-full h-full [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-0"
-                      dangerouslySetInnerHTML={{ __html: settings.showroomMapIframe }}
+                      dangerouslySetInnerHTML={{ __html: (settings as any).showroomMapIframe }}
                     />
                   ) : (
                     <iframe

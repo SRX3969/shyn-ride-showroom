@@ -16,15 +16,9 @@ export const list = query({
   handler: async (ctx, { token, status, make, search, page, limit }) => {
     await requireAdmin(ctx, token);
 
-    let carsQuery = ctx.db.query("cars").filter((q) => q.neq(q.field("is_deleted"), true));
-
-    if (status) {
-      carsQuery = ctx.db.query("cars")
-        .withIndex("by_status", (q) => q.eq("status", status))
-        .filter((q) => q.neq(q.field("is_deleted"), true));
-    }
-
-    let allCars = await carsQuery.order("desc").collect();
+    let allCars = status
+      ? await ctx.db.query("cars").withIndex("by_status", (q) => q.eq("status", status)).filter((q) => q.neq(q.field("is_deleted"), true)).order("desc").collect()
+      : await ctx.db.query("cars").filter((q) => q.neq(q.field("is_deleted"), true)).order("desc").collect();
 
     // Filter by make manually if status index was used, or vice versa
     if (make && make !== "all") {

@@ -50,7 +50,7 @@ function AdminLogin() {
       setSessionToken(token);
       toast.success("Logged in successfully");
       
-      navigate({ to: "/admin/inventory" });
+      navigate({ to: "/admin/inventory", search: { editCarId: undefined } });
     } catch (error: any) {
       console.error(error);
       toast.error(error.message || "Invalid username or password");

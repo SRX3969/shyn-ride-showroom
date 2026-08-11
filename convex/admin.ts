@@ -130,6 +130,7 @@ export const bootstrapAdmin = action({
     const password_hash = await bcrypt.hash(password, 12);
     
     await ctx.runMutation(api.admin.createAdminUser, {
+      token: "system_seed",
       username,
       password_hash,
       role: "owner",

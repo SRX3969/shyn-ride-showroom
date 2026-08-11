@@ -10,6 +10,8 @@ export interface CarWhatsAppDetails {
   price_inr?: number;
   variant?: string;
   slug?: string;
+  carTitle?: string;
+  date?: string;
 }
 
 /**
