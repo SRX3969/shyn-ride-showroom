@@ -233,14 +233,84 @@ function CarDetailContent({ car }: { car: any }) {
         Inventory
       </Link>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 relative">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative">
         {/* Left Column - Gallery & Details */}
-        <div className="lg:col-span-2 space-y-12">
+        <div className="lg:col-span-2 space-y-8">
           
+          {/* Mobile Top Header (Above Fold) */}
+          <div className="block lg:hidden space-y-3 pb-2 border-b border-border/30">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <h1 className="font-bold text-2xl leading-tight text-text-primary font-display">
+                  {car.year} {car.make} {car.model}
+                </h1>
+                {car.variant && (
+                  <div className="mt-0.5 text-sm font-medium text-text-secondary">
+                    {car.variant}
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={toggleWishlist}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full glass bg-surface/80 border border-border"
+              >
+                <Heart className={`h-4.5 w-4.5 transition-colors ${isWishlisted ? "fill-red-500 text-red-500" : "text-text-primary"}`} />
+              </button>
+            </div>
+
+            {/* Price & EMI Badges */}
+            <div className="flex items-center justify-between gap-2 bg-surface/50 border border-border/40 p-3 rounded-xl">
+              <div>
+                {isLimitedOffer && (
+                  <div className="flex items-center gap-2 text-xs text-text-tertiary line-through">
+                    {formatINR(car.original_price)}
+                    <span className="bg-red-600/10 text-red-500 text-[10px] font-bold px-1.5 py-0.2 rounded border border-red-600/20">LIMITED OFFER</span>
+                  </div>
+                )}
+                <div className="font-bold text-2xl text-gradient-gold font-display">
+                  {formatINR(car.price_inr)}
+                </div>
+              </div>
+              {car.price_negotiable && (
+                <span className="rounded-md bg-surface px-2.5 py-1 text-[11px] font-medium text-text-secondary border border-border">
+                  Negotiable
+                </span>
+              )}
+            </div>
+
+            {/* Quick Spec Chips */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 text-[11.5px] font-medium text-text-secondary scrollbar-hide">
+              <span className="bg-surface px-2.5 py-1 rounded-md border border-border/50 shrink-0">{formatKm(car.km)}</span>
+              <span className="bg-surface px-2.5 py-1 rounded-md border border-border/50 capitalize shrink-0">{car.fuel_type}</span>
+              <span className="bg-surface px-2.5 py-1 rounded-md border border-border/50 capitalize shrink-0">{car.transmission}</span>
+              <span className="bg-surface px-2.5 py-1 rounded-md border border-border/50 uppercase shrink-0">{car.reg_state || "KA"}</span>
+              <span className="bg-surface px-2.5 py-1 rounded-md border border-border/50 shrink-0">{car.owners} Owner{car.owners > 1 ? 's' : ''}</span>
+            </div>
+
+            {/* Quick Action CTAs */}
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <button
+                onClick={scrollToEnquiry}
+                className="flex items-center justify-center gap-1.5 rounded-xl bg-gold-ui px-3 py-2.5 text-xs font-bold text-white shadow-md shadow-gold-ui/10 active:scale-95 transition-all"
+              >
+                Enquire Now
+              </button>
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-1.5 rounded-xl bg-[#25D366]/15 border border-[#25D366]/30 px-3 py-2.5 text-xs font-bold text-[#25D366] active:scale-95 transition-all"
+              >
+                <MessageCircle className="h-4 w-4" />
+                WhatsApp
+              </a>
+            </div>
+          </div>
+
           {/* Gallery */}
           <div>
             <div 
-              className="group relative aspect-[4/3] md:aspect-[16/9] overflow-hidden rounded-2xl bg-card cursor-pointer touch-pan-y"
+              className="group relative aspect-[16/10] md:aspect-[16/9] overflow-hidden rounded-2xl bg-card cursor-pointer touch-pan-y shadow-lg"
               onClick={() => setShowLightbox(true)}
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
@@ -556,23 +626,33 @@ function CarDetailContent({ car }: { car: any }) {
       )}
 
       {/* Mobile Bottom Sticky Bar */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/90 backdrop-blur-xl border-t border-border/40 p-4 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] flex items-center justify-between animate-fade-in-up">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface/95 backdrop-blur-xl border-t border-border/60 p-3.5 shadow-[0_-10px_30px_rgba(0,0,0,0.3)] flex items-center justify-between slide-up-fade">
         <div>
           {isLimitedOffer && (
-            <div className="text-[11px] font-medium text-text-tertiary line-through">
+            <div className="text-[10px] font-medium text-text-tertiary line-through">
               {formatINR(car.original_price)}
             </div>
           )}
-          <div className="font-bold text-xl text-text-primary text-gradient-gold font-display">
+          <div className="font-bold text-lg text-text-primary text-gradient-gold font-display">
             {formatINR(car.price_inr)}
           </div>
         </div>
-        <button
-          onClick={scrollToEnquiry}
-          className="rounded-xl bg-gold-ui px-6 py-3 text-[14px] font-bold text-white shadow-lg shadow-gold-ui/20"
-        >
-          Enquire Now
-        </button>
+        <div className="flex gap-2">
+          <a
+            href={whatsappLink}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center justify-center h-10 w-10 rounded-xl bg-[#25D366]/15 border border-[#25D366]/30 text-[#25D366] active:scale-95 transition-transform"
+          >
+            <MessageCircle className="h-5 w-5" />
+          </a>
+          <button
+            onClick={scrollToEnquiry}
+            className="rounded-xl bg-gold-ui px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-gold-ui/20 active:scale-95 transition-transform"
+          >
+            Enquire Now
+          </button>
+        </div>
       </div>
 
       {/* Fullscreen Lightbox */}

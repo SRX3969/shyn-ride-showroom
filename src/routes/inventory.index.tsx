@@ -129,17 +129,17 @@ function InventoryPage() {
         )}
 
         <Header />
-        <main className="mx-auto max-w-7xl px-6 py-16">
+        <main className="mx-auto max-w-7xl px-4 sm:px-6 py-6 md:py-16">
           <div
             ref={headerRef}
             className={`sr-hidden ${headerVisible ? "sr-visible" : ""}`}
           >
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-[11px] font-bold uppercase tracking-[0.35em] text-champagne">
+                <div className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.35em] text-champagne">
                   Inventory
                 </div>
-                <h1 className="mt-4 font-display text-5xl md:text-6xl">
+                <h1 className="mt-1 md:mt-4 font-display text-3xl md:text-6xl font-bold">
                   The <span className="text-gradient-gold">floor.</span>
                 </h1>
               </div>
@@ -147,14 +147,14 @@ function InventoryPage() {
               {/* Mobile Bottom Sheet Filter Trigger */}
               <button
                 onClick={() => setShowMobileFilter(true)}
-                className="flex lg:hidden items-center gap-2 rounded-xl bg-gold-ui/10 border border-gold-ui/30 px-4 py-2.5 text-xs font-bold text-gold-ui hover:bg-gold-ui/20 transition-all"
+                className="flex lg:hidden items-center gap-2 rounded-xl bg-gold-ui/10 border border-gold-ui/30 px-3.5 py-2 text-xs font-bold text-gold-ui hover:bg-gold-ui/20 transition-all active:scale-95"
               >
                 <Filter className="w-4 h-4" />
                 Filter ({[search.bodyType, search.make, search.fuelType, search.transmission].filter(Boolean).length})
               </button>
             </div>
 
-            <p className="mt-4 max-w-xl text-sm text-muted-foreground/70">
+            <p className="mt-2 md:mt-4 max-w-xl text-xs md:text-sm text-muted-foreground/70">
               {cars === undefined
                 ? "Loading inventory…"
                 : `${cars.length} car${cars.length === 1 ? "" : "s"} available. Every listing is inspected, certified and honestly priced.`}
@@ -162,7 +162,7 @@ function InventoryPage() {
           </div>
 
           {/* Filters */}
-          <div className="mt-8 md:mt-12 rounded-2xl border border-border/30 bg-card/20 p-4 md:p-5">
+          <div className="mt-4 md:mt-12 rounded-2xl border border-border/30 bg-card/20 p-3 md:p-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
                 <div className="flex items-center gap-2 text-muted-foreground/50 shrink-0 mr-1">
