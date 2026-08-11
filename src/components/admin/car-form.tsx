@@ -23,6 +23,9 @@ const carSchema = z.object({
   color: z.string().min(1),
   owners: z.coerce.number().min(1),
   reg_state: z.string().optional().default("KA"),
+  rc_status: z.string().optional().default("Valid"),
+  insurance_validity: z.string().optional(),
+  keys: z.coerce.number().optional().default(2),
   status: z.enum(["draft", "available", "booked", "sold"]),
   featured: z.boolean().default(false),
   description: z.string().optional(),
@@ -94,6 +97,9 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
     resolver: zodResolver(carSchema) as any,
     defaultValues: car ? {
       ...car,
+      rc_status: car.rc_status || "Valid",
+      insurance_validity: car.insurance_validity || "",
+      keys: car.keys ?? 2,
       images: car.images || [],
       purchase_date: car.purchase_date ? new Date(car.purchase_date).toISOString().split('T')[0] : "",
       sold_date: car.sold_date ? new Date(car.sold_date).toISOString().split('T')[0] : "",
@@ -102,6 +108,9 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
       featured: false,
       price_negotiable: false,
       reg_state: "KA",
+      rc_status: "Valid",
+      insurance_validity: "",
+      keys: 2,
       features: [],
       images: []
     }
@@ -176,7 +185,6 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
     }
   };
 
-  return (
   const selectedMake = watch("make");
   const modelOptions = (selectedMake && POPULAR_MODELS[selectedMake]) ? POPULAR_MODELS[selectedMake] : ALL_MODELS;
 
@@ -299,6 +307,22 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
 
             {/* Pricing & Condition */}
             <div className={activeTab === 1 ? "block" : "hidden"}>
+              <datalist id="rc-statuses">
+                <option value="Valid" />
+                <option value="Under Transfer" />
+                <option value="Duplicate RC" />
+                <option value="NOC Issued" />
+                <option value="Expired" />
+              </datalist>
+              <datalist id="insurance-options">
+                <option value="Comprehensive (Valid till Dec 2026)" />
+                <option value="Comprehensive (Valid till 2025)" />
+                <option value="Third Party Only" />
+                <option value="Zero Dep (Valid till Oct 2026)" />
+                <option value="Expired" />
+                <option value="Not Available" />
+              </datalist>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Selling Price (INR) *</label>
@@ -353,6 +377,28 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Reg State</label>
                   <input list="reg-states" {...register("reg_state")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. KA, MH, DL..." autoComplete="off" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-text-secondary">RC Status</label>
+                  <select {...register("rc_status")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary">
+                    <option value="Valid">Valid</option>
+                    <option value="Under Transfer">Under Transfer</option>
+                    <option value="Duplicate RC">Duplicate RC</option>
+                    <option value="NOC Issued">NOC Issued</option>
+                    <option value="Expired">Expired</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-text-secondary">Insurance Validity</label>
+                  <input list="insurance-options" {...register("insurance_validity")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. Comprehensive (Valid 2026)..." autoComplete="off" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-text-secondary">Number of Keys</label>
+                  <select {...register("keys")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary">
+                    <option value={2}>2 Keys (Original)</option>
+                    <option value={1}>1 Key</option>
+                    <option value={3}>3 Keys</option>
+                  </select>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Status *</label>

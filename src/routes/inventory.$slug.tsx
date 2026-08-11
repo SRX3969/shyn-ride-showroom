@@ -199,9 +199,9 @@ function CarDetailContent({ car }: { car: any }) {
     { label: "Transmission", value: car.transmission, icon: Cog },
     { label: "Color", value: car.color, icon: Palette },
     { label: "Body Type", value: car.body_type, icon: Car },
-    { label: "RC Status", value: "Valid", icon: FileCheck },
-    { label: "Insurance Validity", value: "Not Specified", icon: ShieldCheck },
-    { label: "Number of Keys", value: "Not Specified", icon: Key },
+    { label: "RC Status", value: car.rc_status || "Valid", icon: FileCheck },
+    { label: "Insurance Validity", value: car.insurance_validity || "Not Specified", icon: ShieldCheck },
+    { label: "Number of Keys", value: car.keys ? `${car.keys} ${car.keys === 1 ? 'Key' : 'Keys'}` : "Not Specified", icon: Key },
   ];
 
   // Special badges

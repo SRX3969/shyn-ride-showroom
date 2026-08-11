@@ -26,6 +26,7 @@ export default defineSchema({
     video_url: v.optional(v.string()),
     rc_status: v.optional(v.string()),
     insurance_validity: v.optional(v.string()),
+    keys: v.optional(v.number()),
     // Admin fields
     purchase_price: v.optional(v.number()),
     purchase_date: v.optional(v.string()),
