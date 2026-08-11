@@ -14,6 +14,7 @@ const carSchema = z.object({
   model: z.string().min(1, "Model is required"),
   variant: z.string().optional(),
   year: z.coerce.number().min(1900).max(new Date().getFullYear() + 1),
+  reg_year: z.coerce.number().optional(),
   price_inr: z.coerce.number().min(0, "Price must be positive"),
   price_negotiable: z.boolean().default(false),
   km: z.coerce.number().min(0),
@@ -97,6 +98,7 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
     resolver: zodResolver(carSchema) as any,
     defaultValues: car ? {
       ...car,
+      reg_year: car.reg_year || car.year,
       rc_status: car.rc_status || "Valid",
       insurance_validity: car.insurance_validity || "",
       keys: car.keys ?? 2,
@@ -288,9 +290,13 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
                   <input list="car-variants" {...register("variant")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. XZA Plus, SX(O), 200d..." autoComplete="off" />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-text-secondary">Year *</label>
-                  <input type="number" list="car-years" {...register("year")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. 2022" autoComplete="off" />
+                  <label className="text-sm font-medium text-text-secondary">Make Year (Manufacturing) *</label>
+                  <input type="number" list="car-years" {...register("year")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. 2020" autoComplete="off" />
                   {errors.year && <p className="text-xs text-red-500 mt-1">{errors.year.message}</p>}
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-text-secondary">Registration Year</label>
+                  <input type="number" list="car-years" {...register("reg_year")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. 2021" autoComplete="off" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Body Type *</label>

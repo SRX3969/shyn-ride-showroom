@@ -134,6 +134,7 @@ export const saveCar = mutation({
     color: v.string(),
     owners: v.number(),
     reg_state: v.optional(v.string()),
+    reg_year: v.optional(v.number()),
     rc_status: v.optional(v.string()),
     insurance_validity: v.optional(v.string()),
     keys: v.optional(v.number()),

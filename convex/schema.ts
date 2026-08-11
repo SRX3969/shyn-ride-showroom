@@ -18,6 +18,7 @@ export default defineSchema({
     color: v.string(),
     owners: v.number(),
     reg_state: v.optional(v.string()),
+    reg_year: v.optional(v.number()),
     status: v.string(),
     featured: v.boolean(),
     description: v.optional(v.string()),

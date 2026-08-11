@@ -191,7 +191,7 @@ function CarDetailContent({ car }: { car: any }) {
   // Spec Grid (12 fields)
   const specGrid = [
     { label: "Make Year", value: String(car.year), icon: Calendar },
-    { label: "Registration Year", value: String(car.year), icon: Calendar },
+    { label: "Registration Year", value: String(car.reg_year || car.year), icon: Calendar },
     { label: "Ownership", value: `${car.owners} Owner${car.owners > 1 ? 's' : ''}`, icon: Users },
     { label: "Fuel Type", value: car.fuel_type, icon: Fuel },
     { label: "Kilometers Driven", value: formatKm(car.km), icon: Gauge },
