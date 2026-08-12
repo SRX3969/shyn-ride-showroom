@@ -137,6 +137,8 @@ export const saveCar = mutation({
     reg_year: v.optional(v.number()),
     rc_status: v.optional(v.string()),
     insurance_validity: v.optional(v.string()),
+    accident_history: v.optional(v.string()),
+    service_history: v.optional(v.string()),
     keys: v.optional(v.number()),
     status: v.string(),
     featured: v.boolean(),

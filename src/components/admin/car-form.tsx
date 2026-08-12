@@ -26,6 +26,8 @@ const carSchema = z.object({
   reg_state: z.string().optional().default("KA"),
   rc_status: z.string().optional().default("Valid"),
   insurance_validity: z.string().optional(),
+  accident_history: z.string().optional().default("None Reported"),
+  service_history: z.string().optional().default("Authorized Dealer"),
   keys: z.coerce.number().optional().default(2),
   status: z.enum(["draft", "available", "booked", "sold"]),
   featured: z.boolean().default(false),
@@ -101,6 +103,8 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
       reg_year: car.reg_year || car.year,
       rc_status: car.rc_status || "Valid",
       insurance_validity: car.insurance_validity || "",
+      accident_history: car.accident_history || "None Reported",
+      service_history: car.service_history || "Authorized Dealer",
       keys: car.keys ?? 2,
       images: car.images || [],
       purchase_date: car.purchase_date ? new Date(car.purchase_date).toISOString().split('T')[0] : "",
@@ -112,6 +116,8 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
       reg_state: "KA",
       rc_status: "Valid",
       insurance_validity: "",
+      accident_history: "None Reported",
+      service_history: "Authorized Dealer",
       keys: 2,
       features: [],
       images: []
@@ -328,6 +334,18 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
                 <option value="Expired" />
                 <option value="Not Available" />
               </datalist>
+              <datalist id="accident-options">
+                <option value="None Reported" />
+                <option value="No Structural Damage" />
+                <option value="Minor Bumper Scratch Repaired" />
+                <option value="Fully Restored" />
+              </datalist>
+              <datalist id="service-options">
+                <option value="Authorized Dealer" />
+                <option value="Company Maintained" />
+                <option value="Full Service History Available" />
+                <option value="Periodic Service Done" />
+              </datalist>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -397,6 +415,14 @@ export function CarFormModal({ car, onClose, onSaved }: { car: any | null, onClo
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Insurance Validity</label>
                   <input list="insurance-options" {...register("insurance_validity")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. Comprehensive (Valid 2026)..." autoComplete="off" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-text-secondary">Accident History</label>
+                  <input list="accident-options" {...register("accident_history")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. None Reported..." autoComplete="off" />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-text-secondary">Service History</label>
+                  <input list="service-options" {...register("service_history")} className="w-full mt-1 px-3 py-2 bg-background border border-border rounded-lg text-text-primary placeholder:text-text-tertiary" placeholder="e.g. Authorized Dealer..." autoComplete="off" />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-text-secondary">Number of Keys</label>

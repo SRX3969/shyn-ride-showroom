@@ -376,13 +376,38 @@ function CarDetailContent({ car }: { car: any }) {
               )}
             </div>
 
-            {/* Quick Spec Chips */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 text-[12px] font-medium text-text-secondary scrollbar-hide">
-              <span className="bg-surface px-3 py-1.5 rounded-lg border border-border/50 shrink-0">{formatKm(car.km)}</span>
-              <span className="bg-surface px-3 py-1.5 rounded-lg border border-border/50 capitalize shrink-0">{car.fuel_type}</span>
-              <span className="bg-surface px-3 py-1.5 rounded-lg border border-border/50 capitalize shrink-0">{car.transmission}</span>
-              <span className="bg-surface px-3 py-1.5 rounded-lg border border-border/50 uppercase shrink-0">{car.reg_state || "KA"}</span>
-              <span className="bg-surface px-3 py-1.5 rounded-lg border border-border/50 shrink-0">{car.owners} Owner{car.owners > 1 ? 's' : ''}</span>
+            {/* Crisp Quick Spec Boxes Grid */}
+            <div className="grid grid-cols-3 gap-2 pt-1">
+              <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-surface/80 border border-border/50 text-center shadow-sm">
+                <Gauge className="h-4 w-4 text-gold-ui mb-1" />
+                <span className="text-[10px] font-medium text-text-tertiary">Driven</span>
+                <span className="text-[12px] font-bold text-text-primary mt-0.5">{formatKm(car.km)}</span>
+              </div>
+              <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-surface/80 border border-border/50 text-center shadow-sm">
+                <Fuel className="h-4 w-4 text-gold-ui mb-1" />
+                <span className="text-[10px] font-medium text-text-tertiary">Fuel</span>
+                <span className="text-[12px] font-bold text-text-primary capitalize mt-0.5">{car.fuel_type}</span>
+              </div>
+              <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-surface/80 border border-border/50 text-center shadow-sm">
+                <Cog className="h-4 w-4 text-gold-ui mb-1" />
+                <span className="text-[10px] font-medium text-text-tertiary">Transmission</span>
+                <span className="text-[12px] font-bold text-text-primary capitalize mt-0.5">{car.transmission}</span>
+              </div>
+              <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-surface/80 border border-border/50 text-center shadow-sm">
+                <MapPin className="h-4 w-4 text-gold-ui mb-1" />
+                <span className="text-[10px] font-medium text-text-tertiary">Reg State</span>
+                <span className="text-[12px] font-bold text-text-primary uppercase mt-0.5">{car.reg_state || "KA"}</span>
+              </div>
+              <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-surface/80 border border-border/50 text-center shadow-sm">
+                <Users className="h-4 w-4 text-gold-ui mb-1" />
+                <span className="text-[10px] font-medium text-text-tertiary">Ownership</span>
+                <span className="text-[12px] font-bold text-text-primary mt-0.5">{car.owners} Owner{car.owners > 1 ? 's' : ''}</span>
+              </div>
+              <div className="flex flex-col items-center justify-center p-2.5 rounded-xl bg-surface/80 border border-border/50 text-center shadow-sm">
+                <Calendar className="h-4 w-4 text-gold-ui mb-1" />
+                <span className="text-[10px] font-medium text-text-tertiary">Reg Year</span>
+                <span className="text-[12px] font-bold text-text-primary mt-0.5">{car.reg_year || car.year}</span>
+              </div>
             </div>
           </div>
 
@@ -473,28 +498,28 @@ function CarDetailContent({ car }: { car: any }) {
                         <div className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">Accident</div>
                         <ShieldCheck className="h-4 w-4 text-emerald-500" />
                       </div>
-                      <div className="mt-1.5 text-sm font-bold text-text-primary">None Reported</div>
+                      <div className="mt-1.5 text-sm font-bold text-text-primary">{car.accident_history || "None Reported"}</div>
                     </div>
                     <div className="bg-background rounded-xl p-4 border border-border/50">
                       <div className="flex justify-between items-center">
                         <div className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">Service</div>
                         <FileCheck className="h-4 w-4 text-gold-ui" />
                       </div>
-                      <div className="mt-1.5 text-sm font-bold text-text-primary">Auth. Dealer</div>
+                      <div className="mt-1.5 text-sm font-bold text-text-primary">{car.service_history || "Authorized Dealer"}</div>
                     </div>
                     <div className="bg-background rounded-xl p-4 border border-border/50">
                       <div className="flex justify-between items-center">
                         <div className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">Insurance</div>
                         <ShieldCheck className="h-4 w-4 text-text-tertiary" />
                       </div>
-                      <div className="mt-1.5 text-sm font-bold text-text-primary">Not Specified</div>
+                      <div className="mt-1.5 text-sm font-bold text-text-primary">{car.insurance_validity || "Not Specified"}</div>
                     </div>
                     <div className="bg-background rounded-xl p-4 border border-border/50">
                       <div className="flex justify-between items-center">
                         <div className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">RC Status</div>
                         <FileCheck className="h-4 w-4 text-emerald-500" />
                       </div>
-                      <div className="mt-1.5 text-sm font-bold text-text-primary">Original / Valid</div>
+                      <div className="mt-1.5 text-sm font-bold text-text-primary">{car.rc_status || "Valid"}</div>
                     </div>
                   </div>
                 </div>
