@@ -4,7 +4,12 @@ import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { WHATSAPP_NUMBER, getWhatsAppUrl } from "../lib/whatsapp";
 
-export function FloatingActions() {
+interface FloatingActionsProps {
+  hasStickyBottomBar?: boolean;
+  hideWhatsApp?: boolean;
+}
+
+export function FloatingActions({ hasStickyBottomBar, hideWhatsApp }: FloatingActionsProps) {
   const [showTop, setShowTop] = useState(false);
   const logAnalytics = useMutation(api.analytics.logEvent);
 
@@ -25,8 +30,12 @@ export function FloatingActions() {
   const whatsappUrl = getWhatsAppUrl("general");
   const mapsUrl = "https://www.google.com/maps/dir/?api=1&destination=SHYN+RIDE+Bangalore+Karnataka+India";
 
+  const bottomClass = hasStickyBottomBar 
+    ? "bottom-20 right-4 sm:bottom-6 sm:right-6" 
+    : "bottom-4 right-4 sm:bottom-6 sm:right-6";
+
   return (
-    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-center gap-2.5">
+    <div className={`fixed ${bottomClass} z-50 flex flex-col items-center gap-2.5 transition-all duration-300`}>
       {/* Back to top */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -52,21 +61,24 @@ export function FloatingActions() {
         <MapPin className="h-4.5 w-4.5 transition-transform duration-300 group-hover:scale-110" />
       </a>
 
-      {/* WhatsApp */}
-      <a
-        href={whatsappUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={handleWhatsAppClick}
-        aria-label="Chat on WhatsApp"
-        className="group relative flex h-12 w-12 sm:h-14 sm:w-14 min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-[#25D366]/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-[#25D366]/40"
-      >
-        <span className="absolute -top-1 -right-1 flex h-3 w-3 sm:h-3.5 sm:w-3.5">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-3 w-3 sm:h-3.5 sm:w-3.5 bg-emerald-500"></span>
-        </span>
-        <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 transition-transform duration-300 group-hover:scale-110" />
-      </a>
+      {/* WhatsApp - Hide if sticky bar already has WhatsApp action on mobile */}
+      {!hideWhatsApp && (
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={handleWhatsAppClick}
+          aria-label="Chat on WhatsApp"
+          className="group relative flex h-12 w-12 sm:h-14 sm:w-14 min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-[#25D366]/30 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-[#25D366]/40"
+        >
+          <span className="absolute -top-1 -right-1 flex h-3 w-3 sm:h-3.5 sm:w-3.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 sm:h-3.5 sm:w-3.5 bg-emerald-500"></span>
+          </span>
+          <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 transition-transform duration-300 group-hover:scale-110" />
+        </a>
+      )}
     </div>
   );
 }
+
