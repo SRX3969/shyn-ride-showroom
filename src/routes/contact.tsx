@@ -287,8 +287,8 @@ function ContactPage() {
         <OtpVerificationModal
           isOpen={showOtpModal}
           onClose={() => setShowOtpModal(false)}
-          contact={form.email || form.phone}
-          contactType={form.email ? "email" : "phone"}
+          contact={form.phone || form.email}
+          contactType={form.phone ? "phone" : "email"}
           onVerified={handleFinalSubmit}
           title="Verify Contact Information"
         />

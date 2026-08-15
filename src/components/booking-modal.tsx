@@ -290,8 +290,8 @@ export function BookingModal({ isOpen, onClose, carId, carTitle }: BookingModalP
         <OtpVerificationModal
           isOpen={showOtpModal}
           onClose={() => setShowOtpModal(false)}
-          contact={email || phone}
-          contactType={email ? "email" : "phone"}
+          contact={phone || email}
+          contactType={phone ? "phone" : "email"}
           onVerified={handleFinalSubmit}
           title="Verify Contact details for VIP Experience"
         />

@@ -133,7 +133,7 @@ export const sendOtp = action({
 
       if (fast2smsKey) {
         try {
-          const smsRes = await fetch("https://www.fast2sms.com/dev/bulkV2", {
+          let smsRes = await fetch("https://www.fast2sms.com/dev/bulkV2", {
             method: "POST",
             headers: {
               "authorization": fast2smsKey,
@@ -145,9 +145,32 @@ export const sendOtp = action({
               numbers: cleanPhone,
             }),
           });
-          const smsData = await smsRes.json();
-          if (smsData.return) sentViaSms = true;
-          console.log("[SMS OTP FAST2SMS]", smsData);
+          let smsData = await smsRes.json();
+
+          // Fallback to Quick SMS route if OTP route requires explicit DLT approval
+          if (!smsData.return) {
+            console.log("[FAST2SMS OTP ROUTE FAILED, TRYING QUICK ROUTE]", smsData);
+            smsRes = await fetch("https://www.fast2sms.com/dev/bulkV2", {
+              method: "POST",
+              headers: {
+                "authorization": fast2smsKey,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                route: "q",
+                message: `${code} is your SHYN RIDE showroom verification code.`,
+                language: "english",
+                flash: 0,
+                numbers: cleanPhone,
+              }),
+            });
+            smsData = await smsRes.json();
+          }
+
+          if (smsData.return) {
+            sentViaSms = true;
+          }
+          console.log("[SMS OTP FAST2SMS RESULT]", smsData);
         } catch (err) {
           console.error("Fast2SMS API error:", err);
         }
