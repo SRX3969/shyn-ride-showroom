@@ -18,6 +18,7 @@ import type * as faqs from "../faqs.js";
 import type * as inventory from "../inventory.js";
 import type * as lib_requireAdmin from "../lib/requireAdmin.js";
 import type * as notifications from "../notifications.js";
+import type * as otp from "../otp.js";
 import type * as reports from "../reports.js";
 import type * as seed from "../seed.js";
 import type * as settings from "../settings.js";
@@ -41,6 +42,7 @@ declare const fullApi: ApiFromModules<{
   inventory: typeof inventory;
   "lib/requireAdmin": typeof lib_requireAdmin;
   notifications: typeof notifications;
+  otp: typeof otp;
   reports: typeof reports;
   seed: typeof seed;
   settings: typeof settings;

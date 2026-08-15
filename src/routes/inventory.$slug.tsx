@@ -806,7 +806,7 @@ function CarDetailContent({ car }: { car: any }) {
   );
 }
 
-function EnquirySection({
+function EnquiryForm({
   carId,
   carTitle,
 }: {
