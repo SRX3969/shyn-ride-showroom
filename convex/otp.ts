@@ -214,6 +214,8 @@ export const sendOtp = action({
 
     console.log(`[OTP GENERATED] Contact: ${contactClean} | Code: ${code} | SentViaSms: ${sentViaSms} | SentViaEmail: ${sentViaEmail}`);
 
+    const isLiveSent = sentViaSms || sentViaEmail;
+
     return {
       ok: true,
       message: sentViaSms
@@ -221,8 +223,9 @@ export const sendOtp = action({
         : sentViaEmail
         ? `OTP email sent to ${contactClean}`
         : `OTP generated for ${contactClean}`,
-      // Pass devCode for easy local testing / SMS preview fallback
-      devCode: code,
+      // Expose devCode ONLY if live SMS/Email API is not configured
+      devCode: isLiveSent ? undefined : code,
+      isLiveSent,
     };
   },
 });

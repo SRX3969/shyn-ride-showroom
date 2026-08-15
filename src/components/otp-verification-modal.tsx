@@ -71,26 +71,20 @@ export function OtpVerificationModal({
     }
   };
 
-  const handleVerify = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (otpCode.trim().length !== 6) {
-      setError("Please enter the complete 6-digit code.");
-      return;
-    }
-
+  const triggerVerify = async (codeToVerify: string) => {
     setLoading(true);
     setError(null);
     try {
       const res = await verifyOtpMutation({
         contact,
-        code: otpCode.trim(),
+        code: codeToVerify.trim(),
       });
 
       if (res.ok) {
         setSuccess(true);
         setTimeout(() => {
           onVerified();
-        }, 600);
+        }, 500);
       } else {
         setError(res.message || "Invalid OTP code.");
       }
@@ -98,6 +92,23 @@ export function OtpVerificationModal({
       setError(err.message || "Verification error.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVerify = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (otpCode.trim().length !== 6) {
+      setError("Please enter the complete 6-digit code.");
+      return;
+    }
+    await triggerVerify(otpCode);
+  };
+
+  const handleInputChange = (val: string) => {
+    const cleaned = val.replace(/\D/g, "");
+    setOtpCode(cleaned);
+    if (cleaned.length === 6 && !loading) {
+      triggerVerify(cleaned);
     }
   };
 
@@ -175,7 +186,7 @@ export function OtpVerificationModal({
                 type="text"
                 maxLength={6}
                 value={otpCode}
-                onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
+                onChange={(e) => handleInputChange(e.target.value)}
                 placeholder="123456"
                 className="w-full text-center tracking-[12px] font-mono text-2xl py-3 px-4 rounded-xl bg-black/50 border border-white/20 text-white focus:outline-none focus:border-[#DAAE6E] transition-colors"
                 autoFocus
