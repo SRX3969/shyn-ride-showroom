@@ -50,8 +50,8 @@ export function BookingModal({ isOpen, onClose, carId, carTitle }: BookingModalP
       return;
     }
 
-    if (/^(\d)\1{9}$/.test(cleanPhone) || ["1234567890", "9876543210"].includes(cleanPhone)) {
-      setValidationError("Please provide a real mobile number.");
+    if (/^(\d)\1{9}$/.test(cleanPhone)) {
+      setValidationError("Please enter a valid mobile number.");
       return;
     }
 

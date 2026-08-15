@@ -42,14 +42,9 @@ export function validatePhoneAndEmail(phone: string, email?: string) {
     return { valid: false, message: "Mobile number must start with 6, 7, 8, or 9." };
   }
 
-  // Reject repeating numbers (e.g. 9999999999, 0000000000)
+  // Reject all identical digits (e.g. 9999999999, 0000000000)
   if (/^(\d)\1{9}$/.test(cleanPhone)) {
-    return { valid: false, message: "Please enter a real, active mobile number." };
-  }
-
-  // Reject common sequential patterns
-  if (DUMMY_PHONE_PATTERNS.includes(cleanPhone)) {
-    return { valid: false, message: "Sequential test numbers are not allowed." };
+    return { valid: false, message: "Please enter a valid mobile number." };
   }
 
   if (email && email.trim() !== "") {

@@ -62,8 +62,8 @@ function SellPage() {
       return;
     }
 
-    if (/^(\d)\1{9}$/.test(cleanPhone) || ["1234567890", "9876543210"].includes(cleanPhone)) {
-      setError("Please enter a genuine mobile number.");
+    if (/^(\d)\1{9}$/.test(cleanPhone)) {
+      setError("Please enter a valid mobile number.");
       return;
     }
 
