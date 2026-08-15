@@ -151,4 +151,17 @@ export default defineSchema({
     delivery_date: v.optional(v.string()),
     order: v.number(),
   }),
+
+  otp_verifications: defineTable({
+    contact: v.string(),
+    code: v.string(),
+    type: v.string(),
+    expires_at: v.number(),
+    verified: v.boolean(),
+    attempts: v.number(),
+    created_at: v.number(),
+  })
+    .index("by_contact", ["contact"])
+    .index("by_contact_type", ["contact", "type"]),
 });
+

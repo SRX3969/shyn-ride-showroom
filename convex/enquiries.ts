@@ -1,7 +1,7 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { requireAdmin } from "./lib/requireAdmin";
-
+import { validatePhoneAndEmail } from "./otp";
 import { api } from "./_generated/api";
 
 export const submit = mutation({
@@ -18,6 +18,12 @@ export const submit = mutation({
     follow_up_date: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // Validate phone & email format + reject dummy patterns
+    const check = validatePhoneAndEmail(args.phone, args.email);
+    if (!check.valid) {
+      throw new Error(check.message || "Invalid phone number or email address.");
+    }
+
     const id = await ctx.db.insert("enquiries", {
       type: args.type,
       name: args.name,

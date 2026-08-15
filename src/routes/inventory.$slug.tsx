@@ -9,6 +9,7 @@ import { SkeletonLine } from "@/components/skeleton";
 import { formatINR, formatKm } from "@/lib/format";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { CarCard } from "@/components/car-card";
+import { OtpVerificationModal } from "@/components/otp-verification-modal";
 import {
   Calendar,
   Gauge,
@@ -805,7 +806,7 @@ function CarDetailContent({ car }: { car: any }) {
   );
 }
 
-function EnquiryForm({
+function EnquirySection({
   carId,
   carTitle,
 }: {
@@ -818,13 +819,51 @@ function EnquiryForm({
     email: "",
     message: "",
   });
+  const [honeypot, setHoneypot] = useState("");
   const [done, setDone] = useState(false);
   const [sending, setSending] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const submitEnquiry = useMutation(api.enquiries.submit);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handlePreSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+
+    if (honeypot) return;
+
+    if (!form.name.trim() || !form.phone.trim()) {
+      setError("Please enter your name and mobile number.");
+      return;
+    }
+
+    const cleanPhone = form.phone.replace(/\D/g, "");
+    if (cleanPhone.length !== 10 || !/^[6-9]/.test(cleanPhone)) {
+      setError("Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.");
+      return;
+    }
+
+    if (/^(\d)\1{9}$/.test(cleanPhone) || ["1234567890", "9876543210"].includes(cleanPhone)) {
+      setError("Please enter a genuine mobile number.");
+      return;
+    }
+
+    if (!form.email || form.email.trim() === "") {
+      setError("Please enter your email address to receive your verification OTP code.");
+      return;
+    }
+
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailPattern.test(form.email.trim())) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    setShowOtpModal(true);
+  };
+
+  const handleFinalSubmit = async () => {
+    setShowOtpModal(false);
     setError(null);
     setSending(true);
     try {
@@ -858,61 +897,82 @@ function EnquiryForm({
   }
 
   return (
-    <form
-      className="mt-8 space-y-4 rounded-2xl border border-border/20 bg-card/10 p-8 md:p-10"
-      onSubmit={handleSubmit}
-    >
-      <div className="text-[11px] font-bold uppercase tracking-[0.35em] text-champagne mb-6">
-        Enquire about this car
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Input
-          label="Name"
-          value={form.name}
-          onChange={(v) => setForm({ ...form, name: v })}
-          required
-        />
-        <Input
-          label="Phone"
-          value={form.phone}
-          onChange={(v) => setForm({ ...form, phone: v })}
-          required
-          inputMode="tel"
-        />
-        <Input
-          label="Email (optional)"
-          type="email"
-          value={form.email}
-          onChange={(v) => setForm({ ...form, email: v })}
-          className="md:col-span-2"
-        />
-      </div>
-      <div className="mt-4">
-        <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">
-          Message (optional)
-        </label>
-        <textarea
-          rows={3}
-          value={form.message}
-          onChange={(e) => setForm({ ...form, message: e.target.value })}
-          className="mt-2 w-full rounded-xl border border-border/30 bg-card/30 px-4 py-3 text-sm text-foreground transition-all duration-300 focus:border-champagne/40 focus:outline-none resize-none"
-          placeholder="I'd like to schedule a test drive…"
-        />
-      </div>
-      {error && (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-xs text-destructive">
-          {error}
-        </div>
-      )}
-      <button
-        type="submit"
-        disabled={sending}
-        className="mt-6 flex w-full items-center justify-center gap-2.5 rounded-xl bg-champagne px-6 py-4 text-xs font-bold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:shadow-lg hover:shadow-champagne/20 btn-shine disabled:opacity-50"
+    <>
+      <form
+        className="mt-8 space-y-4 rounded-2xl border border-border/20 bg-card/10 p-8 md:p-10"
+        onSubmit={handlePreSubmit}
       >
-        <Send className="h-3.5 w-3.5" />
-        {sending ? "Sending…" : "Send enquiry"}
-      </button>
-    </form>
+        <input
+          type="text"
+          name="b_website"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+          className="hidden"
+          tabIndex={-1}
+          autoComplete="off"
+        />
+        <div className="text-[11px] font-bold uppercase tracking-[0.35em] text-champagne mb-6">
+          Enquire about this car
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label="Name *"
+            value={form.name}
+            onChange={(v) => setForm({ ...form, name: v })}
+            required
+          />
+          <Input
+            label="Phone *"
+            value={form.phone}
+            onChange={(v) => setForm({ ...form, phone: v })}
+            required
+            inputMode="tel"
+          />
+          <Input
+            label="Email Address *"
+            type="email"
+            value={form.email}
+            onChange={(v) => setForm({ ...form, email: v })}
+            required
+            className="md:col-span-2"
+          />
+        </div>
+        <div className="mt-4">
+          <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">
+            Message (optional)
+          </label>
+          <textarea
+            rows={3}
+            value={form.message}
+            onChange={(e) => setForm({ ...form, message: e.target.value })}
+            className="mt-2 w-full rounded-xl border border-border/30 bg-card/30 px-4 py-3 text-sm text-foreground transition-all duration-300 focus:border-champagne/40 focus:outline-none resize-none"
+            placeholder="I'd like to schedule a test drive…"
+          />
+        </div>
+        {error && (
+          <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-xs text-destructive">
+            {error}
+          </div>
+        )}
+        <button
+          type="submit"
+          disabled={sending}
+          className="mt-6 flex w-full items-center justify-center gap-2.5 rounded-xl bg-champagne px-6 py-4 text-xs font-bold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:shadow-lg hover:shadow-champagne/20 btn-shine disabled:opacity-50"
+        >
+          <Send className="h-3.5 w-3.5" />
+          {sending ? "Sending…" : "Verify OTP & Send Enquiry"}
+        </button>
+      </form>
+
+      <OtpVerificationModal
+        isOpen={showOtpModal}
+        onClose={() => setShowOtpModal(false)}
+        contact={form.email || form.phone}
+        contactType={form.email ? "email" : "phone"}
+        onVerified={handleFinalSubmit}
+        title={`Verify details for ${carTitle}`}
+      />
+    </>
   );
 }
 

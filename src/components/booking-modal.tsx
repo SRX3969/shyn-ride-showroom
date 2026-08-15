@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
-import { Calendar, Clock, X, CheckCircle, Car, User, Phone, Mail, ShieldCheck } from "lucide-react";
+import { Calendar, Clock, X, CheckCircle, Car, User, Phone, Mail, ShieldCheck, AlertCircle } from "lucide-react";
 import { getWhatsAppUrl, COMPANY_PHONE_INTL, COMPANY_EMAIL } from "../lib/whatsapp";
+import { OtpVerificationModal } from "./otp-verification-modal";
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -23,15 +24,54 @@ export function BookingModal({ isOpen, onClose, carId, carTitle }: BookingModalP
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [notes, setNotes] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [showOtpModal, setShowOtpModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handlePreSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !phone || !preferredDate) return;
+    setValidationError(null);
 
+    // Honeypot bot check
+    if (honeypot) return;
+
+    if (!name.trim() || !phone.trim() || !preferredDate) {
+      setValidationError("Please fill in all required fields.");
+      return;
+    }
+
+    const cleanPhone = phone.replace(/\D/g, "");
+    if (cleanPhone.length !== 10 || !/^[6-9]/.test(cleanPhone)) {
+      setValidationError("Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.");
+      return;
+    }
+
+    if (/^(\d)\1{9}$/.test(cleanPhone) || ["1234567890", "9876543210"].includes(cleanPhone)) {
+      setValidationError("Please provide a real mobile number.");
+      return;
+    }
+
+    if (!email || email.trim() === "") {
+      setValidationError("Please enter your email address to receive your verification OTP code.");
+      return;
+    }
+
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailPattern.test(email.trim())) {
+      setValidationError("Please enter a valid email address.");
+      return;
+    }
+
+    // Open OTP verification modal
+    setShowOtpModal(true);
+  };
+
+  const handleFinalSubmit = async () => {
+    setShowOtpModal(false);
     setLoading(true);
     try {
       await createBooking({
@@ -54,12 +94,14 @@ export function BookingModal({ isOpen, onClose, carId, carTitle }: BookingModalP
       });
 
       setSuccess(true);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Booking error:", err);
+      setValidationError(err.message || "Booking submission failed.");
     } finally {
       setLoading(false);
     }
   };
+
 
   const handleWhatsAppRedirect = () => {
     const waUrl = getWhatsAppUrl("booking", { carTitle: carTitle || "vehicle", date: preferredDate });
@@ -89,7 +131,25 @@ export function BookingModal({ isOpen, onClose, carId, carTitle }: BookingModalP
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            {validationError && (
+              <div className="mt-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 flex items-center gap-2 text-red-400 text-xs">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{validationError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handlePreSubmit} className="mt-6 space-y-4">
+              {/* Honeypot field (hidden from real users) */}
+              <input
+                type="text"
+                name="b_website"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                className="hidden"
+                tabIndex={-1}
+                autoComplete="off"
+              />
+
               {/* Type Selection */}
               <div>
                 <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Service Type</label>
@@ -164,7 +224,7 @@ export function BookingModal({ isOpen, onClose, carId, carTitle }: BookingModalP
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
                     <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-                      <Phone className="h-3.5 w-3.5 text-gold-ui" /> Phone Number *
+                      <Phone className="h-3.5 w-3.5 text-gold-ui" /> Mobile Number *
                     </label>
                     <input
                       type="tel"
@@ -177,7 +237,7 @@ export function BookingModal({ isOpen, onClose, carId, carTitle }: BookingModalP
                   </div>
                   <div>
                     <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-                      <Mail className="h-3.5 w-3.5 text-gold-ui" /> Email (Optional)
+                      <Mail className="h-3.5 w-3.5 text-gold-ui" /> Email Address
                     </label>
                     <input
                       type="email"
@@ -194,9 +254,10 @@ export function BookingModal({ isOpen, onClose, carId, carTitle }: BookingModalP
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-xl bg-gold-ui py-3 text-sm font-bold text-white shadow-lg shadow-gold-ui/20 transition-all hover:bg-gold-ui/90 disabled:opacity-50 btn-shine"
+                  className="w-full rounded-xl bg-gold-ui py-3 text-sm font-bold text-white shadow-lg shadow-gold-ui/20 transition-all hover:bg-gold-ui/90 disabled:opacity-50 flex items-center justify-center gap-2 btn-shine"
                 >
-                  {loading ? "Confirming Slot..." : "Confirm Booking"}
+                  <ShieldCheck className="w-4 h-4" />
+                  {loading ? "Processing Booking..." : "Verify OTP & Complete Booking"}
                 </button>
               </div>
             </form>
@@ -224,7 +285,18 @@ export function BookingModal({ isOpen, onClose, carId, carTitle }: BookingModalP
             </div>
           </div>
         )}
+
+        {/* OTP Verification Modal Step */}
+        <OtpVerificationModal
+          isOpen={showOtpModal}
+          onClose={() => setShowOtpModal(false)}
+          contact={email || phone}
+          contactType={email ? "email" : "phone"}
+          onVerified={handleFinalSubmit}
+          title="Verify Contact details for VIP Experience"
+        />
       </div>
     </div>
   );
 }
+
